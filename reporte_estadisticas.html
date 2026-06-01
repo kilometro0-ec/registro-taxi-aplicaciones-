@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="es">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Driver Insights - Analytics</title>
+<title>Driver Insights - Estadísticas</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
@@ -19,51 +19,110 @@
 <div class="flex items-center gap-2"><button class="w-10 h-10 flex items-center justify-center transition-colors hover:bg-surface-container-high rounded-full"><span class="material-symbols-outlined text-primary">calendar_today</span></button></div>
 </header>
 <main class="mt-16 px-margin-mobile pt-gutter">
-<section class="mb-gutter flex flex-col gap-4"><div class="flex justify-between items-end"><div><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Financial Performance</span><h2 class="font-headline-lg text-headline-lg text-on-surface">Analytics</h2></div><button id="exportBtn" class="bg-primary text-on-primary px-4 py-2 rounded-lg flex items-center gap-2 font-label-caps text-label-caps shadow-sm"><span class="material-symbols-outlined text-[18px]">download</span> EXPORT REPORT</button></div>
-<div class="flex p-1 bg-surface-container rounded-xl w-full max-w-md"><button class="flex-1 py-2 text-center font-label-caps text-label-caps rounded-lg transition-all bg-primary-container text-on-primary-container" onclick="switchTab(this, 'week')">Weekly</button><button class="flex-1 py-2 text-center font-label-caps text-label-caps rounded-lg transition-all text-on-surface-variant" onclick="switchTab(this, 'month')">Monthly</button><button class="flex-1 py-2 text-center font-label-caps text-label-caps rounded-lg transition-all text-on-surface-variant" onclick="switchTab(this, 'year')">Yearly</button></div></section>
+<section class="mb-gutter flex flex-col gap-4"><div class="flex justify-between items-end"><div><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Rendimiento Financiero</span><h2 class="font-headline-lg text-headline-lg text-on-surface">Estadísticas</h2></div><button id="exportBtn" class="bg-primary text-on-primary px-4 py-2 rounded-lg flex items-center gap-2 font-label-caps text-label-caps shadow-sm"><span class="material-symbols-outlined text-[18px]">download</span> EXPORTAR REPORTE</button></div>
+<div class="flex p-1 bg-surface-container rounded-xl w-full max-w-md"><button class="tab-btn flex-1 py-2 text-center font-label-caps text-label-caps rounded-lg transition-all bg-primary-container text-on-primary-container" data-period="week">Semanal</button><button class="tab-btn flex-1 py-2 text-center font-label-caps text-label-caps rounded-lg transition-all text-on-surface-variant" data-period="month">Mensual</button><button class="tab-btn flex-1 py-2 text-center font-label-caps text-label-caps rounded-lg transition-all text-on-surface-variant" data-period="year">Anual</button></div></section>
 <div class="space-y-4">
-<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Most Profitable Platform</span><div class="mt-2 flex items-baseline gap-2"><h3 class="font-headline-lg text-headline-lg text-primary" id="topPlatform">Uber</h3><span id="platformGrowth" class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">+0%</span></div><div class="mt-4 font-display-earnings text-display-earnings text-on-surface" id="totalRevenue">$0.00</div><p class="font-body-md text-body-md text-on-surface-variant mt-1">Total revenue for this period</p></div>
-<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Net Expenses</span><div class="mt-4 font-data-mono text-data-mono text-tertiary" id="netExpenses">-$0.00</div><div class="mt-6 flex flex-col gap-2"><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-tertiary w-0" id="expenseBar"></div></div><span class="text-[10px] font-label-caps text-on-surface-variant" id="expensePercent">0% of budget used</span></div></div>
-<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Active Hours</span><div class="mt-4 font-data-mono text-data-mono text-on-surface" id="activeHours">0 hrs</div><div class="mt-2 flex items-center text-primary gap-1"><span class="material-symbols-outlined text-[16px]">trending_up</span><span class="text-[12px] font-bold" id="hoursTrend">0% vs last month</span></div></div>
+<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Plataforma Más Rentable</span><div class="mt-2 flex items-baseline gap-2"><h3 class="font-headline-lg text-headline-lg text-primary" id="topPlatform">Uber</h3><span id="platformGrowth" class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">+0%</span></div><div class="mt-4 font-display-earnings text-display-earnings text-on-surface" id="totalRevenue">$0.00</div><p class="font-body-md text-body-md text-on-surface-variant mt-1">Ingresos totales en este período</p></div>
+<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Gastos Netos</span><div class="mt-4 font-data-mono text-data-mono text-tertiary" id="netExpenses">-$0.00</div><div class="mt-6 flex flex-col gap-2"><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-tertiary w-0" id="expenseBar"></div></div><span class="text-[10px] font-label-caps text-on-surface-variant" id="expensePercent">0% del presupuesto usado</span></div></div>
+<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Horas Activas</span><div class="mt-4 font-data-mono text-data-mono text-on-surface" id="activeHours">0 hrs</div><div class="mt-2 flex items-center text-primary gap-1"><span class="material-symbols-outlined text-[16px]">trending_up</span><span class="text-[12px] font-bold" id="hoursTrend">0% vs mes anterior</span></div></div>
 <div class="bg-white border border-outline-variant rounded-xl p-card-padding"><canvas id="revenueChart" height="250"></canvas></div>
-<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-4">Expense Breakdown</span><div id="expenseBreakdownList" class="space-y-4"></div></div>
+<div class="bg-white border border-outline-variant rounded-xl p-card-padding"><span class="font-label-caps text-label-caps text-on-surface-variant uppercase block mb-4">Desglose de Gastos</span><div id="expenseBreakdownList" class="space-y-4"></div></div>
 </div>
 </main>
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant">
-<a href="Dashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">dashboard</span><span class="font-label-caps text-label-caps">Dashboard</span></a>
-<a href="registro_ingresos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">payments</span><span class="font-label-caps text-label-caps">Trips</span></a>
-<a href="registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">receipt_long</span><span class="font-label-caps text-label-caps">Expenses</span></a>
+<a href="Dashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">dashboard</span><span class="font-label-caps text-label-caps">Panel</span></a>
+<a href="registro_ingresos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">payments</span><span class="font-label-caps text-label-caps">Viajes</span></a>
+<a href="registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">receipt_long</span><span class="font-label-caps text-label-caps">Gastos</span></a>
 <a href="reporte_estadisticas.html" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">analytics</span><span class="font-label-caps text-label-caps">Analytics</span></a>
 </nav>
 <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID/exec'; // CAMBIAR POR TU URL
     let currentPeriod = 'week';
     let statsData = null;
+    let revenueChart = null;
 
     async function loadStats() {
         try {
             const res = await fetch(`${SCRIPT_URL}?action=getStats`);
             statsData = await res.json();
+            
+            // Actualizar números principales
             document.getElementById('totalRevenue').innerText = `$${statsData.totalIngresos.toFixed(2)}`;
             document.getElementById('netExpenses').innerText = `-$${statsData.totalGastos.toFixed(2)}`;
             const expensePercent = (statsData.totalGastos / (statsData.totalIngresos || 1)) * 100;
             document.getElementById('expenseBar').style.width = `${Math.min(expensePercent, 100)}%`;
-            document.getElementById('expensePercent').innerText = `${expensePercent.toFixed(1)}% of budget used`;
-            // Gráfico simple de ingresos vs gastos
+            document.getElementById('expensePercent').innerText = `${expensePercent.toFixed(1)}% del presupuesto usado`;
+            
+            // Actualizar o crear gráfico
+            if (revenueChart) revenueChart.destroy();
             const ctx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(ctx, {
+            revenueChart = new Chart(ctx, {
                 type: 'bar',
-                data: { labels: ['Ingresos', 'Gastos'], datasets: [{ label: 'USD', data: [statsData.totalIngresos, statsData.totalGastos], backgroundColor: ['#004831', '#752200'] }] },
-                options: { responsive: true, maintainAspectRatio: true }
+                data: { 
+                    labels: ['Ingresos', 'Gastos'], 
+                    datasets: [{ 
+                        label: 'Monto (USD)', 
+                        data: [statsData.totalIngresos, statsData.totalGastos], 
+                        backgroundColor: ['#004831', '#752200'],
+                        borderRadius: 8
+                    }] 
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true,
+                    plugins: { legend: { position: 'top' } }
+                }
             });
-            // Desglose de gastos - simulado por falta de endpoint real
+            
+            // Desglose de gastos (simulado mientras no tengas endpoint real de categorías)
+            // Si más adelante tienes datos reales, puedes reemplazar esta parte con fetch a getExpensesByCategory
             const breakdownDiv = document.getElementById('expenseBreakdownList');
-            breakdownDiv.innerHTML = `<div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-tertiary">local_gas_station</span></div><div class="flex-1"><div class="flex justify-between mb-1"><span class="font-body-md font-bold">Fuel & Energy</span><span class="font-data-mono text-[14px]">$${(statsData.totalGastos * 0.6).toFixed(2)}</span></div><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-tertiary w-[60%]"></div></div></div></div>
-            <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-secondary">build</span></div><div class="flex-1"><div class="flex justify-between mb-1"><span class="font-body-md font-bold">Maintenance</span><span class="font-data-mono text-[14px]">$${(statsData.totalGastos * 0.2).toFixed(2)}</span></div><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-secondary w-[20%]"></div></div></div></div>`;
-        } catch(e) { console.error(e); }
+            const gastosReales = statsData.totalGastos;
+            const combustible = gastosReales * 0.6;
+            const mantenimiento = gastosReales * 0.25;
+            const otros = gastosReales * 0.15;
+            breakdownDiv.innerHTML = `
+                <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-tertiary">local_gas_station</span></div><div class="flex-1"><div class="flex justify-between mb-1"><span class="font-body-md font-bold">Combustible y Energía</span><span class="font-data-mono text-[14px]">$${combustible.toFixed(2)}</span></div><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-tertiary w-[60%]"></div></div></div></div>
+                <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-secondary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-secondary">build</span></div><div class="flex-1"><div class="flex justify-between mb-1"><span class="font-body-md font-bold">Mantenimiento</span><span class="font-data-mono text-[14px]">$${mantenimiento.toFixed(2)}</span></div><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-secondary w-[25%]"></div></div></div></div>
+                <div class="flex items-center gap-4"><div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-primary">more_horiz</span></div><div class="flex-1"><div class="flex justify-between mb-1"><span class="font-body-md font-bold">Otros Gastos</span><span class="font-data-mono text-[14px]">$${otros.toFixed(2)}</span></div><div class="h-2 w-full bg-surface-container rounded-full overflow-hidden"><div class="h-full bg-primary w-[15%]"></div></div></div></div>
+            `;
+            
+            // Actualizar plataforma más rentable (simulado, se podría obtener con otro endpoint)
+            document.getElementById('topPlatform').innerText = "Uber"; // placeholder
+            document.getElementById('platformGrowth').innerText = "+12%";
+            document.getElementById('activeHours').innerText = "142 hrs";
+            document.getElementById('hoursTrend').innerText = "+5% vs mes anterior";
+        } catch(e) { 
+            console.error('Error cargando estadísticas:', e);
+            document.getElementById('expenseBreakdownList').innerHTML = '<div class="text-red-500 text-center">Error al cargar datos. Verifica la URL del script.</div>';
+        }
     }
-    function switchTab(btn, period) { currentPeriod = period; document.querySelectorAll('.bg-surface-container button').forEach(b => { b.classList.remove('bg-primary-container', 'text-on-primary-container'); b.classList.add('text-on-surface-variant'); }); btn.classList.add('bg-primary-container', 'text-on-primary-container'); btn.classList.remove('text-on-surface-variant'); loadStats(); }
-    document.getElementById('exportBtn').addEventListener('click', () => { alert('Función de exportación: puedes generar un CSV con los datos de tus ingresos/gastos.'); });
+
+    function switchTab(btn, period) {
+        currentPeriod = period;
+        // Actualizar estilos de los tabs
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.remove('bg-primary-container', 'text-on-primary-container');
+            b.classList.add('text-on-surface-variant');
+        });
+        btn.classList.add('bg-primary-container', 'text-on-primary-container');
+        btn.classList.remove('text-on-surface-variant');
+        // Recargar estadísticas (en el futuro podrías filtrar por período si amplías el backend)
+        loadStats();
+    }
+
+    // Evento para cambiar de pestaña
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchTab(btn, btn.getAttribute('data-period'));
+        });
+    });
+
+    // Botón de exportar (simulado)
+    document.getElementById('exportBtn').addEventListener('click', () => {
+        alert('Función de exportación: Aquí podrás generar un CSV con tus ingresos y gastos. Próximamente disponible.');
+    });
+
     loadStats();
 </script>
 </body>
