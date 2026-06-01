@@ -1,265 +1,93 @@
 <!DOCTYPE html>
-
-<html class="light" lang="en"><head>
+<html class="light" lang="en">
+<head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    "colors": {
-                        "on-tertiary-fixed-variant": "#832700",
-                        "secondary": "#455f88",
-                        "on-primary": "#ffffff",
-                        "on-tertiary": "#ffffff",
-                        "surface-container-low": "#eff4ff",
-                        "surface-tint": "#1c6b4d",
-                        "outline": "#6f7973",
-                        "primary-fixed": "#a6f2cc",
-                        "secondary-container": "#b6d0ff",
-                        "surface-container-lowest": "#ffffff",
-                        "outline-variant": "#bfc9c1",
-                        "primary-fixed-dim": "#8bd6b1",
-                        "on-surface-variant": "#3f4943",
-                        "on-tertiary-fixed": "#390c00",
-                        "tertiary-fixed-dim": "#ffb59c",
-                        "surface-dim": "#cbdbf5",
-                        "on-primary-container": "#90dbb6",
-                        "on-background": "#0b1c30",
-                        "error": "#ba1a1a",
-                        "surface": "#f8f9ff",
-                        "primary-container": "#0e6245",
-                        "inverse-surface": "#213145",
-                        "surface-bright": "#f8f9ff",
-                        "background": "#f8f9ff",
-                        "error-container": "#ffdad6",
-                        "inverse-primary": "#8bd6b1",
-                        "secondary-fixed": "#d6e3ff",
-                        "surface-container": "#e5eeff",
-                        "primary": "#004831",
-                        "tertiary": "#752200",
-                        "on-surface": "#0b1c30",
-                        "on-secondary-fixed": "#001b3c",
-                        "surface-container-high": "#dce9ff",
-                        "secondary-fixed-dim": "#adc7f7",
-                        "on-error": "#ffffff",
-                        "on-error-container": "#93000a",
-                        "on-secondary": "#ffffff",
-                        "surface-container-highest": "#d3e4fe",
-                        "on-primary-fixed-variant": "#005138",
-                        "on-secondary-fixed-variant": "#2d476f",
-                        "on-secondary-container": "#3f5882",
-                        "tertiary-fixed": "#ffdbcf",
-                        "inverse-on-surface": "#eaf1ff"
-                    },
-                    "borderRadius": {
-                        "DEFAULT": "0.25rem",
-                        "lg": "0.5rem",
-                        "xl": "0.75rem",
-                        "full": "9999px"
-                    },
-                    "spacing": {
-                        "base": "8px",
-                        "card-padding": "20px",
-                        "margin-mobile": "16px",
-                        "touch-target-min": "48px",
-                        "gutter": "12px"
-                    },
-                    "fontFamily": {
-                        "headline-lg-mobile": ["Inter"],
-                        "data-mono": ["Inter"],
-                        "label-caps": ["Inter"],
-                        "display-earnings": ["Inter"],
-                        "headline-lg": ["Inter"],
-                        "body-md": ["Inter"]
-                    },
-                    "fontSize": {
-                        "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
-                        "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}],
-                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}],
-                        "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}],
-                        "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
-                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
-                    }
-                },
-            },
-        }
-    </script>
-<style>
-        .material-symbols-outlined {
-            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }
-        body { font-family: 'Inter', sans-serif; }
-    </style>
-<style>
-    body {
-      min-height: max(884px, 100dvh);
-    }
-  </style>
-  </head>
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
+</script>
+<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } body { font-family: 'Inter', sans-serif; } body { min-height: max(884px, 100dvh); }</style>
+</head>
 <body class="bg-background text-on-background min-h-screen pb-32">
-<!-- Top AppBar -->
-<header class="bg-surface sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min w-full max-w-full transition-colors duration-200 active:opacity-80">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center overflow-hidden border border-outline-variant">
-<span class="material-symbols-outlined text-on-secondary-fixed text-[20px]">person</span>
-</div>
-<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Driver Insights</h1>
-</div>
-<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
-<span class="material-symbols-outlined text-on-surface-variant">calendar_today</span>
-</button>
+<header class="bg-surface sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min">
+<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-fixed">person</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Driver Insights</h1></div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high"><span class="material-symbols-outlined text-on-surface-variant">calendar_today</span></button>
 </header>
 <main class="px-margin-mobile py-gutter space-y-6 max-w-lg mx-auto">
-<!-- Income Input Section -->
 <section class="space-y-4">
-<div class="flex flex-col items-center justify-center py-6">
-<span class="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">GROSS EARNINGS</span>
-<div class="flex items-center">
-<span class="font-display-earnings text-display-earnings text-primary">$</span>
-<input class="w-48 bg-transparent border-none text-center font-display-earnings text-display-earnings text-primary focus:ring-0 placeholder:text-surface-container-highest" placeholder="0.00" step="0.01" type="number"/>
-</div>
-</div>
-<!-- Platform Selection Bento Grid -->
+<div class="flex flex-col items-center justify-center py-6"><span class="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">GROSS EARNINGS</span><div class="flex items-center"><span class="font-display-earnings text-display-earnings text-primary">$</span><input id="montoInput" class="w-48 bg-transparent border-none text-center font-display-earnings text-display-earnings text-primary focus:ring-0 placeholder:text-surface-container-highest" placeholder="0.00" step="0.01" type="number"/></div></div>
 <div class="grid grid-cols-3 gap-3">
-<button class="platform-btn group bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="uber" onclick="selectPlatform('uber')">
-<div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white">
-<span class="material-symbols-outlined">directions_car</span>
-</div>
-<span class="font-label-caps text-label-caps text-on-surface-variant">Uber</span>
-</button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="didi" onclick="selectPlatform('didi')">
-<div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white">
-<span class="material-symbols-outlined">bolt</span>
-</div>
-<span class="font-label-caps text-label-caps text-on-surface-variant">DiDi</span>
-</button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="indrive" onclick="selectPlatform('indrive')">
-<div class="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center text-white">
-<span class="material-symbols-outlined">handshake</span>
-</div>
-<span class="font-label-caps text-label-caps text-on-surface-variant">InDrive</span>
-</button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="cabify" onclick="selectPlatform('cabify')">
-<div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white">
-<span class="material-symbols-outlined">near_me</span>
-</div>
-<span class="font-label-caps text-label-caps text-on-surface-variant">Cabify</span>
-</button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-3 transition-all hover:bg-surface-container-low active:scale-95 col-span-2" data-platform="other" onclick="selectPlatform('other')">
-<div class="w-full flex items-center justify-center gap-3">
-<div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center text-on-surface-variant">
-<span class="material-symbols-outlined">more_horiz</span>
-</div>
-<span class="font-label-caps text-label-caps text-on-surface-variant">Other Services</span>
-</div>
-</button>
+<button class="platform-btn group bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Uber" onclick="selectPlatform(this, 'Uber')"><div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">directions_car</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Uber</span></button>
+<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="DiDi" onclick="selectPlatform(this, 'DiDi')"><div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">bolt</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">DiDi</span></button>
+<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Indriver" onclick="selectPlatform(this, 'Indriver')"><div class="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">handshake</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">InDrive</span></button>
+<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Cabify" onclick="selectPlatform(this, 'Cabify')"><div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">near_me</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Cabify</span></button>
+<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-3 transition-all hover:bg-surface-container-low active:scale-95 col-span-2" data-platform="Otro" onclick="selectPlatform(this, 'Otro')"><div class="w-full flex items-center justify-center gap-3"><div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">more_horiz</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Other Services</span></div></button>
 </div>
 </section>
-<!-- Metrics Grid -->
 <section class="grid grid-cols-2 gap-gutter">
-<!-- Duration -->
-<div class="bg-white p-card-padding rounded-xl border border-outline-variant flex flex-col gap-1">
-<label class="font-label-caps text-label-caps text-on-surface-variant">TRIP DURATION</label>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary">schedule</span>
-<input class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="24 min" type="text"/>
-</div>
-</div>
-<!-- Distance -->
-<div class="bg-white p-card-padding rounded-xl border border-outline-variant flex flex-col gap-1">
-<label class="font-label-caps text-label-caps text-on-surface-variant">DISTANCE (KM)</label>
-<div class="flex items-center gap-2">
-<span class="material-symbols-outlined text-secondary">route</span>
-<input class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="12.5" type="text"/>
-</div>
-</div>
+<div class="bg-white p-card-padding rounded-xl border border-outline-variant"><label class="font-label-caps text-label-caps text-on-surface-variant">TRIP DURATION</label><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">schedule</span><input id="duracionInput" class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="24 min" type="text"/></div></div>
+<div class="bg-white p-card-padding rounded-xl border border-outline-variant"><label class="font-label-caps text-label-caps text-on-surface-variant">DISTANCE (KM)</label><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">route</span><input id="distanciaInput" class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="12.5" type="text"/></div></div>
 </section>
-<!-- Platform Fee Toggle Card -->
-<section class="bg-white border border-outline-variant rounded-xl p-card-padding space-y-4">
-<div class="flex items-center justify-between">
-<div class="flex flex-col">
-<span class="font-label-caps text-label-caps text-on-surface-variant">PLATFORM FEE (25%)</span>
-<span class="font-body-md text-body-md text-on-surface-variant">Deduct automatically</span>
-</div>
-<button class="w-14 h-8 bg-surface-container-highest rounded-full p-1 transition-colors relative" id="fee-toggle" onclick="toggleFee()">
-<div class="w-6 h-6 bg-white rounded-full shadow-sm transition-transform translate-x-0" id="toggle-thumb"></div>
-</button>
-</div>
-<div class="pt-4 border-t border-outline-variant flex justify-between items-center opacity-50 transition-opacity" id="fee-calc-box">
-<span class="font-body-md text-body-md">Calculated Net</span>
-<span class="font-data-mono text-data-mono text-primary">$0.00</span>
-</div>
-</section>
-<!-- Visual Map Context (Modern Card) -->
-<section class="relative rounded-2xl overflow-hidden h-40 border border-outline-variant shadow-sm">
-<img class="w-full h-full object-cover" data-alt="A clean, minimalist street map of a modern city center with subtle blue and gray tones, showing simplified road lines and small glowing icons for points of interest. The lighting is soft and even, evoking a professional dashboard navigation system. High-contrast labels for street names are legible and follow a corporate, data-driven design language." data-location="New York" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARDz37akuzRUGX79oUHcXmpPRkbKNL0kvXrO_ZTaDmfLTsnlEr1RCQN_jOTgN0B_QBCqeFWaf3uU0aCuO5FxCaYTbh4qhbmWFUH1z6uhb51elrT3UESfmsRivK4zd-98cKZTaqJ5C65Ki18pQSwk0tnKUh2dnBAc2-6VyYzuEvmTCHRsfHQTkvLBLMMjc6HbXtKmRCQqB07aILejZuvy44vpvB5_FVuioRTketpn4WfKa-sVHiAZy4lxkh-iSJh_fwCYVITXgZr5vy"/>
-<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-<div class="absolute bottom-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/20">
-<span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings: 'FILL' 1;">location_on</span>
-<span class="font-label-caps text-label-caps text-on-surface">Financial District</span>
-</div>
-</section>
-<!-- Action Button -->
-<div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
-<button class="w-full h-14 bg-primary text-on-primary font-label-caps text-label-caps rounded-xl shadow-lg hover:bg-on-primary-fixed-variant transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest">
-<span class="material-symbols-outlined">save</span>
-                Save Trip
-            </button>
-</div>
+<section class="bg-white border border-outline-variant rounded-xl p-card-padding space-y-4"><div class="flex items-center justify-between"><div><span class="font-label-caps text-label-caps text-on-surface-variant">PLATFORM FEE (25%)</span><span class="font-body-md text-body-md text-on-surface-variant block">Deduct automatically</span></div><button class="w-14 h-8 bg-surface-container-highest rounded-full p-1 transition-colors relative" id="fee-toggle" onclick="toggleFee()"><div class="w-6 h-6 bg-white rounded-full shadow-sm transition-transform translate-x-0" id="toggle-thumb"></div></button></div><div class="pt-4 border-t border-outline-variant flex justify-between items-center opacity-50 transition-opacity" id="fee-calc-box"><span class="font-body-md text-body-md">Calculated Net</span><span class="font-data-mono text-data-mono text-primary" id="netCalculated">$0.00</span></div></section>
+<section class="relative rounded-2xl overflow-hidden h-40 border border-outline-variant shadow-sm"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARDz37akuzRUGX79oUHcXmpPRkbKNL0kvXrO_ZTaDmfLTsnlEr1RCQN_jOTgN0B_QBCqeFWaf3uU0aCuO5FxCaYTbh4qhbmWFUH1z6uhb51elrT3UESfmsRivK4zd-98cKZTaqJ5C65Ki18pQSwk0tnKUh2dnBAc2-6VyYzuEvmTCHRsfHQTkvLBLMMjc6HbXtKmRCQqB07aILejZuvy44vpvB5_FVuioRTketpn4WfKa-sVHiAZy4lxkh-iSJh_fwCYVITXgZr5vy"/><div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div><div class="absolute bottom-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full"><span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings:'FILL'1;">location_on</span><span class="font-label-caps text-label-caps text-on-surface">Financial District</span></div></section>
+<div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40"><button id="saveTripBtn" class="w-full h-14 bg-primary text-on-primary font-label-caps text-label-caps rounded-xl shadow-lg hover:bg-on-primary-fixed-variant transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest"><span class="material-symbols-outlined">save</span> Save Trip</button></div>
 </main>
-<!-- Bottom Navigation Bar -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant transition-all duration-200">
-<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest transition-all duration-200 scale-95 active:scale-90">
-<span class="material-symbols-outlined">dashboard</span>
-<span class="font-label-caps text-label-caps">Dashboard</span>
-</button>
-<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 transition-all duration-200 scale-95 active:scale-90">
-<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
-<span class="font-label-caps text-label-caps">Trips</span>
-</button>
-<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest transition-all duration-200 scale-95 active:scale-90">
-<span class="material-symbols-outlined">receipt_long</span>
-<span class="font-label-caps text-label-caps">Expenses</span>
-</button>
-<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest transition-all duration-200 scale-95 active:scale-90">
-<span class="material-symbols-outlined">analytics</span>
-<span class="font-label-caps text-label-caps">Analytics</span>
-</button>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant">
+<a href="Dashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">dashboard</span><span class="font-label-caps text-label-caps">Dashboard</span></a>
+<a href="registro_ingresos.html" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="font-label-caps text-label-caps">Trips</span></a>
+<a href="registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">receipt_long</span><span class="font-label-caps text-label-caps">Expenses</span></a>
+<a href="reporte_estadisticas.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">analytics</span><span class="font-label-caps text-label-caps">Analytics</span></a>
 </nav>
 <script>
-        let feeEnabled = false;
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID/exec'; // CAMBIAR POR TU URL
+    let selectedPlatform = 'Uber';
+    let feeEnabled = false;
 
-        function toggleFee() {
-            feeEnabled = !feeEnabled;
-            const toggle = document.getElementById('fee-toggle');
-            const thumb = document.getElementById('toggle-thumb');
-            const box = document.getElementById('fee-calc-box');
-            
-            if (feeEnabled) {
-                toggle.classList.remove('bg-surface-container-highest');
-                toggle.classList.add('bg-primary-container');
-                thumb.classList.add('translate-x-6');
-                box.classList.remove('opacity-50');
-            } else {
-                toggle.classList.add('bg-surface-container-highest');
-                toggle.classList.remove('bg-primary-container');
-                thumb.classList.remove('translate-x-6');
-                box.classList.add('opacity-50');
-            }
-        }
-
-        function selectPlatform(platform) {
-            document.querySelectorAll('.platform-btn').forEach(btn => {
-                btn.classList.remove('ring-2', 'ring-primary', 'bg-primary-fixed-dim/20', 'border-primary');
-            });
-            const selected = document.querySelector(`[data-platform="${platform}"]`);
-            selected.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary');
-        }
-    </script>
-</body></html>
+    function selectPlatform(btn, platform) {
+        selectedPlatform = platform;
+        document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary'));
+        btn.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary');
+    }
+    function toggleFee() {
+        feeEnabled = !feeEnabled;
+        const toggle = document.getElementById('fee-toggle');
+        const thumb = document.getElementById('toggle-thumb');
+        const box = document.getElementById('fee-calc-box');
+        if (feeEnabled) { toggle.classList.remove('bg-surface-container-highest'); toggle.classList.add('bg-primary-container'); thumb.classList.add('translate-x-6'); box.classList.remove('opacity-50'); } 
+        else { toggle.classList.add('bg-surface-container-highest'); toggle.classList.remove('bg-primary-container'); thumb.classList.remove('translate-x-6'); box.classList.add('opacity-50'); }
+        calcularNeto();
+    }
+    function calcularNeto() {
+        const monto = parseFloat(document.getElementById('montoInput').value) || 0;
+        const neto = feeEnabled ? monto * 0.75 : monto;
+        document.getElementById('netCalculated').innerText = `$${neto.toFixed(2)}`;
+    }
+    document.getElementById('montoInput').addEventListener('input', calcularNeto);
+    
+    document.getElementById('saveTripBtn').addEventListener('click', async () => {
+        const monto = parseFloat(document.getElementById('montoInput').value);
+        const fecha = new Date().toISOString().split('T')[0];
+        const duracion = document.getElementById('duracionInput').value || '';
+        const distancia = document.getElementById('distanciaInput').value || '';
+        const notas = `Plataforma: ${selectedPlatform} | Duración: ${duracion} | Distancia: ${distancia}`;
+        if (isNaN(monto) || monto <= 0) { alert('Ingresa un monto válido'); return; }
+        const params = new URLSearchParams();
+        params.append('action', 'addIncome');
+        params.append('plataforma', selectedPlatform);
+        params.append('monto', monto);
+        params.append('fecha', fecha);
+        params.append('notas', notas);
+        try {
+            await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
+            alert('✅ Ingreso registrado');
+            location.href = 'Dashboard.html';
+        } catch(e) { alert('❌ Error al guardar'); }
+    });
+    // Seleccionar Uber por defecto
+    document.querySelector('[data-platform="Uber"]').click();
+</script>
+</body>
+</html>
