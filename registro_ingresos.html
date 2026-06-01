@@ -4,59 +4,63 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-card { animation: fadeInUp 0.4s ease-out; }
+    .btn-glow:hover { box-shadow: 0 0 12px rgba(0,72,49,0.4); transition: all 0.2s; }
+    .platform-btn.active { border-color: #004831; background-color: #a6f2cc20; box-shadow: 0 0 0 2px #004831; }
+</style>
 <script id="tailwind-config">
     tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
 </script>
-<style>.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; } body { font-family: 'Inter', sans-serif; } body { min-height: max(884px, 100dvh); }</style>
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
-<header class="bg-surface sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min">
+<header class="bg-surface/90 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min shadow-sm">
 <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center"><span class="material-symbols-outlined text-on-secondary-fixed">person</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Driver Insights</h1></div>
-<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high"><span class="material-symbols-outlined text-on-surface-variant">calendar_today</span></button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all"><span class="material-symbols-outlined text-on-surface-variant">calendar_today</span></button>
 </header>
 <main class="px-margin-mobile py-gutter space-y-6 max-w-lg mx-auto">
-    <!-- Título -->
-    <div class="text-center">
+    <div class="text-center animate-card">
         <h2 class="font-headline-lg-mobile text-headline-lg-mobile">Registrar Jornada</h2>
         <p class="text-on-surface-variant text-sm">Ingresa los datos de tu turno de trabajo</p>
     </div>
 
-    <!-- Selección de plataforma con memoria y configuración de comisión -->
-    <section class="bg-white border border-outline-variant rounded-xl p-4 space-y-3">
+    <!-- Plataforma y comisión -->
+    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm animate-card transition-all hover:shadow-md">
         <label class="font-label-caps text-label-caps text-on-surface-variant">PLATAFORMA</label>
-        <div class="grid grid-cols-3 gap-2">
-            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center" data-platform="Uber" onclick="selectPlatform('Uber')">
+        <div class="grid grid-cols-3 gap-2 mt-2">
+            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center transition-all hover:scale-105" data-platform="Uber" onclick="selectPlatform('Uber')">
                 <span class="material-symbols-outlined">directions_car</span>
                 <span class="text-xs">Uber</span>
             </button>
-            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center" data-platform="DiDi" onclick="selectPlatform('DiDi')">
+            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center transition-all hover:scale-105" data-platform="DiDi" onclick="selectPlatform('DiDi')">
                 <span class="material-symbols-outlined">bolt</span>
                 <span class="text-xs">DiDi</span>
             </button>
-            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center" data-platform="Indriver" onclick="selectPlatform('Indriver')">
+            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center transition-all hover:scale-105" data-platform="Indriver" onclick="selectPlatform('Indriver')">
                 <span class="material-symbols-outlined">handshake</span>
                 <span class="text-xs">InDrive</span>
             </button>
-            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center" data-platform="Cabify" onclick="selectPlatform('Cabify')">
+            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center transition-all hover:scale-105" data-platform="Cabify" onclick="selectPlatform('Cabify')">
                 <span class="material-symbols-outlined">near_me</span>
                 <span class="text-xs">Cabify</span>
             </button>
-            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center col-span-2" data-platform="Otro" onclick="selectPlatform('Otro')">
+            <button class="platform-btn py-2 px-1 border rounded-lg flex flex-col items-center col-span-2 transition-all hover:scale-105" data-platform="Otro" onclick="selectPlatform('Otro')">
                 <span class="material-symbols-outlined">more_horiz</span>
                 <span class="text-xs">Otro</span>
             </button>
         </div>
-        
-        <!-- Configuración de comisión para la plataforma seleccionada -->
-        <div class="mt-3 p-3 bg-surface-container-low rounded-lg">
+        <div class="mt-4 p-3 bg-surface-container-low rounded-lg">
             <div class="flex justify-between items-center">
                 <label class="font-label-caps text-label-caps">COMISIÓN DE LA PLATAFORMA</label>
                 <div class="flex items-center gap-2">
-                    <input type="number" id="comisionInput" class="w-20 p-1 border rounded text-right" step="0.5" min="0" max="50" value="25">
+                    <input type="number" id="comisionInput" class="w-20 p-1 border rounded text-right bg-white" step="0.5" min="0" max="50" value="25">
                     <span class="text-sm">%</span>
-                    <button id="guardarComisionBtn" class="text-xs bg-primary text-white px-2 py-1 rounded">Guardar</button>
+                    <button id="guardarComisionBtn" class="text-xs bg-primary text-white px-3 py-1 rounded-full shadow-sm hover:shadow transition-all">Guardar</button>
                 </div>
             </div>
             <p class="text-xs text-on-surface-variant mt-1">Este porcentaje se recordará para esta plataforma</p>
@@ -64,68 +68,55 @@
     </section>
 
     <!-- Datos de la jornada -->
-    <section class="bg-white border border-outline-variant rounded-xl p-4 space-y-3">
+    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm animate-card transition-all hover:shadow-md space-y-3">
         <div class="grid grid-cols-2 gap-3">
-            <div><label class="font-label-caps text-label-caps">FECHA</label><input type="date" id="fechaJornada" class="w-full p-2 border rounded"></div>
-            <div><label class="font-label-caps text-label-caps">HORA INICIO</label><input type="time" id="horaInicio" class="w-full p-2 border rounded"></div>
-            <div><label class="font-label-caps text-label-caps">HORA FIN</label><input type="time" id="horaFin" class="w-full p-2 border rounded"></div>
-            <div><label class="font-label-caps text-label-caps">TOTAL BRUTO (USD)</label><input type="number" step="0.01" id="brutoInput" class="w-full p-2 border rounded" placeholder="0.00"></div>
+            <div><label class="font-label-caps text-label-caps">FECHA</label><input type="date" id="fechaJornada" class="w-full p-2 border rounded-lg bg-surface-container-low focus:ring-2 focus:ring-primary"></div>
+            <div><label class="font-label-caps text-label-caps">HORA INICIO</label><input type="time" id="horaInicio" class="w-full p-2 border rounded-lg bg-surface-container-low"></div>
+            <div><label class="font-label-caps text-label-caps">HORA FIN</label><input type="time" id="horaFin" class="w-full p-2 border rounded-lg bg-surface-container-low"></div>
+            <div><label class="font-label-caps text-label-caps">TOTAL BRUTO (USD)</label><input type="number" step="0.01" id="brutoInput" class="w-full p-2 border rounded-lg bg-surface-container-low" placeholder="0.00"></div>
         </div>
-        <div><label class="font-label-caps text-label-caps">DISTANCIA TOTAL (KM)</label><input type="number" step="0.1" id="distanciaInput" class="w-full p-2 border rounded" placeholder="0"></div>
-        <div><label class="font-label-caps text-label-caps">NOTAS (opcional)</label><textarea id="notasInput" rows="2" class="w-full p-2 border rounded" placeholder="Comentarios adicionales..."></textarea></div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="font-label-caps text-label-caps">DISTANCIA APP (km)</label><input type="number" step="0.1" id="distanciaApp" class="w-full p-2 border rounded-lg bg-surface-container-low" placeholder="0" value="0"></div>
+            <div><label class="font-label-caps text-label-caps">DISTANCIA TOTAL (km)</label><input type="number" step="0.1" id="distanciaTotal" class="w-full p-2 border rounded-lg bg-surface-container-low" placeholder="0" value="0"></div>
+        </div>
+        <div><label class="font-label-caps text-label-caps">NOTAS (opcional)</label><textarea id="notasInput" rows="2" class="w-full p-2 border rounded-lg bg-surface-container-low" placeholder="Comentarios adicionales..."></textarea></div>
     </section>
 
-    <!-- Resumen y neto -->
-    <section class="bg-primary-container/20 border border-primary rounded-xl p-4">
-        <div class="flex justify-between items-center">
-            <span class="font-label-caps">INGRESO BRUTO</span>
-            <span class="font-data-mono" id="brutoDisplay">$0.00</span>
-        </div>
-        <div class="flex justify-between items-center mt-2">
-            <span class="font-label-caps">COMISIÓN (%)</span>
-            <span class="font-data-mono" id="comisionDisplay">0%</span>
-        </div>
-        <div class="flex justify-between items-center mt-2 text-lg font-bold border-t pt-2">
-            <span>NETO A COBRAR</span>
-            <span class="text-primary" id="netoDisplay">$0.00</span>
-        </div>
-        <div class="flex justify-between items-center mt-2 text-sm">
-            <span>DURACIÓN ESTIMADA</span>
-            <span id="duracionDisplay">0h 0min</span>
-        </div>
+    <!-- Resumen -->
+    <section class="bg-gradient-to-r from-primary-container/30 to-surface-container-low border border-primary/30 rounded-xl p-4 shadow-md animate-card">
+        <div class="flex justify-between items-center"><span class="font-label-caps">INGRESO BRUTO</span><span class="font-data-mono" id="brutoDisplay">$0.00</span></div>
+        <div class="flex justify-between items-center mt-2"><span class="font-label-caps">COMISIÓN (%)</span><span class="font-data-mono" id="comisionDisplay">0%</span></div>
+        <div class="flex justify-between items-center mt-2 text-lg font-bold border-t pt-2"><span>NETO A COBRAR</span><span class="text-primary text-xl" id="netoDisplay">$0.00</span></div>
+        <div class="flex justify-between items-center mt-2 text-sm"><span>DURACIÓN ESTIMADA</span><span id="duracionDisplay">0h 0min</span></div>
     </section>
 
-    <!-- Botón guardar -->
     <div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
-        <button id="saveJornadaBtn" class="w-full h-14 bg-primary text-white rounded-xl font-bold shadow-lg flex items-center justify-center gap-2">
+        <button id="saveJornadaBtn" class="w-full h-14 bg-primary text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-95 flex items-center justify-center gap-2 btn-glow">
             <span class="material-symbols-outlined">save</span> Guardar Jornada
         </button>
     </div>
 </main>
 
-<!-- Navegación inferior con 5 botones (incluye Vehículo) -->
-<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface border-t border-outline-variant py-1">
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-sm border-t border-outline-variant py-1">
     <div class="grid grid-cols-5 gap-1 text-center">
-        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
-        <a href="registro_ingresos.html" class="flex flex-col items-center py-1 bg-primary-container text-on-primary-container rounded-lg"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="text-[10px]">Viajes</span></a>
-        <a href="registro_gastos.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
-        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
-        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Analytics</span></a>
+        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
+        <a href="registro_ingresos.html" class="flex flex-col items-center py-1 bg-primary-container text-on-primary-container rounded-lg transition-all"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="text-[10px]">Viajes</span></a>
+        <a href="registro_gastos.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
+        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
+        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Analytics</span></a>
     </div>
 </nav>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID/exec'; // REEMPLAZAR CON TU URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyIe-N47TdCtmNHObEgbC4aRe8evzn2l9Fw-X7_4MB-kNGCMwcHnCyOg-xGXamTWeqcVg/exec'; // REEMPLAZAR CON TU URL
     let currentPlatform = 'Uber';
     let commissionPercent = 25;
 
-    // Cargar comisión guardada para la plataforma
     function loadCommissionForPlatform(platform) {
         const saved = localStorage.getItem(`comision_${platform}`);
         if (saved !== null) {
             commissionPercent = parseFloat(saved);
         } else {
-            // Valores por defecto según plataforma
             const defaults = { Uber: 25, DiDi: 20, Indriver: 15, Cabify: 18, Otro: 10 };
             commissionPercent = defaults[platform] || 25;
         }
@@ -136,26 +127,23 @@
 
     function selectPlatform(platform) {
         currentPlatform = platform;
-        // Resaltar botón visual
         document.querySelectorAll('.platform-btn').forEach(btn => {
-            btn.classList.remove('ring-2', 'ring-primary', 'bg-primary-fixed-dim/20', 'border-primary');
+            btn.classList.remove('active', 'ring-2', 'ring-primary', 'bg-primary-fixed-dim/20');
         });
         const selectedBtn = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
-        if (selectedBtn) selectedBtn.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed-dim/20', 'border-primary');
-        
+        if (selectedBtn) selectedBtn.classList.add('active', 'ring-2', 'ring-primary', 'bg-primary-fixed-dim/20');
         loadCommissionForPlatform(platform);
     }
 
     function guardarComision() {
         let newCommission = parseFloat(document.getElementById('comisionInput').value);
         if (isNaN(newCommission)) newCommission = 0;
-        if (newCommission < 0) newCommission = 0;
-        if (newCommission > 50) newCommission = 50;
+        newCommission = Math.min(50, Math.max(0, newCommission));
         commissionPercent = newCommission;
         localStorage.setItem(`comision_${currentPlatform}`, commissionPercent);
         document.getElementById('comisionDisplay').innerText = commissionPercent + '%';
         calcularNeto();
-        alert(`Comisión para ${currentPlatform} guardada: ${commissionPercent}%`);
+        alert(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`);
     }
 
     function calcularNeto() {
@@ -171,8 +159,8 @@
         if (inicio && fin) {
             const start = new Date(`2000-01-01T${inicio}:00`);
             const end = new Date(`2000-01-01T${fin}:00`);
-            let diff = (end - start) / 1000 / 60; // minutos
-            if (diff < 0) diff += 24 * 60; // pasa medianoche
+            let diff = (end - start) / 1000 / 60;
+            if (diff < 0) diff += 24 * 60;
             const horas = Math.floor(diff / 60);
             const minutos = Math.floor(diff % 60);
             document.getElementById('duracionDisplay').innerText = `${horas}h ${minutos}min`;
@@ -181,31 +169,25 @@
         }
     }
 
-    // Eventos
     document.getElementById('brutoInput').addEventListener('input', calcularNeto);
     document.getElementById('horaInicio').addEventListener('change', calcularDuracion);
     document.getElementById('horaFin').addEventListener('change', calcularDuracion);
     document.getElementById('guardarComisionBtn').addEventListener('click', guardarComision);
-    
-    // Fecha por defecto hoy
     document.getElementById('fechaJornada').valueAsDate = new Date();
-
-    // Inicializar plataforma por defecto (Uber)
     selectPlatform('Uber');
 
-    // Guardar jornada
     document.getElementById('saveJornadaBtn').addEventListener('click', async () => {
         const fecha = document.getElementById('fechaJornada').value;
         const inicio = document.getElementById('horaInicio').value;
         const fin = document.getElementById('horaFin').value;
         const bruto = parseFloat(document.getElementById('brutoInput').value);
-        const distancia = parseFloat(document.getElementById('distanciaInput').value) || 0;
+        const distanciaApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
+        const distanciaTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
         const notas = document.getElementById('notasInput').value;
-        
+
         if (!fecha) { alert('Selecciona una fecha'); return; }
         if (isNaN(bruto) || bruto <= 0) { alert('Ingresa un monto bruto válido'); return; }
-        
-        // Calcular horas trabajadas
+
         let horasTrabajadas = 0;
         if (inicio && fin) {
             const start = new Date(`2000-01-01T${inicio}:00`);
@@ -214,22 +196,22 @@
             if (diff < 0) diff += 24;
             horasTrabajadas = diff;
         }
-        
-        const notasCompletas = `Jornada - Plataforma: ${currentPlatform} | Inicio: ${inicio} | Fin: ${fin} | Duración: ${horasTrabajadas.toFixed(1)}h | Distancia: ${distancia} km | Comisión: ${commissionPercent}% | Notas: ${notas}`;
-        
+
+        const notasCompletas = `Jornada - Plataforma: ${currentPlatform} | Inicio: ${inicio} | Fin: ${fin} | Duración: ${horasTrabajadas.toFixed(1)}h | Distancia app: ${distanciaApp} km | Distancia total: ${distanciaTotal} km | Comisión: ${commissionPercent}% | Notas: ${notas}`;
+
         const params = new URLSearchParams();
         params.append('action', 'addIncome');
         params.append('plataforma', currentPlatform);
         params.append('monto', bruto);
         params.append('fecha', fecha);
         params.append('notas', notasCompletas);
-        
+
         try {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
             alert('✅ Jornada registrada correctamente');
             location.href = 'Dashboard.html';
         } catch(e) {
-            alert('❌ Error al guardar. Verifica la URL del script.');
+            alert('❌ Error al guardar. Verifica la URL del script.\n' + e.message);
         }
     });
 </script>
