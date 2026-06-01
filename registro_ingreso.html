@@ -12,90 +12,76 @@
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     .animate-card { animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
-    .rubro-btn.active { background-color: #004831; color: white; box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
-    .input-focus:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 2px #00483120; }
+    .rubro-btn.active-transporte { background-color: #004831; color: white; box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
+    .rubro-btn.active-electronica { background-color: #1E3A8A; color: white; box-shadow: 0 4px 12px rgba(30,58,138,0.2); }
     .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
 </style>
-<script id="tailwind-config">
-    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
-</script>
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
-<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min shadow-md">
-    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">person</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
+<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-4 h-12 shadow-md">
+    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">person</span></div><h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
     <button onclick="history.back()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all active:scale-95"><span class="material-symbols-outlined text-on-surface-variant">arrow_back</span></button>
 </header>
-<main class="px-margin-mobile py-gutter space-y-5 max-w-lg mx-auto">
+<main class="px-4 py-4 space-y-5 max-w-lg mx-auto">
     <div class="text-center animate-card">
-        <h2 class="font-headline-lg-mobile text-headline-lg-mobile">Registrar Ingreso</h2>
-        <p class="text-on-surface-variant text-sm">Selecciona el rubro y completa los datos</p>
+        <h2 class="text-xl font-bold">Registrar Ingreso</h2>
+        <p class="text-sm text-on-surface-variant">Selecciona el rubro y completa los datos</p>
     </div>
 
     <!-- Rubro -->
     <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg animate-card">
-        <label class="font-label-caps text-label-caps text-on-surface-variant">RUBRO / NEGOCIO</label>
+        <label class="text-xs font-bold uppercase">RUBRO / NEGOCIO</label>
         <div class="grid grid-cols-2 gap-3 mt-2">
-            <button id="rubroTransporte" class="rubro-btn active py-3 px-2 border border-transparent rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Transporte')">
-                <span class="material-symbols-outlined">directions_car</span>
-                <span class="text-sm font-semibold">🚖 Transporte</span>
+            <button id="rubroTransporte" class="rubro-btn active-transporte py-3 px-2 border border-transparent rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Transporte')">
+                <span class="material-symbols-outlined">directions_car</span><span class="text-sm font-semibold">🚖 Transporte</span>
             </button>
             <button id="rubroElectronica" class="rubro-btn py-3 px-2 border border-outline-variant rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Electrónica')">
-                <span class="material-symbols-outlined">devices</span>
-                <span class="text-sm font-semibold">🔧 Electrónica</span>
+                <span class="material-symbols-outlined">devices</span><span class="text-sm font-semibold">🤖 Electrónica</span>
             </button>
         </div>
     </section>
 
-    <!-- Campos dinámicos para Transporte -->
+    <!-- Campos Transporte -->
     <div id="camposTransporte" class="space-y-4">
         <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
-            <label class="font-label-caps text-label-caps">PLATAFORMA</label>
+            <label class="text-xs font-bold uppercase">PLATAFORMA</label>
             <select id="plataforma" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low focus:ring-2 focus:ring-primary">
-                <option value="Uber">Uber</option>
-                <option value="DiDi">DiDi</option>
-                <option value="Indriver">Indriver</option>
-                <option value="Otro">Otro</option>
+                <option value="Uber">Uber</option><option value="DiDi">DiDi</option><option value="Indriver">Indriver</option><option value="Otro">Otro</option>
             </select>
         </section>
-        <!-- Puedes agregar campos específicos de transporte: distancia, duración, etc. -->
     </div>
 
-    <!-- Campos dinámicos para Electrónica -->
+    <!-- Campos Electrónica -->
     <div id="camposElectronica" class="hidden space-y-4">
         <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
-            <label class="font-label-caps text-label-caps">TIPO DE SERVICIO</label>
+            <label class="text-xs font-bold uppercase">TIPO DE SERVICIO</label>
             <select id="tipoServicio" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low">
-                <option value="Reparación">Reparación</option>
-                <option value="Venta de repuesto">Venta de repuesto</option>
-                <option value="Mantenimiento">Mantenimiento</option>
-                <option value="Otro">Otro</option>
+                <option value="Reparación">Reparación</option><option value="Venta de repuesto">Venta de repuesto</option><option value="Mantenimiento">Mantenimiento</option><option value="Otro">Otro</option>
             </select>
-            <label class="font-label-caps text-label-caps mt-3 block">DETALLE / PRODUCTO</label>
+            <label class="text-xs font-bold uppercase mt-3 block">DETALLE / PRODUCTO</label>
             <input type="text" id="detalleServicio" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Ej: Pantalla iPhone X, Batería, etc.">
         </section>
     </div>
 
     <!-- Campos comunes -->
     <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg space-y-4">
-        <div><label class="font-label-caps text-label-caps">MONTO (USD)</label><input type="number" step="0.01" id="monto" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0.00"></div>
-        <div><label class="font-label-caps text-label-caps">FECHA</label><input type="date" id="fecha" class="w-full p-2.5 border rounded-xl bg-surface-container-low"></div>
-        <div><label class="font-label-caps text-label-caps">NOTAS (opcional)</label><textarea id="notas" rows="2" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Comentarios adicionales..."></textarea></div>
+        <div><label class="text-xs font-bold uppercase">MONTO (USD)</label><input type="number" step="0.01" id="monto" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0.00"></div>
+        <div><label class="text-xs font-bold uppercase">FECHA</label><input type="date" id="fecha" class="w-full p-2.5 border rounded-xl bg-surface-container-low"></div>
+        <div><label class="text-xs font-bold uppercase">NOTAS (opcional)</label><textarea id="notas" rows="2" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Comentarios adicionales..."></textarea></div>
     </section>
 
-    <!-- Botón guardar -->
-    <div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
-        <button id="guardarBtn" class="w-full h-14 bg-gradient-to-r from-primary to-primary-container text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
+    <div class="fixed bottom-20 left-0 w-full px-4 z-40">
+        <button id="guardarBtn" class="w-full h-14 bg-primary text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
             <span class="material-symbols-outlined">save</span> Guardar Ingreso
         </button>
     </div>
 </main>
 
-<!-- Navegación inferior consistente con el dashboard -->
 <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
     <div class="grid grid-cols-5 gap-1 text-center">
         <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
-        <a href="registro_ingreso.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="text-[10px]">Ingresos</span></a>
+        <a href="registro_ingreso.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined">payments</span><span class="text-[10px]">Ingresos</span></a>
         <a href="registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
         <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
         <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Análisis</span></a>
@@ -103,60 +89,43 @@
 </nav>
 
 <script>
-    // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec';
-    
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqiJKDDXKRM_7xBR8NhDC43BVpsyrqyI3mZeY5w_w6vroHubh1KjlBExGw66MmeZX_Rg/exec'; // REEMPLAZAR
     let rubroActual = 'Transporte';
 
     function seleccionarRubro(rubro) {
         rubroActual = rubro;
-        // Actualizar estilos de botones
-        document.querySelectorAll('.rubro-btn').forEach(btn => {
-            btn.classList.remove('active', 'bg-primary', 'text-white', 'border-transparent');
-            btn.classList.add('border-outline-variant');
-        });
-        const btnActivo = rubro === 'Transporte' ? document.getElementById('rubroTransporte') : document.getElementById('rubroElectronica');
-        btnActivo.classList.add('active', 'bg-primary', 'text-white', 'border-transparent');
-        btnActivo.classList.remove('border-outline-variant');
-        
-        // Mostrar/ocultar campos específicos
+        const btnTransporte = document.getElementById('rubroTransporte');
+        const btnElectronica = document.getElementById('rubroElectronica');
         if (rubro === 'Transporte') {
+            btnTransporte.classList.remove('active-electronica'); btnTransporte.classList.add('active-transporte');
+            btnElectronica.classList.remove('active-transporte', 'active-electronica'); btnElectronica.classList.add('border-outline-variant');
             document.getElementById('camposTransporte').classList.remove('hidden');
             document.getElementById('camposElectronica').classList.add('hidden');
         } else {
+            btnElectronica.classList.remove('active-transporte'); btnElectronica.classList.add('active-electronica');
+            btnTransporte.classList.remove('active-transporte', 'active-electronica'); btnTransporte.classList.add('border-outline-variant');
             document.getElementById('camposTransporte').classList.add('hidden');
             document.getElementById('camposElectronica').classList.remove('hidden');
         }
     }
 
-    // Establecer fecha actual por defecto
     document.getElementById('fecha').valueAsDate = new Date();
-
-    // Guardar ingreso
     const guardarBtn = document.getElementById('guardarBtn');
     guardarBtn.addEventListener('click', async () => {
         const monto = parseFloat(document.getElementById('monto').value);
         const fecha = document.getElementById('fecha').value;
         let notas = document.getElementById('notas').value;
         let plataforma = '';
-        let descripcionExtra = '';
-
-        if (!monto || monto <= 0) {
-            alert('❌ Ingresa un monto válido');
-            return;
-        }
-
+        if (!monto || monto <= 0) { alert('❌ Ingresa un monto válido'); return; }
         if (rubroActual === 'Transporte') {
             plataforma = document.getElementById('plataforma').value;
             notas = `Plataforma: ${plataforma} | ${notas}`;
         } else {
             const tipo = document.getElementById('tipoServicio').value;
             const detalle = document.getElementById('detalleServicio').value;
-            descripcionExtra = `${tipo} - ${detalle}`;
-            notas = `Servicio: ${descripcionExtra} | ${notas}`;
-            plataforma = rubroActual; // para la columna Plataforma guardamos el rubro
+            notas = `Servicio: ${tipo} - ${detalle} | ${notas}`;
+            plataforma = rubroActual;
         }
-
         const params = new URLSearchParams();
         params.append('action', 'addIncome');
         params.append('plataforma', rubroActual === 'Transporte' ? plataforma : rubroActual);
@@ -164,33 +133,17 @@
         params.append('monto', monto);
         params.append('fecha', fecha);
         params.append('notas', notas);
-
-        const originalText = guardarBtn.innerHTML;
+        const original = guardarBtn.innerHTML;
         guardarBtn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
         guardarBtn.disabled = true;
-
         try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
-            });
-            const text = await response.text();
-            if (response.ok && text.includes('OK')) {
-                alert('✅ Ingreso registrado correctamente');
-                location.href = 'Dashboard.html';
-            } else {
-                alert('❌ Error del servidor: ' + text);
-            }
-        } catch (e) {
-            alert('❌ Error de conexión: ' + e.message);
-        } finally {
-            guardarBtn.innerHTML = originalText;
-            guardarBtn.disabled = false;
-        }
+            const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params });
+            const text = await res.text();
+            if (res.ok && text.includes('OK')) alert('✅ Ingreso registrado');
+            else alert('❌ Error: ' + text);
+            location.href = 'Dashboard.html';
+        } catch(e) { alert('❌ Error de conexión: ' + e.message); } finally { guardarBtn.innerHTML = original; guardarBtn.disabled = false; }
     });
-
-    // Inicializar rubro por defecto
     seleccionarRubro('Transporte');
 </script>
 </body>
