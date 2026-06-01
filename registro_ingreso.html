@@ -19,6 +19,12 @@
     .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 2px #00483120; }
+    .btn-guardar { background-color: #004831; color: white; border-radius: 1rem; font-weight: bold; transition: all 0.2s; }
+    .btn-guardar:hover { transform: scale(1.01); background-color: #006b48; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .btn-guardar:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; }
+    .status-connected { background: #dcfce7; color: #166534; }
+    .status-error { background: #fee2e2; color: #991b1b; }
 </style>
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
@@ -31,6 +37,9 @@
     <div class="text-center animate-card">
         <h2 class="text-xl font-bold">Registrar Ingreso</h2>
         <p class="text-sm text-on-surface-variant">Selecciona el rubro y completa los datos</p>
+        <!-- Indicador de conexión a Google Sheets -->
+        <div id="conexionStatus" class="status-badge mt-2 justify-center mx-auto w-fit">🔄 Verificando conexión...</div>
+        <p class="text-xs text-gray-400 mt-1">Los datos se guardarán en Google Sheets (hoja: Ingresos)</p>
     </div>
 
     <!-- ========== RUBRO ========== -->
@@ -50,7 +59,6 @@
 
     <!-- ========== CAMPOS PARA TRANSPORTE ========== -->
     <div id="camposTransporte" class="space-y-4">
-        <!-- Plataformas -->
         <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg">
             <label class="text-xs font-bold uppercase">Plataforma</label>
             <div class="grid grid-cols-3 gap-2 mt-2">
@@ -60,7 +68,6 @@
                 <button class="platform-btn py-2 border rounded-xl flex flex-col items-center" data-platform="Cabify" onclick="selectPlatform('Cabify')"><span class="material-symbols-outlined">near_me</span><span class="text-xs">Cabify</span></button>
                 <button class="platform-btn py-2 border rounded-xl flex flex-col items-center col-span-2" data-platform="Otro" onclick="selectPlatform('Otro')"><span class="material-symbols-outlined">more_horiz</span><span class="text-xs">Otro</span></button>
             </div>
-            <!-- Comisión (solo transporte) -->
             <div class="mt-4 p-3 bg-gray-50 rounded-lg">
                 <div class="flex justify-between items-center">
                     <label class="text-xs font-bold">Comisión de la plataforma</label>
@@ -73,7 +80,6 @@
                 <p class="text-xs mt-1 text-gray-500">Se recordará para esta plataforma</p>
             </div>
         </section>
-        <!-- Distancias y duración opcionales (similares al estilo de jornada) -->
         <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg space-y-3">
             <div class="grid grid-cols-2 gap-3">
                 <div><label class="text-xs">Hora inicio</label><input type="time" id="horaInicio" class="w-full p-2 border rounded"></div>
@@ -116,7 +122,7 @@
 
     <!-- Botón guardar -->
     <div class="fixed bottom-20 left-0 w-full px-4 z-40">
-        <button id="guardarBtn" class="w-full h-14 bg-primary text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
+        <button id="guardarBtn" class="btn-guardar w-full h-14 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
             <span class="material-symbols-outlined">save</span> Guardar Ingreso
         </button>
     </div>
@@ -134,10 +140,35 @@
 
 <script>
     // ========== CONFIGURACIÓN ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqiJKDDXKRM_7xBR8NhDC43BVpsyrqyI3mZeY5w_w6vroHubh1KjlBExGw66MmeZX_Rg/exec'; // REEMPLAZAR
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqiJKDDXKRM_7xBR8NhDC43BVpsyrqyI3mZeY5w_w6vroHubh1KjlBExGw66MmeZX_Rg/exec';
     let rubroActual = 'Transporte';
     let currentPlatform = 'Uber';
     let commissionPercent = 25;
+
+    // --- Verificar conexión con Google Sheets ---
+    async function verificarConexion() {
+        const statusDiv = document.getElementById('conexionStatus');
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=getStats`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && typeof data === 'object') {
+                    statusDiv.innerHTML = '✅ Conectado a Google Sheets';
+                    statusDiv.classList.add('status-connected');
+                    statusDiv.classList.remove('status-error');
+                } else {
+                    throw new Error('Respuesta inválida');
+                }
+            } else {
+                throw new Error(`HTTP ${response.status}`);
+            }
+        } catch (error) {
+            console.error('Error de conexión:', error);
+            statusDiv.innerHTML = '❌ Error de conexión – revisa URL o publicación del script';
+            statusDiv.classList.add('status-error');
+            statusDiv.classList.remove('status-connected');
+        }
+    }
 
     // Funciones de rubro
     function seleccionarRubro(rubro) {
@@ -162,18 +193,19 @@
         calcularPreview();
     }
 
-    // Funciones de plataforma y comisión (solo para transporte)
     function selectPlatform(platform) {
         currentPlatform = platform;
         document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active', 'ring-2', 'ring-primary'));
-        document.querySelector(`.platform-btn[data-platform="${platform}"]`).classList.add('active', 'ring-2', 'ring-primary');
+        const selected = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
+        if (selected) selected.classList.add('active', 'ring-2', 'ring-primary');
         loadCommissionForPlatform(platform);
     }
 
     function loadCommissionForPlatform(platform) {
         let saved = localStorage.getItem(`comision_${platform}`);
         commissionPercent = (saved && !isNaN(parseFloat(saved))) ? parseFloat(saved) : {Uber:25,DiDi:20,Indriver:15,Cabify:18,Otro:10}[platform]||25;
-        document.getElementById('comisionInput').value = commissionPercent;
+        const comisionInput = document.getElementById('comisionInput');
+        if (comisionInput) comisionInput.value = commissionPercent;
         calcularPreview();
     }
 
@@ -195,12 +227,10 @@
             document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
             document.getElementById('netoPreview').innerText = `$${neto.toFixed(2)}`;
         } else {
-            // Electrónica sin comisión
             document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
             document.getElementById('comisionPreview').innerText = `0%`;
             document.getElementById('netoPreview').innerText = `$${monto.toFixed(2)}`;
         }
-        // Duración
         const inicio = document.getElementById('horaInicio')?.value;
         const fin = document.getElementById('horaFin')?.value;
         if (inicio && fin) {
@@ -216,18 +246,17 @@
         }
     }
 
-    // Eventos de entrada para preview
     document.getElementById('monto').addEventListener('input', calcularPreview);
     document.getElementById('horaInicio')?.addEventListener('change', calcularPreview);
     document.getElementById('horaFin')?.addEventListener('change', calcularPreview);
-    document.getElementById('guardarComisionBtn')?.addEventListener('click', guardarComision);
+    const guardarComisionBtn = document.getElementById('guardarComisionBtn');
+    if (guardarComisionBtn) guardarComisionBtn.addEventListener('click', guardarComision);
     document.getElementById('fecha').valueAsDate = new Date();
 
-    // Inicializar rubro y plataforma
     seleccionarRubro('Transporte');
     selectPlatform('Uber');
+    verificarConexion();  // Al cargar la página, comprueba si el script responde
 
-    // Guardar registro
     const guardarBtn = document.getElementById('guardarBtn');
     guardarBtn.addEventListener('click', async () => {
         const monto = parseFloat(document.getElementById('monto').value);
@@ -261,7 +290,6 @@
             }
             notas = `Plataforma: ${plataforma} | Duración: ${duracion} | Dist app: ${distApp} km | Dist total: ${distTotal} km | Comisión: ${commissionPercent}% | ${notas}`;
         } else {
-            // Electrónica
             const tipo = document.getElementById('tipoServicio').value;
             const detalle = document.getElementById('detalleServicio').value;
             plataforma = 'Electrónica';
@@ -288,7 +316,7 @@
             });
             const text = await response.text();
             if (response.ok && (text.includes('OK') || text.includes('Ingreso registrado'))) {
-                alert('✅ Ingreso registrado correctamente');
+                alert(`✅ Ingreso registrado correctamente en Google Sheets (hoja Ingresos)\nRubro: ${rubro}\nMonto: $${monto}`);
                 window.location.href = 'Dashboard.html';
             } else {
                 alert('❌ Error del servidor: ' + text);
