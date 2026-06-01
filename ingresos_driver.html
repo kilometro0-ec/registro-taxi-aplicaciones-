@@ -3,21 +3,17 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Driver Insights - Registrar Jornada</title>
+<title>Driver Insights - Nuevo Ingreso</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
-    * { transition: all 0.2s ease; }
     body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%); }
     .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
     @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
     .animate-card { animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
-    .platform-btn { transition: all 0.2s; }
-    .platform-btn.active { border-color: #004831; background: linear-gradient(145deg, #a6f2cc40, #ffffff); box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
-    .btn-glow { transition: all 0.3s; }
-    .btn-glow:hover { box-shadow: 0 0 18px rgba(0,72,49,0.5); transform: scale(1.02); }
-    input:focus, textarea:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 2px #00483120; }
+    .rubro-btn.active { background-color: #004831; color: white; box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
+    .input-focus:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 2px #00483120; }
     .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
 </style>
@@ -27,229 +23,175 @@
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
 <header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min shadow-md">
-<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">person</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
-<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all active:scale-95"><span class="material-symbols-outlined text-on-surface-variant">calendar_today</span></button>
+    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">person</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
+    <button onclick="history.back()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all active:scale-95"><span class="material-symbols-outlined text-on-surface-variant">arrow_back</span></button>
 </header>
-<main class="px-margin-mobile py-gutter space-y-6 max-w-lg mx-auto">
+<main class="px-margin-mobile py-gutter space-y-5 max-w-lg mx-auto">
     <div class="text-center animate-card">
-        <h2 class="font-headline-lg-mobile text-headline-lg-mobile">Registrar Jornada</h2>
-        <p class="text-on-surface-variant text-sm">Ingresa los datos de tu turno de trabajo</p>
+        <h2 class="font-headline-lg-mobile text-headline-lg-mobile">Registrar Ingreso</h2>
+        <p class="text-on-surface-variant text-sm">Selecciona el rubro y completa los datos</p>
     </div>
 
-    <!-- Plataforma y comisión -->
-    <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg animate-card transition-all hover:shadow-xl">
-        <label class="font-label-caps text-label-caps text-on-surface-variant">PLATAFORMA</label>
-        <div class="grid grid-cols-3 gap-2 mt-2">
-            <button class="platform-btn py-2 px-1 border rounded-xl flex flex-col items-center transition-all hover:scale-105 hover:shadow-md" data-platform="Uber" onclick="selectPlatform('Uber')">
-                <span class="material-symbols-outlined">directions_car</span><span class="text-xs font-semibold">Uber</span>
+    <!-- Rubro -->
+    <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg animate-card">
+        <label class="font-label-caps text-label-caps text-on-surface-variant">RUBRO / NEGOCIO</label>
+        <div class="grid grid-cols-2 gap-3 mt-2">
+            <button id="rubroTransporte" class="rubro-btn active py-3 px-2 border border-transparent rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Transporte')">
+                <span class="material-symbols-outlined">directions_car</span>
+                <span class="text-sm font-semibold">🚖 Transporte</span>
             </button>
-            <button class="platform-btn py-2 px-1 border rounded-xl flex flex-col items-center transition-all hover:scale-105 hover:shadow-md" data-platform="DiDi" onclick="selectPlatform('DiDi')">
-                <span class="material-symbols-outlined">bolt</span><span class="text-xs font-semibold">DiDi</span>
+            <button id="rubroElectronica" class="rubro-btn py-3 px-2 border border-outline-variant rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Electrónica')">
+                <span class="material-symbols-outlined">devices</span>
+                <span class="text-sm font-semibold">🔧 Electrónica</span>
             </button>
-            <button class="platform-btn py-2 px-1 border rounded-xl flex flex-col items-center transition-all hover:scale-105 hover:shadow-md" data-platform="Indriver" onclick="selectPlatform('Indriver')">
-                <span class="material-symbols-outlined">handshake</span><span class="text-xs font-semibold">InDrive</span>
-            </button>
-            <button class="platform-btn py-2 px-1 border rounded-xl flex flex-col items-center transition-all hover:scale-105 hover:shadow-md" data-platform="Cabify" onclick="selectPlatform('Cabify')">
-                <span class="material-symbols-outlined">near_me</span><span class="text-xs font-semibold">Cabify</span>
-            </button>
-            <button class="platform-btn py-2 px-1 border rounded-xl flex flex-col items-center col-span-2 transition-all hover:scale-105 hover:shadow-md" data-platform="Otro" onclick="selectPlatform('Otro')">
-                <span class="material-symbols-outlined">more_horiz</span><span class="text-xs font-semibold">Otro</span>
-            </button>
-        </div>
-        <div class="mt-5 p-4 bg-surface-container-low/60 rounded-xl border border-outline-variant/50">
-            <div class="flex justify-between items-center flex-wrap gap-2">
-                <label class="font-label-caps text-label-caps">COMISIÓN DE LA PLATAFORMA</label>
-                <div class="flex items-center gap-2">
-                    <input type="number" id="comisionInput" class="w-20 p-1.5 border rounded-xl text-right bg-white shadow-sm" step="0.5" min="0" max="50" value="25">
-                    <span class="text-sm font-bold">%</span>
-                    <button id="guardarComisionBtn" class="text-xs bg-primary text-white px-3 py-1.5 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95">Guardar</button>
-                </div>
-            </div>
-            <p class="text-xs text-on-surface-variant mt-2">Este porcentaje se recordará para esta plataforma</p>
         </div>
     </section>
 
-    <!-- Datos de la jornada -->
-    <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg animate-card transition-all hover:shadow-xl space-y-4">
-        <div class="grid grid-cols-2 gap-3">
-            <div><label class="font-label-caps text-label-caps">FECHA</label><input type="date" id="fechaJornada" class="w-full p-2.5 border rounded-xl bg-surface-container-low focus:ring-2 focus:ring-primary"></div>
-            <div><label class="font-label-caps text-label-caps">HORA INICIO</label><input type="time" id="horaInicio" class="w-full p-2.5 border rounded-xl bg-surface-container-low"></div>
-            <div><label class="font-label-caps text-label-caps">HORA FIN</label><input type="time" id="horaFin" class="w-full p-2.5 border rounded-xl bg-surface-container-low"></div>
-            <div><label class="font-label-caps text-label-caps">TOTAL BRUTO (USD)</label><input type="number" step="0.01" id="brutoInput" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0.00"></div>
-        </div>
-        <div class="grid grid-cols-2 gap-3">
-            <div><label class="font-label-caps text-label-caps">DISTANCIA APP (km)</label><input type="number" step="0.1" id="distanciaApp" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0" value="0"></div>
-            <div><label class="font-label-caps text-label-caps">DISTANCIA TOTAL (km)</label><input type="number" step="0.1" id="distanciaTotal" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0" value="0"></div>
-        </div>
-        <div><label class="font-label-caps text-label-caps">NOTAS (opcional)</label><textarea id="notasInput" rows="2" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Comentarios adicionales..."></textarea></div>
+    <!-- Campos dinámicos para Transporte -->
+    <div id="camposTransporte" class="space-y-4">
+        <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
+            <label class="font-label-caps text-label-caps">PLATAFORMA</label>
+            <select id="plataforma" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low focus:ring-2 focus:ring-primary">
+                <option value="Uber">Uber</option>
+                <option value="DiDi">DiDi</option>
+                <option value="Indriver">Indriver</option>
+                <option value="Otro">Otro</option>
+            </select>
+        </section>
+        <!-- Puedes agregar campos específicos de transporte: distancia, duración, etc. -->
+    </div>
+
+    <!-- Campos dinámicos para Electrónica -->
+    <div id="camposElectronica" class="hidden space-y-4">
+        <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
+            <label class="font-label-caps text-label-caps">TIPO DE SERVICIO</label>
+            <select id="tipoServicio" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low">
+                <option value="Reparación">Reparación</option>
+                <option value="Venta de repuesto">Venta de repuesto</option>
+                <option value="Mantenimiento">Mantenimiento</option>
+                <option value="Otro">Otro</option>
+            </select>
+            <label class="font-label-caps text-label-caps mt-3 block">DETALLE / PRODUCTO</label>
+            <input type="text" id="detalleServicio" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Ej: Pantalla iPhone X, Batería, etc.">
+        </section>
+    </div>
+
+    <!-- Campos comunes -->
+    <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg space-y-4">
+        <div><label class="font-label-caps text-label-caps">MONTO (USD)</label><input type="number" step="0.01" id="monto" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0.00"></div>
+        <div><label class="font-label-caps text-label-caps">FECHA</label><input type="date" id="fecha" class="w-full p-2.5 border rounded-xl bg-surface-container-low"></div>
+        <div><label class="font-label-caps text-label-caps">NOTAS (opcional)</label><textarea id="notas" rows="2" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Comentarios adicionales..."></textarea></div>
     </section>
 
-    <!-- Resumen -->
-    <section class="bg-gradient-to-br from-primary-container/20 via-surface to-primary-container/10 border border-primary/40 rounded-xl p-5 shadow-lg backdrop-blur-sm animate-card">
-        <div class="flex justify-between items-center"><span class="font-label-caps text-label-caps">INGRESO BRUTO</span><span class="font-data-mono text-data-mono font-bold" id="brutoDisplay">$0.00</span></div>
-        <div class="flex justify-between items-center mt-2"><span class="font-label-caps text-label-caps">COMISIÓN (%)</span><span class="font-data-mono text-data-mono font-bold" id="comisionDisplay">0%</span></div>
-        <div class="flex justify-between items-center mt-3 text-xl font-bold border-t border-primary/30 pt-3"><span>NETO A COBRAR</span><span class="text-primary text-2xl font-black" id="netoDisplay">$0.00</span></div>
-        <div class="flex justify-between items-center mt-2 text-sm"><span>DURACIÓN ESTIMADA</span><span id="duracionDisplay" class="font-mono">0h 0min</span></div>
-    </section>
-
+    <!-- Botón guardar -->
     <div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
-        <button id="saveJornadaBtn" class="w-full h-14 bg-gradient-to-r from-primary to-primary-container text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-2 btn-glow">
-            <span class="material-symbols-outlined">save</span> Guardar Jornada
+        <button id="guardarBtn" class="w-full h-14 bg-gradient-to-r from-primary to-primary-container text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">save</span> Guardar Ingreso
         </button>
     </div>
 </main>
 
-<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-md border-t border-outline-variant py-2 shadow-lg">
+<!-- Navegación inferior consistente con el dashboard -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
     <div class="grid grid-cols-5 gap-1 text-center">
-        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105 hover:text-primary"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px] font-medium">Panel</span></a>
-        <a href="registro_ingresos.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-xl transition-all"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="text-[10px] font-medium">Viajes</span></a>
-        <a href="registro_gastos.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105 hover:text-primary"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px] font-medium">Gastos</span></a>
-        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105 hover:text-primary"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px] font-medium">Vehículo</span></a>
-        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant transition-all hover:scale-105 hover:text-primary"><span class="material-symbols-outlined">analytics</span><span class="text-[10px] font-medium">Analytics</span></a>
+        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
+        <a href="registro_ingreso.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="text-[10px]">Ingresos</span></a>
+        <a href="registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
+        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
+        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Análisis</span></a>
     </div>
 </nav>
 
 <script>
     // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHAis1xtB3LJhS4jBGvXmB69tg1e7Gc5UTUKLEXBCRynFpjnhKDMhoLIFCk7MGjKsxMw/exec'; // <--- ¡Cámbiala por la tuya si es diferente!
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec';
     
-    let currentPlatform = 'Uber';
-    let commissionPercent = 25;
+    let rubroActual = 'Transporte';
 
-    function loadCommissionForPlatform(platform) {
-        const saved = localStorage.getItem(`comision_${platform}`);
-        if (saved !== null && !isNaN(parseFloat(saved))) {
-            commissionPercent = parseFloat(saved);
-        } else {
-            const defaults = { Uber: 25, DiDi: 20, Indriver: 15, Cabify: 18, Otro: 10 };
-            commissionPercent = defaults[platform] || 25;
-        }
-        document.getElementById('comisionInput').value = commissionPercent;
-        document.getElementById('comisionDisplay').innerText = commissionPercent + '%';
-        calcularNeto();
-    }
-
-    function selectPlatform(platform) {
-        currentPlatform = platform;
-        document.querySelectorAll('.platform-btn').forEach(btn => {
-            btn.classList.remove('active', 'ring-2', 'ring-primary', 'bg-primary-fixed-dim/20');
+    function seleccionarRubro(rubro) {
+        rubroActual = rubro;
+        // Actualizar estilos de botones
+        document.querySelectorAll('.rubro-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-primary', 'text-white', 'border-transparent');
+            btn.classList.add('border-outline-variant');
         });
-        const selectedBtn = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
-        if (selectedBtn) selectedBtn.classList.add('active', 'ring-2', 'ring-primary', 'bg-primary-fixed-dim/20');
-        loadCommissionForPlatform(platform);
-    }
-
-    function guardarComision() {
-        let newCommission = parseFloat(document.getElementById('comisionInput').value);
-        if (isNaN(newCommission)) newCommission = 0;
-        newCommission = Math.min(50, Math.max(0, newCommission));
-        commissionPercent = newCommission;
-        localStorage.setItem(`comision_${currentPlatform}`, commissionPercent);
-        document.getElementById('comisionDisplay').innerText = commissionPercent + '%';
-        calcularNeto();
-        alert(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`);
-    }
-
-    function calcularNeto() {
-        const bruto = parseFloat(document.getElementById('brutoInput').value) || 0;
-        const neto = bruto * (1 - commissionPercent / 100);
-        document.getElementById('brutoDisplay').innerText = `$${bruto.toFixed(2)}`;
-        document.getElementById('netoDisplay').innerText = `$${neto.toFixed(2)}`;
-        // Asegurar que comisión display se actualice si cambió
-        document.getElementById('comisionDisplay').innerText = commissionPercent + '%';
-    }
-
-    function calcularDuracion() {
-        const inicio = document.getElementById('horaInicio').value;
-        const fin = document.getElementById('horaFin').value;
-        if (inicio && fin) {
-            const start = new Date(`2000-01-01T${inicio}:00`);
-            const end = new Date(`2000-01-01T${fin}:00`);
-            let diff = (end - start) / 1000 / 60;
-            if (diff < 0) diff += 24 * 60;
-            const horas = Math.floor(diff / 60);
-            const minutos = Math.floor(diff % 60);
-            document.getElementById('duracionDisplay').innerText = `${horas}h ${minutos}min`;
+        const btnActivo = rubro === 'Transporte' ? document.getElementById('rubroTransporte') : document.getElementById('rubroElectronica');
+        btnActivo.classList.add('active', 'bg-primary', 'text-white', 'border-transparent');
+        btnActivo.classList.remove('border-outline-variant');
+        
+        // Mostrar/ocultar campos específicos
+        if (rubro === 'Transporte') {
+            document.getElementById('camposTransporte').classList.remove('hidden');
+            document.getElementById('camposElectronica').classList.add('hidden');
         } else {
-            document.getElementById('duracionDisplay').innerText = '0h 0min';
+            document.getElementById('camposTransporte').classList.add('hidden');
+            document.getElementById('camposElectronica').classList.remove('hidden');
         }
     }
 
-    // Eventos
-    document.getElementById('brutoInput').addEventListener('input', calcularNeto);
-    document.getElementById('horaInicio').addEventListener('change', calcularDuracion);
-    document.getElementById('horaFin').addEventListener('change', calcularDuracion);
-    document.getElementById('guardarComisionBtn').addEventListener('click', guardarComision);
-    document.getElementById('fechaJornada').valueAsDate = new Date();
-    selectPlatform('Uber');
+    // Establecer fecha actual por defecto
+    document.getElementById('fecha').valueAsDate = new Date();
 
-    // Guardar jornada con feedback y carga
-    const saveBtn = document.getElementById('saveJornadaBtn');
-    saveBtn.addEventListener('click', async () => {
-        const fecha = document.getElementById('fechaJornada').value;
-        const inicio = document.getElementById('horaInicio').value;
-        const fin = document.getElementById('horaFin').value;
-        const bruto = parseFloat(document.getElementById('brutoInput').value);
-        const distanciaApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
-        const distanciaTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
-        const notas = document.getElementById('notasInput').value;
+    // Guardar ingreso
+    const guardarBtn = document.getElementById('guardarBtn');
+    guardarBtn.addEventListener('click', async () => {
+        const monto = parseFloat(document.getElementById('monto').value);
+        const fecha = document.getElementById('fecha').value;
+        let notas = document.getElementById('notas').value;
+        let plataforma = '';
+        let descripcionExtra = '';
 
-        if (!fecha) { alert('❌ Selecciona una fecha'); return; }
-        if (isNaN(bruto) || bruto <= 0) { alert('❌ Ingresa un monto bruto válido'); return; }
-
-        // Mostrar spinner en el botón
-        const originalText = saveBtn.innerHTML;
-        saveBtn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
-        saveBtn.disabled = true;
-
-        let horasTrabajadas = 0;
-        if (inicio && fin) {
-            const start = new Date(`2000-01-01T${inicio}:00`);
-            const end = new Date(`2000-01-01T${fin}:00`);
-            let diff = (end - start) / 1000 / 3600;
-            if (diff < 0) diff += 24;
-            horasTrabajadas = diff;
+        if (!monto || monto <= 0) {
+            alert('❌ Ingresa un monto válido');
+            return;
         }
 
-        const notasCompletas = `Jornada - Plataforma: ${currentPlatform} | Inicio: ${inicio} | Fin: ${fin} | Duración: ${horasTrabajadas.toFixed(1)}h | Distancia app: ${distanciaApp} km | Distancia total: ${distanciaTotal} km | Comisión: ${commissionPercent}% | Notas: ${notas}`;
+        if (rubroActual === 'Transporte') {
+            plataforma = document.getElementById('plataforma').value;
+            notas = `Plataforma: ${plataforma} | ${notas}`;
+        } else {
+            const tipo = document.getElementById('tipoServicio').value;
+            const detalle = document.getElementById('detalleServicio').value;
+            descripcionExtra = `${tipo} - ${detalle}`;
+            notas = `Servicio: ${descripcionExtra} | ${notas}`;
+            plataforma = rubroActual; // para la columna Plataforma guardamos el rubro
+        }
 
         const params = new URLSearchParams();
         params.append('action', 'addIncome');
-        params.append('plataforma', currentPlatform);
-        params.append('monto', bruto);
+        params.append('plataforma', rubroActual === 'Transporte' ? plataforma : rubroActual);
+        params.append('rubro', rubroActual);
+        params.append('monto', monto);
         params.append('fecha', fecha);
-        params.append('notas', notasCompletas);
+        params.append('notas', notas);
+
+        const originalText = guardarBtn.innerHTML;
+        guardarBtn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
+        guardarBtn.disabled = true;
 
         try {
-            // Usamos POST normal sin 'no-cors' para poder detectar errores reales
             const response = await fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: params
             });
-            if (response.ok) {
-                const result = await response.text();
-                console.log('Respuesta del servidor:', result);
-                alert('✅ Jornada registrada correctamente en Google Sheets');
-                // Opcional: limpiar campos
-                document.getElementById('brutoInput').value = '';
-                document.getElementById('distanciaApp').value = 0;
-                document.getElementById('distanciaTotal').value = 0;
-                document.getElementById('notasInput').value = '';
+            const text = await response.text();
+            if (response.ok && text.includes('OK')) {
+                alert('✅ Ingreso registrado correctamente');
                 location.href = 'Dashboard.html';
             } else {
-                const errorMsg = await response.text();
-                console.error('Error del servidor:', errorMsg);
-                alert(`❌ Error del servidor (${response.status}): ${errorMsg.substring(0, 200)}. Verifica que el script de Apps Script esté desplegado y acepte POST.`);
+                alert('❌ Error del servidor: ' + text);
             }
         } catch (e) {
-            console.error('Error de red:', e);
-            alert('❌ No se pudo conectar con Google Apps Script. Comprueba que la URL sea correcta y que el script esté publicado como Web App con acceso "Cualquiera".\n\nDetalle: ' + e.message);
+            alert('❌ Error de conexión: ' + e.message);
         } finally {
-            saveBtn.innerHTML = originalText;
-            saveBtn.disabled = false;
+            guardarBtn.innerHTML = originalText;
+            guardarBtn.disabled = false;
         }
     });
+
+    // Inicializar rubro por defecto
+    seleccionarRubro('Transporte');
 </script>
 </body>
 </html>
