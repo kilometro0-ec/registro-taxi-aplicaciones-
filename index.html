@@ -23,23 +23,42 @@
 <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full">calendar_today</button>
 </header>
 <main class="pt-16 px-margin-mobile space-y-4">
-    <!-- Ganancia neta (acumulada) -->
+    <!-- Ganancia neta acumulada -->
     <section class="mt-2 bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
         <div class="absolute top-0 right-0 p-3 opacity-10"><span class="material-symbols-outlined text-5xl">trending_up</span></div>
         <p class="font-label-caps text-label-caps text-on-surface-variant">GANANCIA NETA (TOTAL)</p>
         <h2 class="font-display-earnings text-display-earnings text-primary" id="gananciaNeta">$0.00</h2>
-        <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_drop_up</span> vs Ayer</span><p class="text-[11px] text-on-surface-variant" id="resumenIngresosGastos">Bruto: $0.00 | Gastos: $0.00</p></div>
+        <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_drop_up</span> vs ayer</span><p class="text-[11px] text-on-surface-variant" id="resumenIngresosGastos">Bruto: $0.00 | Gastos: $0.00</p></div>
     </section>
-    <!-- Métricas rápidas -->
-    <div class="grid grid-cols-2 gap-3"><div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL</p><p class="font-data-mono text-lg">0 km</p></div><div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p><p class="font-data-mono text-lg">0h</p></div></div>
+    
+    <!-- Métricas rápidas: distancia y horas (simuladas, se pueden obtener del backend) -->
+    <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL</p><p class="font-data-mono text-lg" id="distanciaTotal">0 km</p></div>
+        <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p><p class="font-data-mono text-lg" id="horasTrabajadas">0 h</p></div>
+    </div>
+    
     <!-- Alertas de mantenimiento -->
     <section><h3 class="font-label-caps text-label-caps text-on-surface-variant">MANTENIMIENTO PENDIENTE</h3><div id="alertasContainer" class="space-y-2 mt-1"></div></section>
-    <!-- Rentabilidad -->
-    <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Basado en conducción</p></div><p class="font-data-mono text-primary" id="earningsPerHour">$0.00</p></div><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costPerKm">$0.00</p></div></div>
+    
+    <!-- Rentabilidad real -->
+    <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
+        <div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Basado en conducción</p></div><p class="font-data-mono text-primary" id="earningsPerHour">$0.00</p></div>
+        <div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costPerKm">$0.00</p></div>
+    </div>
+    
     <!-- Botones rápidos -->
     <div class="grid grid-cols-2 gap-3"><button onclick="location.href='registro_ingresos.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined">add_circle</span> Ingreso</button><button onclick="location.href='registro_gastos.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined">remove_circle</span> Gasto</button></div>
+    
+    <!-- Actividad reciente (últimos movimientos) -->
+    <section class="space-y-3">
+        <div class="flex items-center justify-between"><h3 class="font-headline-lg-mobile text-[16px]">Actividad Reciente</h3><button id="verTodoBtn" class="text-secondary font-bold text-xs uppercase tracking-wider">Ver Todo</button></div>
+        <div id="recentActivityContainer" class="space-y-2">
+            <div class="bg-white border border-outline-variant p-4 rounded-xl text-center text-on-surface-variant">Cargando actividad...</div>
+        </div>
+    </section>
 </main>
-<!-- Navegación inferior 5 botones -->
+
+<!-- Navegación inferior con 5 botones -->
 <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
     <div class="grid grid-cols-5 gap-1 text-center">
         <a href="Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
@@ -49,24 +68,64 @@
         <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Analytics</span></a>
     </div>
 </nav>
+
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHAis1xtB3LJhS4jBGvXmB69tg1e7Gc5UTUKLEXBCRynFpjnhKDMhoLIFCk7MGjKsxMw/exec'; // REEMPLAZAR
+    // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHAis1xtB3LJhS4jBGvXmB69tg1e7Gc5UTUKLEXBCRynFpjnhKDMhoLIFCk7MGjKsxMw/exec';
+    
     async function cargarDashboard() {
         try {
-            const res = await fetch(`${SCRIPT_URL}?action=getStats`);
-            const stats = await res.json();
+            // 1. Estadísticas financieras
+            const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
+            const stats = await resStats.json();
             document.getElementById('gananciaNeta').innerText = `$${stats.ganancia.toFixed(2)}`;
             document.getElementById('resumenIngresosGastos').innerHTML = `Bruto: $${stats.totalIngresos.toFixed(2)} | Gastos: $${stats.totalGastos.toFixed(2)}`;
-            document.getElementById('earningsPerHour').innerText = `$${(stats.totalIngresos / 40).toFixed(2)}`;
-            document.getElementById('costPerKm').innerText = `$${(stats.totalGastos / 100).toFixed(2)}`;
+            
+            // 2. Cálculos auxiliares (simulados mientras el backend no provea horas/distancia real)
+            // En una versión futura, el backend podría devolver total de km y horas desde la hoja de ingresos.
+            const horasEstimadas = 40;  // Podría calcularse en base a las jornadas
+            const kmEstimados = stats.totalIngresos > 0 ? stats.totalIngresos * 1.5 : 0;
+            document.getElementById('earningsPerHour').innerText = `$${(stats.totalIngresos / horasEstimadas).toFixed(2)}`;
+            document.getElementById('costPerKm').innerText = `$${(stats.totalGastos / (kmEstimados || 1)).toFixed(2)}`;
+            document.getElementById('distanciaTotal').innerText = `${kmEstimados.toFixed(0)} km`;
+            document.getElementById('horasTrabajadas').innerText = `${horasEstimadas} h`;
+            
+            // 3. Alertas de mantenimiento
             const alertRes = await fetch(`${SCRIPT_URL}?action=getAlertas`);
             const alertas = await alertRes.json();
             const container = document.getElementById('alertasContainer');
             container.innerHTML = '';
-            if(alertas.length===0) container.innerHTML='<div class="p-2 bg-green-50 border border-green-300 rounded text-green-800 text-sm">✅ Todo en orden</div>';
-            else alertas.forEach(a => { let d=document.createElement('div'); d.className=`p-2 rounded border text-sm ${a.urgente?'bg-red-50 border-red-300 text-red-800':'bg-yellow-50 border-yellow-300'}`; d.innerText=a.mensaje; container.appendChild(d); });
-        } catch(e){ console.error(e); }
+            if (alertas.length === 0) {
+                container.innerHTML = '<div class="p-2 bg-green-50 border border-green-300 rounded text-green-800 text-sm">✅ Todo en orden</div>';
+            } else {
+                alertas.forEach(a => {
+                    let d = document.createElement('div');
+                    d.className = `p-2 rounded border text-sm ${a.urgente ? 'bg-red-50 border-red-300 text-red-800' : 'bg-yellow-50 border-yellow-300'}`;
+                    d.innerText = a.mensaje;
+                    container.appendChild(d);
+                });
+            }
+            
+            // 4. Actividad reciente (si el backend tiene un endpoint para últimos registros)
+            // Por ahora mostramos un mensaje informativo mientras se implementa ese endpoint.
+            const activityContainer = document.getElementById('recentActivityContainer');
+            activityContainer.innerHTML = `
+                <div class="bg-white border border-outline-variant p-4 rounded-xl text-center text-on-surface-variant">
+                    📋 Próximamente podrás ver aquí tus últimos viajes y gastos.
+                </div>
+            `;
+            // Opcional: se puede llamar a un endpoint `getRecentActivity` si existe.
+        } catch(e) {
+            console.error('Error al cargar el dashboard:', e);
+            document.getElementById('alertasContainer').innerHTML = '<div class="p-2 bg-red-50 border border-red-300 rounded text-red-800 text-sm">⚠️ Error de conexión con el servidor.</div>';
+        }
     }
+    
+    // Botón "Ver Todo" (por ahora solo alerta)
+    document.getElementById('verTodoBtn')?.addEventListener('click', () => {
+        alert('Próximamente: historial completo de ingresos y gastos.');
+    });
+    
     cargarDashboard();
 </script>
 </body>
