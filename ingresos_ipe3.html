@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Registro de Ingresos - Driver Insights</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-highest": "#d3e4fe",
+                      "on-surface": "#0b1c30",
+                      "surface-container-lowest": "#ffffff",
+                      "on-primary": "#ffffff",
+                      "on-secondary-fixed-variant": "#2d476f",
+                      "background": "#f8f9ff",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "primary-fixed": "#a6f2cc",
+                      "tertiary-fixed": "#ffdbcf",
+                      "surface-container": "#e5eeff",
+                      "primary-container": "#0e6245",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#752200",
+                      "on-surface-variant": "#3f4943",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-container": "#ffbca6",
+                      "on-secondary-fixed": "#001b3c",
+                      "surface-container-low": "#eff4ff",
+                      "surface-bright": "#f8f9ff",
+                      "on-secondary-container": "#3f5882",
+                      "inverse-on-surface": "#eaf1ff",
+                      "surface-container-high": "#dce9ff",
+                      "secondary-fixed-dim": "#adc7f7",
+                      "on-error-container": "#93000a",
+                      "secondary-container": "#b6d0ff",
+                      "on-primary-fixed": "#002114",
+                      "on-primary-container": "#90dbb6",
+                      "error": "#ba1a1a",
+                      "on-background": "#0b1c30",
+                      "surface": "#f8f9ff",
+                      "secondary-fixed": "#d6e3ff",
+                      "secondary": "#455f88",
+                      "inverse-surface": "#213145",
+                      "on-primary-fixed-variant": "#005138",
+                      "surface-variant": "#d3e4fe",
+                      "outline-variant": "#bfc9c1",
+                      "inverse-primary": "#8bd6b1",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#1c6b4d",
+                      "on-tertiary-fixed": "#390c00",
+                      "on-tertiary": "#ffffff",
+                      "primary-fixed-dim": "#8bd6b1",
+                      "primary": "#004831",
+                      "tertiary-container": "#9d3000",
+                      "surface-dim": "#cbdbf5",
+                      "on-tertiary-fixed-variant": "#832700",
+                      "outline": "#6f7973"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "touch-target-min": "48px",
+                      "margin-mobile": "16px",
+                      "card-padding": "20px",
+                      "gutter": "12px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "display-earnings": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"]
+              },
+              "fontSize": {
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}],
+                      "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}],
+                      "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}],
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min w-full max-w-full sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center overflow-hidden">
+<img alt="Driver Profile" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDag0nO9QsSnKLpKHSim9f_Ym-PBFsee-4dxrqZbr-zsLqzIAiqobBlpzGnP8xyKkHdGAVOMVUtans02d1NvgpVyH6lRqZzCel_FVP1JTXZNnZEhuKY9PxNrz5wXQCnB-7W4jBDxGYCP-_lS3YRSxBWPKIO3oq7WHJgRLAvLzc-_D49cnTOejYCPPW7vsQtOW6tdzYlMKauPnJdx2oxmVxGvQqP0xssyknWwjTYwp9hBWA84E_OynruRwHPOsM-RqdT6PG1GjIAt-Ti"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Driver Insights</h1>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">calendar_today</span>
+</button>
+</header>
+<main class="px-margin-mobile py-6 max-w-2xl mx-auto space-y-6">
+<!-- Section Title -->
+<header>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Registro de Servicio</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Complete los detalles del trabajo realizado.</p>
+</header>
+<!-- Service Type Selector -->
+<section class="space-y-3">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase">Tipo de Servicio<!-- equilibrar-->
+<div class="grid grid-cols-2 gap-2">
+<button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high active:scale-95" data-service="Installation" onclick="selectService(this)">
+<span class="material-symbols-outlined mb-1">construction</span>
+<span class="font-label-caps text-label-caps">Instalación</span>
+</button>
+<button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high active:scale-95" data-service="Repair" onclick="selectService(this)">
+<span class="material-symbols-outlined mb-1">build</span>
+<span class="font-label-caps text-label-caps">Reparación</span>
+</button>
+<button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high active:scale-95" data-service="Maintenance" onclick="selectService(this)">
+<span class="material-symbols-outlined mb-1">home_repair_service</span>
+<span class="font-label-caps text-label-caps">Mantenimiento</span>
+</button>
+<button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high active:scale-95" data-service="Consulting" onclick="selectService(this)">
+<span class="material-symbols-outlined mb-1">engineering</span>
+<span class="font-label-caps text-label-caps">Consultoría</span>
+</button>
+</div>
+</label></section>
+<!-- Form Fields -->
+<section class="space-y-4">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="client_name">Nombre del Cliente</label>
+<input class="w-full h-14 px-4 bg-surface border border-outline rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md" id="client_name" placeholder="Ej. Juan Pérez" type="text"/>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase" for="job_desc">Descripción del Trabajo</label>
+<textarea class="w-full p-4 bg-surface border border-outline rounded-xl focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all font-body-md text-body-md" id="job_desc" placeholder="Detalle las tareas realizadas..." rows="3"></textarea>
+</div>
+</section>
+<!-- Cost Breakdown Card -->
+<section class="bg-surface border border-outline rounded-xl p-card-padding space-y-4">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant uppercase">Desglose de Costos</h3>
+<div class="grid grid-cols-2 gap-4">
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Mano de Obra</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-data-mono text-on-surface-variant">$</span>
+<input class="w-full h-12 pl-8 pr-4 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono text-data-mono focus:border-primary outline-none" id="labor_cost" oninput="calculateTotal()" placeholder="0.00" type="number"/>
+</div>
+</div>
+<div class="space-y-1">
+<label class="font-label-caps text-label-caps text-on-surface-variant">Materiales</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 font-data-mono text-on-surface-variant">$</span>
+<input class="w-full h-12 pl-8 pr-4 bg-surface-container-low border border-outline-variant rounded-lg font-data-mono text-data-mono focus:border-primary outline-none" id="materials_cost" oninput="calculateTotal()" placeholder="0.00" type="number"/>
+</div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant flex justify-between items-baseline">
+<span class="font-headline-lg-mobile text-on-surface">Precio Total</span>
+<span class="font-display-earnings text-display-earnings text-primary" id="total_price">$0.00</span>
+</div>
+</section>
+<!-- Payment Status Toggle -->
+<section class="flex items-center justify-between bg-surface border border-outline rounded-xl p-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary" id="status_icon">pending_actions</span>
+<div>
+<p class="font-label-caps text-label-caps text-on-surface-variant uppercase">Estado de Pago</p>
+<p class="font-body-md text-body-md font-bold text-tertiary" id="status_label">Pendiente</p>
+</div>
+</div>
+<button class="w-14 h-8 rounded-full bg-outline-variant relative transition-colors duration-300" id="payment_toggle" onclick="togglePayment(this)">
+<div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform duration-300 shadow-sm" id="toggle_knob"></div>
+</button>
+</section>
+<!-- Attachments -->
+<section class="grid grid-cols-2 gap-4">
+<button class="flex flex-col items-center justify-center p-4 bg-surface border border-outline-variant border-dashed rounded-xl hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant mb-1">add_a_photo</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Foto del Trabajo</span>
+</button>
+<button class="flex flex-col items-center justify-center p-4 bg-surface border border-outline-variant border-dashed rounded-xl hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant mb-1">receipt</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Recibo/Factura</span>
+</button>
+</section>
+<!-- Action Buttons -->
+<div class="flex flex-col gap-3 pt-4">
+<button class="w-full h-14 bg-primary text-on-primary font-bold rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">save</span>
+                Registrar Ingreso
+            </button>
+<button class="w-full h-14 border border-error text-error font-bold rounded-xl active:scale-95 transition-transform flex items-center justify-center gap-2">
+                Cancelar
+            </button>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant">
+<!-- Expenses is active because we are in the "Registration" context often accessed through this tab -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Trips</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-caps text-label-caps">Expenses</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</button>
+</nav>
+<script>
+        function selectService(btn) {
+            document.querySelectorAll('.service-btn').forEach(b => {
+                b.classList.remove('bg-primary-container', 'text-on-primary-container', 'border-primary');
+                b.classList.add('bg-surface', 'border-outline');
+            });
+            btn.classList.remove('bg-surface', 'border-outline');
+            btn.classList.add('bg-primary-container', 'text-on-primary-container', 'border-primary');
+        }
+
+        function calculateTotal() {
+            const labor = parseFloat(document.getElementById('labor_cost').value) || 0;
+            const materials = parseFloat(document.getElementById('materials_cost').value) || 0;
+            const total = labor + materials;
+            document.getElementById('total_price').textContent = `$${total.toFixed(2)}`;
+        }
+
+        let isPaid = false;
+        function togglePayment(btn) {
+            isPaid = !isPaid;
+            const knob = document.getElementById('toggle_knob');
+            const label = document.getElementById('status_label');
+            const icon = document.getElementById('status_icon');
+            
+            if (isPaid) {
+                btn.classList.replace('bg-outline-variant', 'bg-primary');
+                knob.style.transform = 'translateX(24px)';
+                label.textContent = 'Pagado';
+                label.classList.replace('text-tertiary', 'text-primary');
+                icon.textContent = 'check_circle';
+                icon.style.fontVariationSettings = "'FILL' 1";
+            } else {
+                btn.classList.replace('bg-primary', 'bg-outline-variant');
+                knob.style.transform = 'translateX(0)';
+                label.textContent = 'Pendiente';
+                label.classList.replace('text-primary', 'text-tertiary');
+                icon.textContent = 'pending_actions';
+                icon.style.fontVariationSettings = "'FILL' 0";
+            }
+        }
+    </script>
+</body></html>
