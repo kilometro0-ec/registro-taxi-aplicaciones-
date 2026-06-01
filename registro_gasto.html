@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html class="light" lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Driver Insights - Nuevo Gasto</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%); }
+    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-card { animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
+    .rubro-btn.active { background-color: #752200; color: white; box-shadow: 0 4px 12px rgba(117,34,0,0.2); }
+    .input-focus:focus { outline: none; border-color: #752200; box-shadow: 0 0 0 2px #75220020; }
+    .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+<script id="tailwind-config">
+    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
+</script>
+</head>
+<body class="bg-background text-on-background min-h-screen pb-32">
+<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min shadow-md">
+    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-tertiary to-tertiary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">receipt_long</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile bg-gradient-to-r from-tertiary to-tertiary-container bg-clip-text text-transparent">Driver Insights</h1></div>
+    <button onclick="history.back()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all active:scale-95"><span class="material-symbols-outlined text-on-surface-variant">arrow_back</span></button>
+</header>
+<main class="px-margin-mobile py-gutter space-y-5 max-w-lg mx-auto">
+    <div class="text-center animate-card">
+        <h2 class="font-headline-lg-mobile text-headline-lg-mobile">Registrar Gasto</h2>
+        <p class="text-on-surface-variant text-sm">Selecciona el rubro y completa los datos</p>
+    </div>
+
+    <!-- Rubro -->
+    <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg animate-card">
+        <label class="font-label-caps text-label-caps text-on-surface-variant">RUBRO / NEGOCIO</label>
+        <div class="grid grid-cols-2 gap-3 mt-2">
+            <button id="rubroTransporte" class="rubro-btn active py-3 px-2 border border-transparent rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Transporte')">
+                <span class="material-symbols-outlined">directions_car</span>
+                <span class="text-sm font-semibold">🚖 Transporte</span>
+            </button>
+            <button id="rubroElectronica" class="rubro-btn py-3 px-2 border border-outline-variant rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Electrónica')">
+                <span class="material-symbols-outlined">devices</span>
+                <span class="text-sm font-semibold">🔧 Electrónica</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- Campos dinámicos para Transporte -->
+    <div id="camposTransporte" class="space-y-4">
+        <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
+            <label class="font-label-caps text-label-caps">CATEGORÍA</label>
+            <select id="categoriaTransporte" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low focus:ring-2 focus:ring-tertiary">
+                <option value="Combustible">⛽ Combustible</option>
+                <option value="Mantenimiento">🔧 Mantenimiento</option>
+                <option value="Lavado">🧼 Lavado</option>
+                <option value="Peajes">🛣️ Peajes</option>
+                <option value="Seguro">🛡️ Seguro</option>
+                <option value="Comisión App">📱 Comisión App</option>
+                <option value="Otros">📦 Otros</option>
+            </select>
+        </section>
+    </div>
+
+    <!-- Campos dinámicos para Electrónica -->
+    <div id="camposElectronica" class="hidden space-y-4">
+        <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
+            <label class="font-label-caps text-label-caps">CATEGORÍA</label>
+            <select id="categoriaElectronica" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low">
+                <option value="Repuestos">🔩 Repuestos / Componentes</option>
+                <option value="Herramientas">🛠️ Herramientas</option>
+                <option value="Equipos">💻 Equipos de prueba</option>
+                <option value="Insumos">📦 Insumos (soldadura, estaño, etc.)</option>
+                <option value="Otros">📦 Otros</option>
+            </select>
+            <label class="font-label-caps text-label-caps mt-3 block">DETALLE / PROVEEDOR</label>
+            <input type="text" id="detalleGasto" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Ej: Pantalla, batería, estación de soldadura, etc.">
+        </section>
+    </div>
+
+    <!-- Campos comunes -->
+    <section class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg space-y-4">
+        <div><label class="font-label-caps text-label-caps">MONTO (USD)</label><input type="number" step="0.01" id="monto" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="0.00"></div>
+        <div><label class="font-label-caps text-label-caps">FECHA</label><input type="date" id="fecha" class="w-full p-2.5 border rounded-xl bg-surface-container-low"></div>
+        <div><label class="font-label-caps text-label-caps">DESCRIPCIÓN (opcional)</label><textarea id="descripcion" rows="2" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Comentarios adicionales..."></textarea></div>
+    </section>
+
+    <!-- Botón guardar -->
+    <div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40">
+        <button id="guardarBtn" class="w-full h-14 bg-gradient-to-r from-tertiary to-tertiary-container text-white rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all active:scale-95 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">save</span> Guardar Gasto
+        </button>
+    </div>
+</main>
+
+<!-- Navegación inferior consistente -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
+    <div class="grid grid-cols-5 gap-1 text-center">
+        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
+        <a href="registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">payments</span><span class="text-[10px]">Ingresos</span></a>
+        <a href="registro_gasto.html" class="flex flex-col items-center py-1 bg-tertiary-container/60 text-tertiary rounded-lg"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">receipt_long</span><span class="text-[10px]">Gastos</span></a>
+        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
+        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Análisis</span></a>
+    </div>
+</nav>
+
+<script>
+    // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec';
+    
+    let rubroActual = 'Transporte';
+
+    function seleccionarRubro(rubro) {
+        rubroActual = rubro;
+        // Actualizar estilos de botones
+        document.querySelectorAll('.rubro-btn').forEach(btn => {
+            btn.classList.remove('active', 'bg-tertiary', 'text-white', 'border-transparent');
+            btn.classList.add('border-outline-variant');
+        });
+        const btnActivo = rubro === 'Transporte' ? document.getElementById('rubroTransporte') : document.getElementById('rubroElectronica');
+        btnActivo.classList.add('active', 'bg-tertiary', 'text-white', 'border-transparent');
+        btnActivo.classList.remove('border-outline-variant');
+        
+        // Mostrar/ocultar campos específicos
+        if (rubro === 'Transporte') {
+            document.getElementById('camposTransporte').classList.remove('hidden');
+            document.getElementById('camposElectronica').classList.add('hidden');
+        } else {
+            document.getElementById('camposTransporte').classList.add('hidden');
+            document.getElementById('camposElectronica').classList.remove('hidden');
+        }
+    }
+
+    // Fecha actual por defecto
+    document.getElementById('fecha').valueAsDate = new Date();
+
+    // Guardar gasto
+    const guardarBtn = document.getElementById('guardarBtn');
+    guardarBtn.addEventListener('click', async () => {
+        const monto = parseFloat(document.getElementById('monto').value);
+        const fecha = document.getElementById('fecha').value;
+        let descripcionBase = document.getElementById('descripcion').value;
+        let categoria = '';
+        let detalles = '';
+
+        if (!monto || monto <= 0) {
+            alert('❌ Ingresa un monto válido');
+            return;
+        }
+
+        if (rubroActual === 'Transporte') {
+            categoria = document.getElementById('categoriaTransporte').value;
+            descripcionBase = `Categoría: ${categoria} | ${descripcionBase}`;
+        } else {
+            categoria = document.getElementById('categoriaElectronica').value;
+            const detalle = document.getElementById('detalleGasto').value;
+            detalles = ` | Detalle: ${detalle}`;
+            descripcionBase = `Categoría: ${categoria}${detalles} | ${descripcionBase}`;
+        }
+
+        const params = new URLSearchParams();
+        params.append('action', 'addExpense');
+        params.append('categoria', categoria);
+        params.append('rubro', rubroActual);
+        params.append('monto', monto);
+        params.append('fecha', fecha);
+        params.append('descripcion', descripcionBase);
+
+        const originalText = guardarBtn.innerHTML;
+        guardarBtn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
+        guardarBtn.disabled = true;
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
+            const text = await response.text();
+            if (response.ok && text.includes('OK')) {
+                alert('✅ Gasto registrado correctamente');
+                location.href = 'Dashboard.html';
+            } else {
+                alert('❌ Error del servidor: ' + text);
+            }
+        } catch (e) {
+            alert('❌ Error de conexión: ' + e.message);
+        } finally {
+            guardarBtn.innerHTML = originalText;
+            guardarBtn.disabled = false;
+        }
+    });
+
+    // Inicializar rubro por defecto
+    seleccionarRubro('Transporte');
+</script>
+</body>
+</html>
