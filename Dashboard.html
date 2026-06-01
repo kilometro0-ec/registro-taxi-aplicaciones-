@@ -1,132 +1,310 @@
 <!DOCTYPE html>
-<html class="light" lang="es">
-<head>
+
+<html class="light" lang="en"><head>
 <meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Driver Insights - Panel de Control</title>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Driver Insights - Profitability Dashboard</title>
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
 <style>
-    body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-card { animation: fadeInUp 0.4s ease-out; }
-</style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
 <script id="tailwind-config">
-    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
-</script>
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#832700",
+                      "secondary": "#455f88",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "surface-tint": "#1c6b4d",
+                      "outline": "#6f7973",
+                      "primary-fixed": "#a6f2cc",
+                      "secondary-container": "#b6d0ff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#bfc9c1",
+                      "primary-fixed-dim": "#8bd6b1",
+                      "on-surface-variant": "#3f4943",
+                      "on-tertiary-fixed": "#390c00",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "surface-dim": "#cbdbf5",
+                      "on-primary-container": "#90dbb6",
+                      "on-background": "#0b1c30",
+                      "error": "#ba1a1a",
+                      "surface": "#f8f9ff",
+                      "primary-container": "#0e6245",
+                      "inverse-surface": "#213145",
+                      "surface-bright": "#f8f9ff",
+                      "background": "#f8f9ff",
+                      "error-container": "#ffdad6",
+                      "inverse-primary": "#8bd6b1",
+                      "secondary-fixed": "#d6e3ff",
+                      "surface-variant": "#d3e4fe",
+                      "on-primary-fixed": "#002114",
+                      "tertiary-container": "#9d3000",
+                      "on-tertiary-container": "#ffbca6",
+                      "surface-container": "#e5eeff",
+                      "primary": "#004831",
+                      "tertiary": "#752200",
+                      "on-surface": "#0b1c30",
+                      "on-secondary-fixed": "#001b3c",
+                      "surface-container-high": "#dce9ff",
+                      "secondary-fixed-dim": "#adc7f7",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-primary-fixed-variant": "#005138",
+                      "on-secondary-fixed-variant": "#2d476f",
+                      "on-secondary-container": "#3f5882",
+                      "tertiary-fixed": "#ffdbcf",
+                      "inverse-on-surface": "#eaf1ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "card-padding": "20px",
+                      "margin-mobile": "16px",
+                      "touch-target-min": "48px",
+                      "gutter": "12px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "display-earnings": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                      "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}],
+                      "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
 </head>
 <body class="bg-surface text-on-surface min-h-screen pb-24">
-<header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-margin-mobile h-touch-target-min w-full shadow-sm">
-<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-white">person</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
-<button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full">calendar_today</button>
-</header>
-<main class="pt-16 px-margin-mobile space-y-4">
-    <!-- Ganancia neta acumulada -->
-    <section class="mt-2 bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
-        <div class="absolute top-0 right-0 p-3 opacity-10"><span class="material-symbols-outlined text-5xl">trending_up</span></div>
-        <p class="font-label-caps text-label-caps text-on-surface-variant">GANANCIA NETA (TOTAL)</p>
-        <h2 class="font-display-earnings text-display-earnings text-primary" id="gananciaNeta">$0.00</h2>
-        <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_drop_up</span> vs ayer</span><p class="text-[11px] text-on-surface-variant" id="resumenIngresosGastos">Bruto: $0.00 | Gastos: $0.00</p></div>
-    </section>
-    
-    <!-- Métricas rápidas: distancia y horas (simuladas, se pueden obtener del backend) -->
-    <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL</p><p class="font-data-mono text-lg" id="distanciaTotal">0 km</p></div>
-        <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p><p class="font-data-mono text-lg" id="horasTrabajadas">0 h</p></div>
-    </div>
-    
-    <!-- Alertas de mantenimiento -->
-    <section><h3 class="font-label-caps text-label-caps text-on-surface-variant">MANTENIMIENTO PENDIENTE</h3><div id="alertasContainer" class="space-y-2 mt-1"></div></section>
-    
-    <!-- Rentabilidad real -->
-    <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
-        <div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Basado en conducción</p></div><p class="font-data-mono text-primary" id="earningsPerHour">$0.00</p></div>
-        <div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costPerKm">$0.00</p></div>
-    </div>
-    
-    <!-- Botones rápidos -->
-    <div class="grid grid-cols-2 gap-3"><button onclick="location.href='registro_ingresos.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined">add_circle</span> Ingreso</button><button onclick="location.href='registro_gastos.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined">remove_circle</span> Gasto</button></div>
-    
-    <!-- Actividad reciente (últimos movimientos) -->
-    <section class="space-y-3">
-        <div class="flex items-center justify-between"><h3 class="font-headline-lg-mobile text-[16px]">Actividad Reciente</h3><button id="verTodoBtn" class="text-secondary font-bold text-xs uppercase tracking-wider">Ver Todo</button></div>
-        <div id="recentActivityContainer" class="space-y-2">
-            <div class="bg-white border border-outline-variant p-4 rounded-xl text-center text-on-surface-variant">Cargando actividad...</div>
-        </div>
-    </section>
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline fixed top-0 z-50 flex justify-between items-center px-margin-mobile h-touch-target-min w-full max-w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img alt="Driver Profile" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a friendly male rideshare driver in his late 30s wearing a clean polo shirt. The background shows the blurred interior of a modern, well-maintained vehicle with soft natural sunlight filtering through the windows. The aesthetic is high-contrast and corporate, emphasizing trust and reliability through crisp, clear details and a professional lighting setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxUwNcw5De2bLOLii85shO0Pg4HTjEilq7BY8f6NuUbmcNv7-kzSDUiJUoNfBtyOEbvNFVmixzVJ0Q53s_g7yc0ukQECLZFsjNp0POMPClk3gC7OkFwUETs8k1cy-txz2LAM4XVSSy6GpSST6tMMGEZHIpSROGeTC21o9DDMtgULsgviTkxfrctyYAK6tROoZjjlR-3Fu1NCMlmIudqNEQ4Wv-DepQ3ts16iT6XQyZaSIzMPSlsuYKGoLhgDqSAs3-OPinkmAb_fn1"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">Perspectivas de Negocio</h1>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant dark:text-on-surface-variant transition-colors duration-200 active:opacity-80 hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant p-2 rounded-full">
+            calendar_today
+        </button>
+</header><div class="sticky top-12 z-40 bg-surface border-b border-outline-variant px-margin-mobile py-2 flex gap-2 overflow-x-auto no-scrollbar">
+<button class="flex-none px-4 py-1.5 rounded-full bg-primary text-on-primary text-sm font-bold shadow-sm"><span class="material-symbols-outlined">add_circle</span> Ingreso</button>
+<button class="flex-none px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-bold">Electrónica</button>
+<button class="flex-none px-4 py-1.5 rounded-full bg-surface-container-high text-on-surface-variant text-sm font-bold">General</button>
+</div>
+<main class="pt-16 px-margin-mobile space-y-gutter"><section class="mb-2 bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Ganancia Neta Global Hoy</p>
+<p class="text-xl font-bold text-primary">$256.00</p>
+</div>
+<div class="flex gap-2">
+<div class="text-right border-r border-outline-variant pr-3">
+<p class="text-[10px] text-on-surface-variant">Transporte</p>
+<p class="text-sm font-bold">$184.50</p>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant">Electrónica</p>
+<p class="text-sm font-bold">$71.50</p>
+</div>
+</div>
+</section>
+<!-- Net Profit Today Hero Card -->
+<section class="mt-4 bg-white border border-outline-variant rounded-xl p-card-padding shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary-container opacity-20 text-6xl rotate-12 group-hover:rotate-0 transition-transform duration-500">trending_up</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">UTILIDAD NETA HOY (TRANSPORTE)</p>
+<h2 class="font-display-earnings text-display-earnings text-primary">$184.50</h2>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_drop_up</span> 12% vs ayer</span>
+<p class="text-[12px] text-on-surface-variant">Bruto: $240.00 | Gastos: $55.50</p>
+</div>
+</div>
+</section>
+<!-- Secondary Metrics Grid -->
+<div class="grid grid-cols-2 gap-gutter">
+<div class="bg-white border border-outline-variant rounded-xl p-4">
+<p class="font-label-caps text-label-caps text-on-surface-variant">DISTANCIA TOTAL</p>
+<div class="flex items-end justify-between mt-1">
+<p class="font-data-mono text-data-mono text-on-surface">142.8 km</p>
+<span class="material-symbols-outlined text-secondary text-sm">route</span>
+</div>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-4">
+<p class="font-label-caps text-label-caps text-on-surface-variant">HORAS TRABAJADAS</p>
+<div class="flex items-end justify-between mt-1">
+<p class="font-data-mono text-data-mono text-on-surface">6h 45m</p>
+<span class="material-symbols-outlined text-secondary text-sm">schedule</span>
+</div>
+</div>
+</div>
+<!-- Profitability Insights Bento -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4">RENTABILIDAD REAL</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary-container text-on-primary-container p-2 rounded-lg">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Ganancia por Hora</p>
+<p class="text-xs text-on-surface-variant">Basado en conducción activa</p>
+</div>
+</div>
+<p class="font-data-mono text-data-mono text-primary">$27.33</p>
+</div>
+<div class="h-[1px] bg-outline-variant"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-tertiary-container text-on-tertiary-container p-2 rounded-lg">
+<span class="material-symbols-outlined">gas_meter</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Cost per KM</p>
+<p class="text-xs text-on-surface-variant">Fuel + Maintenance</p>
+</div>
+</div>
+<p class="font-data-mono text-data-mono text-tertiary">$0.39</p>
+</div>
+</div>
+</div>
+<!-- Quick Action Buttons -->
+<div class="grid grid-cols-2 gap-margin-mobile">
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-bold h-touch-target-min rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"><span class="material-symbols-outlined">add_circle</span> Ingreso</button>
+<button class="bg-tertiary hover:bg-on-tertiary-fixed-variant text-on-tertiary font-bold h-touch-target-min rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95"><span class="material-symbols-outlined">remove_circle</span> Gasto</button>
+</div>
+<!-- Recent Activity -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-lg-mobile text-[16px]">Actividad Reciente</h3>
+<button class="text-secondary font-bold text-xs uppercase tracking-wider">VER TODO</button>
+</div>
+<div class="space-y-2">
+<!-- Activity Item 1 -->
+<div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_taxi</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Uber Ride #4920</p>
+<p class="text-xs text-on-surface-variant">2:14 PM • 8.4 km • Transporte</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary">+$22.40</p>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded uppercase font-bold">Card</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" content="devices">devices</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Reparación iPhone X</p>
+<p class="text-xs text-on-surface-variant">12:45 PM • Repuesto Pantalla • Electrónica</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-tertiary">-$42.00</p>
+<span class="text-[10px] bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.5 rounded uppercase font-bold">Cash</span>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_taxi</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Lyft Ride #2811</p>
+<p class="text-xs text-on-surface-variant">11:20 AM • 12.1 km</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary">+$34.15</p>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded uppercase font-bold">Card</span>
+</div>
+</div>
+</div>
+</section>
 </main>
-
-<!-- Navegación inferior con 5 botones -->
-<nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
-    <div class="grid grid-cols-5 gap-1 text-center">
-        <a href="Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
-        <a href="registro_ingresos.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">payments</span><span class="text-[10px]">Viajes</span></a>
-        <a href="registro_gastos.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
-        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
-        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Analytics</span></a>
-    </div>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container dark:bg-primary-fixed dark:text-on-primary-fixed rounded-xl px-4 py-1 transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-weight="fill">dashboard</span>
+<span class="font-label-caps text-label-caps">Panel</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-secondary-fixed-variant transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Viajes/Ventas</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-secondary-fixed-variant transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-caps text-label-caps">Gastos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-secondary-fixed-variant transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps">Análisis</span>
+</a>
 </nav>
-
 <script>
-    // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHAis1xtB3LJhS4jBGvXmB69tg1e7Gc5UTUKLEXBCRynFpjnhKDMhoLIFCk7MGjKsxMw/exec';
-    
-    async function cargarDashboard() {
-        try {
-            // 1. Estadísticas financieras
-            const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
-            const stats = await resStats.json();
-            document.getElementById('gananciaNeta').innerText = `$${stats.ganancia.toFixed(2)}`;
-            document.getElementById('resumenIngresosGastos').innerHTML = `Bruto: $${stats.totalIngresos.toFixed(2)} | Gastos: $${stats.totalGastos.toFixed(2)}`;
-            
-            // 2. Cálculos auxiliares (simulados mientras el backend no provea horas/distancia real)
-            // En una versión futura, el backend podría devolver total de km y horas desde la hoja de ingresos.
-            const horasEstimadas = 40;  // Podría calcularse en base a las jornadas
-            const kmEstimados = stats.totalIngresos > 0 ? stats.totalIngresos * 1.5 : 0;
-            document.getElementById('earningsPerHour').innerText = `$${(stats.totalIngresos / horasEstimadas).toFixed(2)}`;
-            document.getElementById('costPerKm').innerText = `$${(stats.totalGastos / (kmEstimados || 1)).toFixed(2)}`;
-            document.getElementById('distanciaTotal').innerText = `${kmEstimados.toFixed(0)} km`;
-            document.getElementById('horasTrabajadas').innerText = `${horasEstimadas} h`;
-            
-            // 3. Alertas de mantenimiento
-            const alertRes = await fetch(`${SCRIPT_URL}?action=getAlertas`);
-            const alertas = await alertRes.json();
-            const container = document.getElementById('alertasContainer');
-            container.innerHTML = '';
-            if (alertas.length === 0) {
-                container.innerHTML = '<div class="p-2 bg-green-50 border border-green-300 rounded text-green-800 text-sm">✅ Todo en orden</div>';
-            } else {
-                alertas.forEach(a => {
-                    let d = document.createElement('div');
-                    d.className = `p-2 rounded border text-sm ${a.urgente ? 'bg-red-50 border-red-300 text-red-800' : 'bg-yellow-50 border-yellow-300'}`;
-                    d.innerText = a.mensaje;
-                    container.appendChild(d);
-                });
-            }
-            
-            // 4. Actividad reciente (si el backend tiene un endpoint para últimos registros)
-            // Por ahora mostramos un mensaje informativo mientras se implementa ese endpoint.
-            const activityContainer = document.getElementById('recentActivityContainer');
-            activityContainer.innerHTML = `
-                <div class="bg-white border border-outline-variant p-4 rounded-xl text-center text-on-surface-variant">
-                    📋 Próximamente podrás ver aquí tus últimos viajes y gastos.
-                </div>
-            `;
-            // Opcional: se puede llamar a un endpoint `getRecentActivity` si existe.
-        } catch(e) {
-            console.error('Error al cargar el dashboard:', e);
-            document.getElementById('alertasContainer').innerHTML = '<div class="p-2 bg-red-50 border border-red-300 rounded text-red-800 text-sm">⚠️ Error de conexión con el servidor.</div>';
-        }
-    }
-    
-    // Botón "Ver Todo" (por ahora solo alerta)
-    document.getElementById('verTodoBtn')?.addEventListener('click', () => {
-        alert('Próximamente: historial completo de ingresos y gastos.');
-    });
-    
-    cargarDashboard();
-</script>
-</body>
-</html>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.bg-white').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.classList.add('scale-[0.98]', 'transition-transform');
+            });
+            card.addEventListener('touchend', () => {
+                card.classList.remove('scale-[0.98]');
+            });
+        });
+
+        // Add ambient glow to the hero card
+        const heroCard = document.querySelector('section.group');
+        heroCard.addEventListener('mousemove', (e) => {
+            const rect = heroCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            heroCard.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(166, 242, 204, 0.15) 0%, rgba(255,255,255,1) 70%)`;
+        });
+        heroCard.addEventListener('mouseleave', () => {
+            heroCard.style.background = 'white';
+        });
+    </script>
+</body></html>
