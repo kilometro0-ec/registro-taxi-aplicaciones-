@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="light" lang="en">
+<html class="light" lang="es">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
@@ -18,39 +18,91 @@
 </header>
 <main class="px-margin-mobile py-gutter space-y-6 max-w-lg mx-auto">
 <section class="space-y-4">
-<div class="flex flex-col items-center justify-center py-6"><span class="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">GROSS EARNINGS</span><div class="flex items-center"><span class="font-display-earnings text-display-earnings text-primary">$</span><input id="montoInput" class="w-48 bg-transparent border-none text-center font-display-earnings text-display-earnings text-primary focus:ring-0 placeholder:text-surface-container-highest" placeholder="0.00" step="0.01" type="number"/></div></div>
+<div class="flex flex-col items-center justify-center py-6"><span class="font-label-caps text-label-caps text-on-surface-variant mb-1 uppercase tracking-widest">INGRESO BRUTO</span><div class="flex items-center"><span class="font-display-earnings text-display-earnings text-primary">$</span><input id="montoInput" class="w-48 bg-transparent border-none text-center font-display-earnings text-display-earnings text-primary focus:ring-0 placeholder:text-surface-container-highest" placeholder="0.00" step="0.01" type="number"/></div></div>
+
+<!-- Selector de plataforma con recordatorio -->
+<div class="mb-3">
+    <label class="font-label-caps text-label-caps text-on-surface-variant">PLATAFORMA</label>
+    <select id="plataformaSelect" class="w-full mt-1 p-3 bg-white border border-outline-variant rounded-xl font-body-md">
+        <option value="Uber">Uber</option>
+        <option value="DiDi">DiDi</option>
+        <option value="Indriver">Indriver</option>
+        <option value="Cabify">Cabify</option>
+        <option value="Otro">Otro</option>
+    </select>
+    <div class="flex items-center mt-2">
+        <input type="checkbox" id="recordarPlataforma" class="mr-2">
+        <label for="recordarPlataforma" class="text-xs text-on-surface-variant">Recordar esta plataforma para próximos ingresos</label>
+    </div>
+</div>
+
+<!-- Grid de plataformas visual (opcional, pero lo dejamos por si gustas) -->
 <div class="grid grid-cols-3 gap-3">
-<button class="platform-btn group bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Uber" onclick="selectPlatform(this, 'Uber')"><div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">directions_car</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Uber</span></button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="DiDi" onclick="selectPlatform(this, 'DiDi')"><div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">bolt</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">DiDi</span></button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Indriver" onclick="selectPlatform(this, 'Indriver')"><div class="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">handshake</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">InDrive</span></button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Cabify" onclick="selectPlatform(this, 'Cabify')"><div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">near_me</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Cabify</span></button>
-<button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-3 transition-all hover:bg-surface-container-low active:scale-95 col-span-2" data-platform="Otro" onclick="selectPlatform(this, 'Otro')"><div class="w-full flex items-center justify-center gap-3"><div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">more_horiz</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Other Services</span></div></button>
+    <button class="platform-btn group bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Uber" onclick="selectPlatformVisual(this, 'Uber')"><div class="w-12 h-12 bg-black rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">directions_car</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Uber</span></button>
+    <button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="DiDi" onclick="selectPlatformVisual(this, 'DiDi')"><div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">bolt</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">DiDi</span></button>
+    <button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Indriver" onclick="selectPlatformVisual(this, 'Indriver')"><div class="w-12 h-12 bg-emerald-500 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">handshake</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">InDrive</span></button>
+    <button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-2 transition-all hover:bg-surface-container-low active:scale-95" data-platform="Cabify" onclick="selectPlatformVisual(this, 'Cabify')"><div class="w-12 h-12 bg-purple-600 rounded-lg flex items-center justify-center text-white"><span class="material-symbols-outlined">near_me</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Cabify</span></button>
+    <button class="platform-btn bg-white border border-outline-variant p-4 rounded-xl flex flex-col items-center gap-3 transition-all hover:bg-surface-container-low active:scale-95 col-span-2" data-platform="Otro" onclick="selectPlatformVisual(this, 'Otro')"><div class="w-full flex items-center justify-center gap-3"><div class="w-10 h-10 bg-surface-container-highest rounded-lg flex items-center justify-center"><span class="material-symbols-outlined">more_horiz</span></div><span class="font-label-caps text-label-caps text-on-surface-variant">Otros Servicios</span></div></button>
 </div>
 </section>
+
 <section class="grid grid-cols-2 gap-gutter">
-<div class="bg-white p-card-padding rounded-xl border border-outline-variant"><label class="font-label-caps text-label-caps text-on-surface-variant">TRIP DURATION</label><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">schedule</span><input id="duracionInput" class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="24 min" type="text"/></div></div>
-<div class="bg-white p-card-padding rounded-xl border border-outline-variant"><label class="font-label-caps text-label-caps text-on-surface-variant">DISTANCE (KM)</label><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">route</span><input id="distanciaInput" class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="12.5" type="text"/></div></div>
+<div class="bg-white p-card-padding rounded-xl border border-outline-variant"><label class="font-label-caps text-label-caps text-on-surface-variant">DURACIÓN DEL VIAJE</label><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">schedule</span><input id="duracionInput" class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="24 min" type="text"/></div></div>
+<div class="bg-white p-card-padding rounded-xl border border-outline-variant"><label class="font-label-caps text-label-caps text-on-surface-variant">DISTANCIA (KM)</label><div class="flex items-center gap-2"><span class="material-symbols-outlined text-secondary">route</span><input id="distanciaInput" class="w-full bg-transparent border-none p-0 font-data-mono text-data-mono focus:ring-0" placeholder="12.5" type="text"/></div></div>
 </section>
-<section class="bg-white border border-outline-variant rounded-xl p-card-padding space-y-4"><div class="flex items-center justify-between"><div><span class="font-label-caps text-label-caps text-on-surface-variant">PLATFORM FEE (25%)</span><span class="font-body-md text-body-md text-on-surface-variant block">Deduct automatically</span></div><button class="w-14 h-8 bg-surface-container-highest rounded-full p-1 transition-colors relative" id="fee-toggle" onclick="toggleFee()"><div class="w-6 h-6 bg-white rounded-full shadow-sm transition-transform translate-x-0" id="toggle-thumb"></div></button></div><div class="pt-4 border-t border-outline-variant flex justify-between items-center opacity-50 transition-opacity" id="fee-calc-box"><span class="font-body-md text-body-md">Calculated Net</span><span class="font-data-mono text-data-mono text-primary" id="netCalculated">$0.00</span></div></section>
-<section class="relative rounded-2xl overflow-hidden h-40 border border-outline-variant shadow-sm"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARDz37akuzRUGX79oUHcXmpPRkbKNL0kvXrO_ZTaDmfLTsnlEr1RCQN_jOTgN0B_QBCqeFWaf3uU0aCuO5FxCaYTbh4qhbmWFUH1z6uhb51elrT3UESfmsRivK4zd-98cKZTaqJ5C65Ki18pQSwk0tnKUh2dnBAc2-6VyYzuEvmTCHRsfHQTkvLBLMMjc6HbXtKmRCQqB07aILejZuvy44vpvB5_FVuioRTketpn4WfKa-sVHiAZy4lxkh-iSJh_fwCYVITXgZr5vy"/><div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div><div class="absolute bottom-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full"><span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings:'FILL'1;">location_on</span><span class="font-label-caps text-label-caps text-on-surface">Financial District</span></div></section>
-<div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40"><button id="saveTripBtn" class="w-full h-14 bg-primary text-on-primary font-label-caps text-label-caps rounded-xl shadow-lg hover:bg-on-primary-fixed-variant transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest"><span class="material-symbols-outlined">save</span> Save Trip</button></div>
+
+<section class="bg-white border border-outline-variant rounded-xl p-card-padding space-y-4">
+<div class="flex items-center justify-between"><div><span class="font-label-caps text-label-caps text-on-surface-variant">COMISIÓN DE PLATAFORMA (25%)</span><span class="font-body-md text-body-md text-on-surface-variant block">Descontar automáticamente</span></div><button class="w-14 h-8 bg-surface-container-highest rounded-full p-1 transition-colors relative" id="fee-toggle" onclick="toggleFee()"><div class="w-6 h-6 bg-white rounded-full shadow-sm transition-transform translate-x-0" id="toggle-thumb"></div></button></div>
+<div class="pt-4 border-t border-outline-variant flex justify-between items-center opacity-50 transition-opacity" id="fee-calc-box"><span class="font-body-md text-body-md">Neto calculado</span><span class="font-data-mono text-data-mono text-primary" id="netCalculated">$0.00</span></div>
+</section>
+
+<section class="relative rounded-2xl overflow-hidden h-40 border border-outline-variant shadow-sm"><img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuARDz37akuzRUGX79oUHcXmpPRkbKNL0kvXrO_ZTaDmfLTsnlEr1RCQN_jOTgN0B_QBCqeFWaf3uU0aCuO5FxCaYTbh4qhbmWFUH1z6uhb51elrT3UESfmsRivK4zd-98cKZTaqJ5C65Ki18pQSwk0tnKUh2dnBAc2-6VyYzuEvmTCHRsfHQTkvLBLMMjc6HbXtKmRCQqB07aILejZuvy44vpvB5_FVuioRTketpn4WfKa-sVHiAZy4lxkh-iSJh_fwCYVITXgZr5vy"/><div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div><div class="absolute bottom-4 left-4 flex items-center gap-2 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full"><span class="material-symbols-outlined text-[18px] text-primary" style="font-variation-settings:'FILL'1;">location_on</span><span class="font-label-caps text-label-caps text-on-surface">Distrito Financiero</span></div></section>
+
+<div class="fixed bottom-20 left-0 w-full px-margin-mobile z-40"><button id="saveTripBtn" class="w-full h-14 bg-primary text-on-primary font-label-caps text-label-caps rounded-xl shadow-lg hover:bg-on-primary-fixed-variant transition-all active:scale-95 flex items-center justify-center gap-2 uppercase tracking-widest"><span class="material-symbols-outlined">save</span> Guardar Viaje</button></div>
 </main>
+
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant">
-<a href="Dashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">dashboard</span><span class="font-label-caps text-label-caps">Dashboard</span></a>
-<a href="registro_ingresos.html" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="font-label-caps text-label-caps">Trips</span></a>
-<a href="registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">receipt_long</span><span class="font-label-caps text-label-caps">Expenses</span></a>
+<a href="Dashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">dashboard</span><span class="font-label-caps text-label-caps">Panel</span></a>
+<a href="registro_ingresos.html" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1"><span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">payments</span><span class="font-label-caps text-label-caps">Viajes</span></a>
+<a href="registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">receipt_long</span><span class="font-label-caps text-label-caps">Gastos</span></a>
 <a href="reporte_estadisticas.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1"><span class="material-symbols-outlined">analytics</span><span class="font-label-caps text-label-caps">Analytics</span></a>
 </nav>
+
 <script>
     const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID/exec'; // CAMBIAR POR TU URL
     let selectedPlatform = 'Uber';
     let feeEnabled = false;
 
-    function selectPlatform(btn, platform) {
+    // Sincronizar selector visual con el select desplegable
+    function selectPlatformVisual(btn, platform) {
         selectedPlatform = platform;
         document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary'));
         btn.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary');
+        // Actualizar el select oculto (dropdown)
+        const selectEl = document.getElementById('plataformaSelect');
+        if (selectEl) selectEl.value = platform;
+        // Si está activo el recordatorio, guardar en localStorage
+        if (document.getElementById('recordarPlataforma').checked) {
+            localStorage.setItem('plataformaPredeterminadaIngreso', platform);
+        }
     }
+
+    // Manejar el cambio manual del dropdown
+    function onPlataformaSelectChange() {
+        const selectEl = document.getElementById('plataformaSelect');
+        const platform = selectEl.value;
+        selectedPlatform = platform;
+        // Resaltar el botón visual correspondiente
+        const btn = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
+        if (btn) {
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary'));
+            btn.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary');
+        }
+        if (document.getElementById('recordarPlataforma').checked) {
+            localStorage.setItem('plataformaPredeterminadaIngreso', platform);
+        }
+    }
+
     function toggleFee() {
         feeEnabled = !feeEnabled;
         const toggle = document.getElementById('fee-toggle');
@@ -60,19 +112,50 @@
         else { toggle.classList.add('bg-surface-container-highest'); toggle.classList.remove('bg-primary-container'); thumb.classList.remove('translate-x-6'); box.classList.add('opacity-50'); }
         calcularNeto();
     }
+
     function calcularNeto() {
         const monto = parseFloat(document.getElementById('montoInput').value) || 0;
         const neto = feeEnabled ? monto * 0.75 : monto;
         document.getElementById('netCalculated').innerText = `$${neto.toFixed(2)}`;
     }
+
     document.getElementById('montoInput').addEventListener('input', calcularNeto);
-    
+
+    // Cargar plataforma guardada
+    const savedPlatform = localStorage.getItem('plataformaPredeterminadaIngreso');
+    if (savedPlatform) {
+        selectedPlatform = savedPlatform;
+        document.getElementById('plataformaSelect').value = savedPlatform;
+        document.getElementById('recordarPlataforma').checked = true;
+        // Resaltar el botón visual correspondiente
+        const btn = document.querySelector(`.platform-btn[data-platform="${savedPlatform}"]`);
+        if (btn) {
+            document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary'));
+            btn.classList.add('ring-2', 'ring-primary', 'bg-primary-fixed-dim/10', 'border-primary');
+        }
+    } else {
+        // Por defecto seleccionar Uber
+        document.querySelector('[data-platform="Uber"]').click();
+    }
+
+    // Evento del dropdown
+    document.getElementById('plataformaSelect').addEventListener('change', onPlataformaSelectChange);
+    // Evento del checkbox para eliminar de localStorage si se desmarca
+    document.getElementById('recordarPlataforma').addEventListener('change', (e) => {
+        if (!e.target.checked) {
+            localStorage.removeItem('plataformaPredeterminadaIngreso');
+        } else {
+            localStorage.setItem('plataformaPredeterminadaIngreso', selectedPlatform);
+        }
+    });
+
+    // Guardar ingreso
     document.getElementById('saveTripBtn').addEventListener('click', async () => {
         const monto = parseFloat(document.getElementById('montoInput').value);
         const fecha = new Date().toISOString().split('T')[0];
         const duracion = document.getElementById('duracionInput').value || '';
         const distancia = document.getElementById('distanciaInput').value || '';
-        const notas = `Plataforma: ${selectedPlatform} | Duración: ${duracion} | Distancia: ${distancia}`;
+        const notas = `Plataforma: ${selectedPlatform} | Duración: ${duracion} | Distancia: ${distancia} km`;
         if (isNaN(monto) || monto <= 0) { alert('Ingresa un monto válido'); return; }
         const params = new URLSearchParams();
         params.append('action', 'addIncome');
@@ -82,12 +165,10 @@
         params.append('notas', notas);
         try {
             await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: params });
-            alert('✅ Ingreso registrado');
+            alert('✅ Ingreso registrado correctamente');
             location.href = 'Dashboard.html';
-        } catch(e) { alert('❌ Error al guardar'); }
+        } catch(e) { alert('❌ Error al guardar. Verifica la URL del script.'); }
     });
-    // Seleccionar Uber por defecto
-    document.querySelector('[data-platform="Uber"]').click();
 </script>
 </body>
 </html>
