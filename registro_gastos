@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed-variant": "#832700",
+                    "secondary": "#455f88",
+                    "on-primary": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "surface-container-low": "#eff4ff",
+                    "surface-tint": "#1c6b4d",
+                    "outline": "#6f7973",
+                    "primary-fixed": "#a6f2cc",
+                    "secondary-container": "#b6d0ff",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#bfc9c1",
+                    "primary-fixed-dim": "#8bd6b1",
+                    "on-surface-variant": "#3f4943",
+                    "on-tertiary-fixed": "#390c00",
+                    "tertiary-fixed-dim": "#ffb59c",
+                    "surface-dim": "#cbdbf5",
+                    "on-primary-container": "#90dbb6",
+                    "on-background": "#0b1c30",
+                    "error": "#ba1a1a",
+                    "surface": "#f8f9ff",
+                    "primary": "#004831",
+                    "tertiary": "#752200",
+                    "on-surface": "#0b1c30",
+                    "on-secondary-fixed": "#001b3c",
+                    "surface-container-high": "#dce9ff",
+                    "secondary-fixed-dim": "#adc7f7",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-secondary": "#ffffff",
+                    "surface-container-highest": "#d3e4fe",
+                    "on-primary-fixed-variant": "#005138",
+                    "on-secondary-fixed-variant": "#2d476f",
+                    "on-secondary-container": "#3f5882",
+                    "tertiary-fixed": "#ffdbcf",
+                    "inverse-on-surface": "#eaf1ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "base": "8px",
+                    "card-padding": "20px",
+                    "margin-mobile": "16px",
+                    "touch-target-min": "48px",
+                    "gutter": "12px"
+            },
+            "fontFamily": {
+                    "headline-lg-mobile": ["Inter"],
+                    "data-mono": ["Inter"],
+                    "label-caps": ["Inter"],
+                    "display-earnings": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-md": ["Inter"]
+            },
+            "fontSize": {
+                    "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                    "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}],
+                    "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}],
+                    "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .active-category {
+            border: 2px solid #004831 !important;
+            background-color: #a6f2cc !important;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex flex-col pb-20">
+<!-- TopAppBar -->
+<header class="bg-surface flex justify-between items-center px-margin-mobile h-touch-target-min w-full max-w-full border-b border-outline-variant transition-colors duration-200 sticky top-0 z-40">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container overflow-hidden">
+<img alt="Driver Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a smiling middle-aged male driver wearing a clean polo shirt. The lighting is bright and natural, suggesting a midday outdoor setting. The background is a softly blurred modern car interior, emphasizing a corporate and trustworthy professional vibe. The color palette is composed of clean whites and professional blues, aligning with a high-contrast corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTQlZhJHlDYyTxd7fn1UXOm37bMNo5Hx7P-hfTUuPoje7By8kZRc83mrPuRZIA5TyzArBV8BwsfU1c8XXM0gD80_650deWfy8LF7uu5o1hW4tw9fTH45l1UaUzP31we8CGcevcG-LEdpvmLuyLSmD9ImSkk5m9l1Hr4jXt0SbtGeGj2sT5ljgs7VER8WB1QUv9lLD98Lbf-8DJ5PzqLBjX7aAF0zIhb3dIUsRVC-5EnPgC4r5TFq3oIwej7pxAYOsoqX_-4mvdDVsm"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Driver Insights</h1>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors active:opacity-80">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+</button>
+</header>
+<main class="flex-1 px-margin-mobile pt-gutter">
+<!-- Page Headline -->
+<div class="mb-6">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile">Expenses</h2>
+<p class="text-on-surface-variant font-label-caps uppercase tracking-wider">Track your business costs</p>
+</div>
+<!-- Input Section Card -->
+<section class="bg-white rounded-xl border border-outline-variant p-card-padding mb-gutter shadow-sm">
+<div class="grid grid-cols-2 gap-3 mb-6">
+<!-- Amount Field -->
+<div class="col-span-1">
+<label class="font-label-caps text-on-surface-variant mb-1 block">AMOUNT</label>
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-primary">$</span>
+<input class="w-full h-[56px] pl-8 pr-4 bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary font-data-mono text-display-earnings text-xl" placeholder="0.00" type="number"/>
+</div>
+</div>
+<!-- Date Field -->
+<div class="col-span-1">
+<label class="font-label-caps text-on-surface-variant mb-1 block">DATE</label>
+<input class="w-full h-[56px] px-4 bg-surface-container-low border border-outline-variant rounded-lg focus:border-primary focus:ring-1 focus:ring-primary font-body-md" type="date" value="2023-10-27"/>
+</div>
+</div>
+<!-- Categories Grid -->
+<label class="font-label-caps text-on-surface-variant mb-3 block">CATEGORY</label>
+<div class="grid grid-cols-3 gap-2 mb-6" id="categoryGrid">
+<button class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95" onclick="selectCategory(this)">
+<span class="material-symbols-outlined mb-1" data-icon="local_gas_station">local_gas_station</span>
+<span class="text-[10px] font-bold">Fuel</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95" onclick="selectCategory(this)">
+<span class="material-symbols-outlined mb-1" data-icon="build">build</span>
+<span class="text-[10px] font-bold">Maintenance</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95" onclick="selectCategory(this)">
+<span class="material-symbols-outlined mb-1" data-icon="local_car_wash">local_car_wash</span>
+<span class="text-[10px] font-bold">Car Wash</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95" onclick="selectCategory(this)">
+<span class="material-symbols-outlined mb-1" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="text-[10px] font-bold">Commission</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95" onclick="selectCategory(this)">
+<span class="material-symbols-outlined mb-1" data-icon="verified_user">verified_user</span>
+<span class="text-[10px] font-bold">Insurance</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-lg hover:bg-surface-container-highest transition-colors active:scale-95" onclick="selectCategory(this)">
+<span class="material-symbols-outlined mb-1" data-icon="more_horiz">more_horiz</span>
+<span class="text-[10px] font-bold">Other</span>
+</button>
+</div>
+<!-- Receipt Upload -->
+<div class="mb-6">
+<label class="font-label-caps text-on-surface-variant mb-1 block">ATTACH RECEIPT</label>
+<div class="border-2 border-dashed border-outline-variant rounded-xl h-24 flex flex-col items-center justify-center bg-surface hover:bg-surface-container-low transition-colors cursor-pointer group">
+<span class="material-symbols-outlined text-primary mb-1 group-hover:scale-110 transition-transform" data-icon="add_a_photo">add_a_photo</span>
+<span class="font-label-caps text-primary">Upload or Capture</span>
+</div>
+</div>
+<!-- Save Button -->
+<button class="w-full h-14 bg-primary text-white rounded-lg font-bold text-lg shadow-md hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="save">save</span>
+                Save Expense
+            </button>
+</section>
+<!-- Today's History -->
+<section class="mb-10">
+<div class="flex items-center justify-between mb-3 px-2">
+<h3 class="font-headline-lg-mobile text-sm uppercase text-on-surface-variant opacity-80">Today's Activity</h3>
+<span class="font-data-mono text-tertiary">Total: $42.50</span>
+</div>
+<div class="space-y-2">
+<!-- Expense Item -->
+<div class="bg-white p-4 rounded-xl border border-outline-variant flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="local_gas_station">local_gas_station</span>
+</div>
+<div>
+<p class="font-bold leading-tight">Fuel Refill</p>
+<p class="text-[12px] text-on-surface-variant">Shell Station • 10:45 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono font-bold">-$35.00</p>
+<span class="material-symbols-outlined text-sm text-primary" data-icon="receipt_long">receipt_long</span>
+</div>
+</div>
+<!-- Expense Item -->
+<div class="bg-white p-4 rounded-xl border border-outline-variant flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="local_car_wash">local_car_wash</span>
+</div>
+<div>
+<p class="font-bold leading-tight">Car Wash</p>
+<p class="text-[12px] text-on-surface-variant">Standard Exterior • 08:20 AM</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono font-bold">-$7.50</p>
+<span class="material-symbols-outlined text-sm text-primary" data-icon="receipt_long">receipt_long</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface border-t border-outline-variant">
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-caps text-label-caps">Trips</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1 transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="receipt_long" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+<span class="font-label-caps text-label-caps">Expenses</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest transition-all duration-200 scale-95 active:scale-90">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</div>
+</nav>
+<script>
+        function selectCategory(el) {
+            const btns = document.querySelectorAll('#categoryGrid button');
+            btns.forEach(btn => btn.classList.remove('active-category'));
+            el.classList.add('active-category');
+        }
+
+        // Initialize first category as selected
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstCat = document.querySelector('#categoryGrid button');
+            if(firstCat) selectCategory(firstCat);
+        });
+    </script>
+</body></html>
