@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Driver Insights - Profitability Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed-variant": "#832700",
+                      "secondary": "#455f88",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-low": "#eff4ff",
+                      "surface-tint": "#1c6b4d",
+                      "outline": "#6f7973",
+                      "primary-fixed": "#a6f2cc",
+                      "secondary-container": "#b6d0ff",
+                      "surface-container-lowest": "#ffffff",
+                      "outline-variant": "#bfc9c1",
+                      "primary-fixed-dim": "#8bd6b1",
+                      "on-surface-variant": "#3f4943",
+                      "on-tertiary-fixed": "#390c00",
+                      "tertiary-fixed-dim": "#ffb59c",
+                      "surface-dim": "#cbdbf5",
+                      "on-primary-container": "#90dbb6",
+                      "on-background": "#0b1c30",
+                      "error": "#ba1a1a",
+                      "surface": "#f8f9ff",
+                      "primary-container": "#0e6245",
+                      "inverse-surface": "#213145",
+                      "surface-bright": "#f8f9ff",
+                      "background": "#f8f9ff",
+                      "error-container": "#ffdad6",
+                      "inverse-primary": "#8bd6b1",
+                      "secondary-fixed": "#d6e3ff",
+                      "surface-variant": "#d3e4fe",
+                      "on-primary-fixed": "#002114",
+                      "tertiary-container": "#9d3000",
+                      "on-tertiary-container": "#ffbca6",
+                      "surface-container": "#e5eeff",
+                      "primary": "#004831",
+                      "tertiary": "#752200",
+                      "on-surface": "#0b1c30",
+                      "on-secondary-fixed": "#001b3c",
+                      "surface-container-high": "#dce9ff",
+                      "secondary-fixed-dim": "#adc7f7",
+                      "on-error": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "on-secondary": "#ffffff",
+                      "surface-container-highest": "#d3e4fe",
+                      "on-primary-fixed-variant": "#005138",
+                      "on-secondary-fixed-variant": "#2d476f",
+                      "on-secondary-container": "#3f5882",
+                      "tertiary-fixed": "#ffdbcf",
+                      "inverse-on-surface": "#eaf1ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "base": "8px",
+                      "card-padding": "20px",
+                      "margin-mobile": "16px",
+                      "touch-target-min": "48px",
+                      "gutter": "12px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": ["Inter"],
+                      "data-mono": ["Inter"],
+                      "label-caps": ["Inter"],
+                      "display-earnings": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}],
+                      "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}],
+                      "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}],
+                      "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline fixed top-0 z-50 flex justify-between items-center px-margin-mobile h-touch-target-min w-full max-w-full">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container-high border border-outline-variant">
+<img alt="Driver Profile" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a friendly male rideshare driver in his late 30s wearing a clean polo shirt. The background shows the blurred interior of a modern, well-maintained vehicle with soft natural sunlight filtering through the windows. The aesthetic is high-contrast and corporate, emphasizing trust and reliability through crisp, clear details and a professional lighting setup." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxUwNcw5De2bLOLii85shO0Pg4HTjEilq7BY8f6NuUbmcNv7-kzSDUiJUoNfBtyOEbvNFVmixzVJ0Q53s_g7yc0ukQECLZFsjNp0POMPClk3gC7OkFwUETs8k1cy-txz2LAM4XVSSy6GpSST6tMMGEZHIpSROGeTC21o9DDMtgULsgviTkxfrctyYAK6tROoZjjlR-3Fu1NCMlmIudqNEQ4Wv-DepQ3ts16iT6XQyZaSIzMPSlsuYKGoLhgDqSAs3-OPinkmAb_fn1"/>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">Driver Insights</h1>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant dark:text-on-surface-variant transition-colors duration-200 active:opacity-80 hover:bg-surface-container-high dark:hover:bg-on-secondary-fixed-variant p-2 rounded-full">
+            calendar_today
+        </button>
+</header>
+<main class="pt-16 px-margin-mobile space-y-gutter">
+<!-- Net Profit Today Hero Card -->
+<section class="mt-4 bg-white border border-outline-variant rounded-xl p-card-padding shadow-sm relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="material-symbols-outlined text-primary-container opacity-20 text-6xl rotate-12 group-hover:rotate-0 transition-transform duration-500">trending_up</span>
+</div>
+<div class="relative z-10">
+<p class="font-label-caps text-label-caps text-on-surface-variant mb-1">NET PROFIT TODAY</p>
+<h2 class="font-display-earnings text-display-earnings text-primary">$184.50</h2>
+<div class="flex items-center gap-2 mt-2">
+<span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold flex items-center">
+<span class="material-symbols-outlined text-[14px]">arrow_drop_up</span> 12% vs Yesterday
+                    </span>
+<p class="text-[12px] text-on-surface-variant">Gross: $240.00 | Exp: $55.50</p>
+</div>
+</div>
+</section>
+<!-- Secondary Metrics Grid -->
+<div class="grid grid-cols-2 gap-gutter">
+<div class="bg-white border border-outline-variant rounded-xl p-4">
+<p class="font-label-caps text-label-caps text-on-surface-variant">TOTAL DISTANCE</p>
+<div class="flex items-end justify-between mt-1">
+<p class="font-data-mono text-data-mono text-on-surface">142.8 km</p>
+<span class="material-symbols-outlined text-secondary text-sm">route</span>
+</div>
+</div>
+<div class="bg-white border border-outline-variant rounded-xl p-4">
+<p class="font-label-caps text-label-caps text-on-surface-variant">HOURS WORKED</p>
+<div class="flex items-end justify-between mt-1">
+<p class="font-data-mono text-data-mono text-on-surface">6h 45m</p>
+<span class="material-symbols-outlined text-secondary text-sm">schedule</span>
+</div>
+</div>
+</div>
+<!-- Profitability Insights Bento -->
+<div class="bg-surface-container-low rounded-xl p-4 border border-outline-variant">
+<h3 class="font-label-caps text-label-caps text-on-surface-variant mb-4">REAL PROFITABILITY</h3>
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-primary-container text-on-primary-container p-2 rounded-lg">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Earnings per Hour</p>
+<p class="text-xs text-on-surface-variant">Based on active driving</p>
+</div>
+</div>
+<p class="font-data-mono text-data-mono text-primary">$27.33</p>
+</div>
+<div class="h-[1px] bg-outline-variant"></div>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="bg-tertiary-container text-on-tertiary-container p-2 rounded-lg">
+<span class="material-symbols-outlined">gas_meter</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Cost per KM</p>
+<p class="text-xs text-on-surface-variant">Fuel + Maintenance</p>
+</div>
+</div>
+<p class="font-data-mono text-data-mono text-tertiary">$0.39</p>
+</div>
+</div>
+</div>
+<!-- Quick Action Buttons -->
+<div class="grid grid-cols-2 gap-margin-mobile">
+<button class="bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-bold h-touch-target-min rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+<span class="material-symbols-outlined">add_circle</span>
+                Add Income
+            </button>
+<button class="bg-tertiary hover:bg-on-tertiary-fixed-variant text-on-tertiary font-bold h-touch-target-min rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95">
+<span class="material-symbols-outlined">remove_circle</span>
+                Add Expense
+            </button>
+</div>
+<!-- Recent Activity -->
+<section class="space-y-3">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-lg-mobile text-[16px]">Recent Activity</h3>
+<button class="text-secondary font-bold text-xs uppercase tracking-wider">View All</button>
+</div>
+<div class="space-y-2">
+<!-- Activity Item 1 -->
+<div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_taxi</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Uber Ride #4920</p>
+<p class="text-xs text-on-surface-variant">2:14 PM • 8.4 km</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary">+$22.40</p>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded uppercase font-bold">Card</span>
+</div>
+</div>
+<!-- Activity Item 2 -->
+<div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">local_gas_station</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Shell Station</p>
+<p class="text-xs text-on-surface-variant">12:45 PM • Fuel Refill</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-tertiary">-$42.00</p>
+<span class="text-[10px] bg-tertiary-fixed text-on-tertiary-fixed px-1.5 py-0.5 rounded uppercase font-bold">Cash</span>
+</div>
+</div>
+<!-- Activity Item 3 -->
+<div class="bg-white border border-outline-variant p-4 rounded-xl flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">local_taxi</span>
+</div>
+<div>
+<p class="font-body-md text-body-md font-bold">Lyft Ride #2811</p>
+<p class="text-xs text-on-surface-variant">11:20 AM • 12.1 km</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-data-mono text-data-mono text-primary">+$34.15</p>
+<span class="text-[10px] bg-secondary-container text-on-secondary-container px-1.5 py-0.5 rounded uppercase font-bold">Card</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-gutter bg-surface dark:bg-inverse-surface border-t border-outline-variant dark:border-outline">
+<a class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container dark:bg-primary-fixed dark:text-on-primary-fixed rounded-xl px-4 py-1 transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined" data-weight="fill">dashboard</span>
+<span class="font-label-caps text-label-caps">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-secondary-fixed-variant transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-caps text-label-caps">Trips</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-secondary-fixed-variant transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+<span class="font-label-caps text-label-caps">Expenses</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant px-4 py-1 hover:bg-surface-container-highest dark:hover:bg-on-secondary-fixed-variant transition-all duration-200 scale-95 active:scale-90" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-caps">Analytics</span>
+</a>
+</nav>
+<script>
+        // Simple micro-interaction for cards
+        document.querySelectorAll('.bg-white').forEach(card => {
+            card.addEventListener('touchstart', () => {
+                card.classList.add('scale-[0.98]', 'transition-transform');
+            });
+            card.addEventListener('touchend', () => {
+                card.classList.remove('scale-[0.98]');
+            });
+        });
+
+        // Add ambient glow to the hero card
+        const heroCard = document.querySelector('section.group');
+        heroCard.addEventListener('mousemove', (e) => {
+            const rect = heroCard.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            heroCard.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(166, 242, 204, 0.15) 0%, rgba(255,255,255,1) 70%)`;
+        });
+        heroCard.addEventListener('mouseleave', () => {
+            heroCard.style.background = 'white';
+        });
+    </script>
+</body></html>
