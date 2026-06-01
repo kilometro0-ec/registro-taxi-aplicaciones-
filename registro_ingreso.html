@@ -37,7 +37,6 @@
     <div class="text-center animate-card">
         <h2 class="text-xl font-bold">Registrar Ingreso</h2>
         <p class="text-sm text-on-surface-variant">Selecciona el rubro y completa los datos</p>
-        <!-- Indicador de conexión a Google Sheets -->
         <div id="conexionStatus" class="status-badge mt-2 justify-center mx-auto w-fit">🔄 Verificando conexión...</div>
         <p class="text-xs text-gray-400 mt-1">Los datos se guardarán en Google Sheets (hoja: Ingresos)</p>
     </div>
@@ -47,12 +46,10 @@
         <label class="text-xs font-bold uppercase">Rubro / Negocio</label>
         <div class="grid grid-cols-2 gap-3 mt-2">
             <button id="rubroTransporte" class="rubro-btn active-transporte py-3 px-2 border rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Transporte')">
-                <span class="material-symbols-outlined">directions_car</span>
-                <span class="text-sm font-semibold">🚖 Transporte</span>
+                <span class="material-symbols-outlined">directions_car</span><span class="text-sm font-semibold">🚖 Transporte</span>
             </button>
             <button id="rubroElectronica" class="rubro-btn py-3 px-2 border border-outline-variant rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Electrónica')">
-                <span class="material-symbols-outlined">devices</span>
-                <span class="text-sm font-semibold">🤖 Electrónica</span>
+                <span class="material-symbols-outlined">devices</span><span class="text-sm font-semibold">🤖 Electrónica</span>
             </button>
         </div>
     </section>
@@ -109,7 +106,7 @@
                 <option value="Otro">📦 Otro</option>
             </select>
             <label class="text-xs font-bold uppercase mt-3 block">Detalle / Producto</label>
-            <input type="text" id="detalleServicio" class="w-full p-2.5 border rounded-xl bg-surface-container-low" placeholder="Ej: Pantalla iPhone X, Batería, reparación de PC">
+            <input type="text" id="detalleServicio" class="w-full p-2.5 border rounded-xl" placeholder="Ej: Pantalla iPhone X, Batería, reparación de PC">
         </section>
     </div>
 
@@ -120,7 +117,6 @@
         <div><label class="text-xs font-bold uppercase">Notas (opcional)</label><textarea id="notas" rows="2" class="w-full p-2.5 border rounded-xl" placeholder="Comentarios adicionales..."></textarea></div>
     </section>
 
-    <!-- Botón guardar -->
     <div class="fixed bottom-20 left-0 w-full px-4 z-40">
         <button id="guardarBtn" class="btn-guardar w-full h-14 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
             <span class="material-symbols-outlined">save</span> Guardar Ingreso
@@ -140,12 +136,12 @@
 
 <script>
     // ========== CONFIGURACIÓN ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzix2MXs9Udwyl8NZF6jSCwkqXnsCvF6brh_tyGZhMqWMBSZJLyY1xv6idVxc1xgCsplQ/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzix2MXs9Udwyl8NZF6jSCwkqXnsCvF6brh_tyGZhMqWMBSZJLyY1xv6idVxc1xgCsplQ/exec'; // REEMPLAZAR
     let rubroActual = 'Transporte';
     let currentPlatform = 'Uber';
     let commissionPercent = 25;
 
-    // --- Verificar conexión con Google Sheets ---
+    // Verificar conexión
     async function verificarConexion() {
         const statusDiv = document.getElementById('conexionStatus');
         try {
@@ -156,21 +152,15 @@
                     statusDiv.innerHTML = '✅ Conectado a Google Sheets';
                     statusDiv.classList.add('status-connected');
                     statusDiv.classList.remove('status-error');
-                } else {
-                    throw new Error('Respuesta inválida');
-                }
-            } else {
-                throw new Error(`HTTP ${response.status}`);
-            }
+                } else throw new Error('Respuesta inválida');
+            } else throw new Error(`HTTP ${response.status}`);
         } catch (error) {
-            console.error('Error de conexión:', error);
             statusDiv.innerHTML = '❌ Error de conexión – revisa URL o publicación del script';
             statusDiv.classList.add('status-error');
             statusDiv.classList.remove('status-connected');
         }
     }
 
-    // Funciones de rubro
     function seleccionarRubro(rubro) {
         rubroActual = rubro;
         const btnTransporte = document.getElementById('rubroTransporte');
@@ -231,19 +221,33 @@
             document.getElementById('comisionPreview').innerText = `0%`;
             document.getElementById('netoPreview').innerText = `$${monto.toFixed(2)}`;
         }
+        // Duración preview
         const inicio = document.getElementById('horaInicio')?.value;
         const fin = document.getElementById('horaFin')?.value;
         if (inicio && fin) {
             let start = new Date(`2000-01-01T${inicio}:00`);
             let end = new Date(`2000-01-01T${fin}:00`);
-            let diff = (end - start) / 1000 / 60;
-            if (diff < 0) diff += 24*60;
-            let horas = Math.floor(diff/60);
-            let minutos = Math.floor(diff%60);
-            document.getElementById('duracionPreview').innerText = `${horas}h ${minutos}min`;
+            let diff = (end - start) / 1000 / 3600;
+            if (diff < 0) diff += 24;
+            let horasInt = Math.floor(diff);
+            let minutos = Math.floor((diff - horasInt) * 60);
+            document.getElementById('duracionPreview').innerText = `${horasInt}h ${minutos}min`;
         } else {
             document.getElementById('duracionPreview').innerText = '0h 0min';
         }
+    }
+
+    function calcularDuracion() {
+        let inicio = document.getElementById('horaInicio').value;
+        let fin = document.getElementById('horaFin').value;
+        if (inicio && fin) {
+            let start = new Date(`2000-01-01T${inicio}:00`);
+            let end = new Date(`2000-01-01T${fin}:00`);
+            let diff = (end - start) / 1000 / 3600;
+            if (diff < 0) diff += 24;
+            return diff;
+        }
+        return 0;
     }
 
     document.getElementById('monto').addEventListener('input', calcularPreview);
@@ -255,7 +259,7 @@
 
     seleccionarRubro('Transporte');
     selectPlatform('Uber');
-    verificarConexion();  // Al cargar la página, comprueba si el script responde
+    verificarConexion();
 
     const guardarBtn = document.getElementById('guardarBtn');
     guardarBtn.addEventListener('click', async () => {
@@ -264,31 +268,17 @@
         let notas = document.getElementById('notas').value;
         let plataforma = '';
         let rubro = rubroActual;
+        let distanciaApp = 0, distanciaTotal = 0, horas = 0;
 
-        if (!monto || monto <= 0) {
-            alert('❌ Ingresa un monto válido');
-            return;
-        }
-        if (!fecha) {
-            alert('❌ Selecciona una fecha');
-            return;
-        }
+        if (!monto || monto <= 0) { alert('❌ Ingresa un monto válido'); return; }
+        if (!fecha) { alert('❌ Selecciona una fecha'); return; }
 
         if (rubroActual === 'Transporte') {
             plataforma = currentPlatform;
-            const inicio = document.getElementById('horaInicio').value;
-            const fin = document.getElementById('horaFin').value;
-            const distApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
-            const distTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
-            let duracion = '';
-            if (inicio && fin) {
-                let start = new Date(`2000-01-01T${inicio}:00`);
-                let end = new Date(`2000-01-01T${fin}:00`);
-                let diff = (end - start) / 1000 / 3600;
-                if (diff < 0) diff += 24;
-                duracion = `${diff.toFixed(1)}h`;
-            }
-            notas = `Plataforma: ${plataforma} | Duración: ${duracion} | Dist app: ${distApp} km | Dist total: ${distTotal} km | Comisión: ${commissionPercent}% | ${notas}`;
+            distanciaApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
+            distanciaTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
+            horas = calcularDuracion();
+            notas = `Comisión: ${commissionPercent}% | ${notas}`;
         } else {
             const tipo = document.getElementById('tipoServicio').value;
             const detalle = document.getElementById('detalleServicio').value;
@@ -302,6 +292,9 @@
         params.append('rubro', rubro);
         params.append('monto', monto);
         params.append('fecha', fecha);
+        params.append('kmApp', distanciaApp);
+        params.append('kmTotal', distanciaTotal);
+        params.append('horas', horas);
         params.append('notas', notas);
 
         const originalHtml = guardarBtn.innerHTML;
@@ -316,7 +309,7 @@
             });
             const text = await response.text();
             if (response.ok && (text.includes('OK') || text.includes('Ingreso registrado'))) {
-                alert(`✅ Ingreso registrado correctamente en Google Sheets (hoja Ingresos)\nRubro: ${rubro}\nMonto: $${monto}`);
+                alert(`✅ Ingreso registrado correctamente en Google Sheets\nRubro: ${rubro}\nMonto: $${monto}\nKm app: ${distanciaApp} | Km total: ${distanciaTotal} | Horas: ${horas.toFixed(1)}`);
                 window.location.href = 'Dashboard.html';
             } else {
                 alert('❌ Error del servidor: ' + text);
