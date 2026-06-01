@@ -24,6 +24,8 @@
     input:focus, select:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 2px #00483120; }
     .delete-btn { cursor: pointer; transition: 0.2s; }
     .delete-btn:hover { color: #ba1a1a; transform: scale(1.1); }
+    .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
@@ -45,214 +47,153 @@
         <button id="tabGeneral" class="px-4 py-2 rounded-t-lg font-semibold text-on-surface-variant transition-all" onclick="mostrarSeccion('general')">📋 General</button>
     </div>
 
-    <!-- Sección PLATAFORMAS -->
-    <div id="seccionPlataformas" class="space-y-4 animate-card">
-        <div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
-            <h3 class="font-bold text-lg mb-3 flex justify-between"><span>Plataformas de transporte</span><button id="agregarPlataformaBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir</button></h3>
-            <div id="listaPlataformas" class="space-y-3"></div>
-            <p class="text-xs text-on-surface-variant mt-4">* Desactiva una plataforma para que no aparezca en los formularios de ingreso.</p>
-        </div>
-    </div>
+    <!-- Secciones (idem anterior pero con renderizado dinámico desde datos) -->
+    <div id="seccionPlataformas" class="space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Plataformas de transporte</span><button id="agregarPlataformaBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir</button></h3><div id="listaPlataformas" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Desactiva una plataforma para que no aparezca en los formularios de ingreso.</p></div></div>
+    <div id="seccionMantenimiento" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Intervalos de mantenimiento</span><button id="agregarMantenimientoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Nuevo tipo</button></h3><div id="listaMantenimientos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Define cada cuántos kilómetros o meses se debe realizar cada servicio.</p></div></div>
+    <div id="seccionRepuestos" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Repuestos y componentes</span><button id="agregarRepuestoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir repuesto</button></h3><div id="listaRepuestos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Registra repuestos comunes para facilitar la entrada de gastos de electrónica o vehículo.</p></div></div>
+    <div id="seccionGeneral" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3">Otras configuraciones</h3><div class="space-y-3"><div class="flex justify-between items-center"><label class="font-semibold">Notificaciones por correo</label><label class="toggle-switch"><input type="checkbox" id="emailNotifications"><span class="slider"></span></label></div><div class="flex justify-between items-center"><label class="font-semibold">Registro automático de kilometraje</label><label class="toggle-switch"><input type="checkbox" id="autoKm"><span class="slider"></span></label></div><div><label class="font-semibold">Costo por defecto de combustible (USD/L)</label><input type="number" step="0.01" id="costoCombustible" class="w-32 p-1 border rounded"></div></div></div></div>
 
-    <!-- Sección MANTENIMIENTO (intervalos) -->
-    <div id="seccionMantenimiento" class="hidden space-y-4 animate-card">
-        <div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
-            <h3 class="font-bold text-lg mb-3 flex justify-between"><span>Intervalos de mantenimiento</span><button id="agregarMantenimientoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Nuevo tipo</button></h3>
-            <div id="listaMantenimientos" class="space-y-3"></div>
-            <p class="text-xs text-on-surface-variant mt-4">* Define cada cuántos kilómetros o meses se debe realizar cada servicio.</p>
-        </div>
-    </div>
-
-    <!-- Sección REPUESTOS (gestión de inventario o costos) -->
-    <div id="seccionRepuestos" class="hidden space-y-4 animate-card">
-        <div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
-            <h3 class="font-bold text-lg mb-3 flex justify-between"><span>Repuestos y componentes</span><button id="agregarRepuestoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir repuesto</button></h3>
-            <div id="listaRepuestos" class="space-y-3"></div>
-            <p class="text-xs text-on-surface-variant mt-4">* Registra repuestos comunes para facilitar la entrada de gastos de electrónica o vehículo.</p>
-        </div>
-    </div>
-
-    <!-- Sección GENERAL (configuraciones varias) -->
-    <div id="seccionGeneral" class="hidden space-y-4 animate-card">
-        <div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg">
-            <h3 class="font-bold text-lg mb-3">Otras configuraciones</h3>
-            <div class="space-y-3">
-                <div class="flex justify-between items-center"><label class="font-semibold">Notificaciones por correo</label><label class="toggle-switch"><input type="checkbox" id="emailNotifications"><span class="slider"></span></label></div>
-                <div class="flex justify-between items-center"><label class="font-semibold">Registro automático de kilometraje</label><label class="toggle-switch"><input type="checkbox" id="autoKm"><span class="slider"></span></label></div>
-                <div><label class="font-semibold">Costo por defecto de combustible (USD/L)</label><input type="number" step="0.01" id="costoCombustible" class="w-32 p-1 border rounded"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Botón guardar global -->
     <div class="pt-4"><button id="guardarTodoBtn" class="w-full h-12 bg-primary text-white rounded-xl font-bold shadow-md hover:shadow-xl transition-all save-btn flex items-center justify-center gap-2"><span class="material-symbols-outlined">save</span> Guardar toda la configuración</button></div>
 </main>
 
 <script>
-    // ---------- ESTRUCTURA DE DATOS ----------
-    let plataformas = [
-        { id: 'Uber', nombre: 'Uber', activa: true, comision: 25 },
-        { id: 'DiDi', nombre: 'DiDi', activa: true, comision: 20 },
-        { id: 'Indriver', nombre: 'Indriver', activa: true, comision: 15 },
-        { id: 'Cabify', nombre: 'Cabify', activa: true, comision: 18 },
-        { id: 'Otro', nombre: 'Otro', activa: true, comision: 10 }
-    ];
-    let mantenimientos = [
-        { id: 'aceite', nombre: 'Cambio de aceite', intervaloKm: 5000, intervaloMeses: 6, activo: true },
-        { id: 'frenos', nombre: 'Frenos', intervaloKm: 20000, intervaloMeses: 12, activo: true },
-        { id: 'neumaticos', nombre: 'Neumáticos', intervaloKm: 30000, intervaloMeses: 24, activo: true },
-        { id: 'transmision', nombre: 'Transmisión', intervaloKm: 40000, intervaloMeses: 36, activo: true }
-    ];
-    let repuestos = [
-        { id: 'pantalla_iphone', nombre: 'Pantalla iPhone X', costoPromedio: 45, proveedor: '' },
-        { id: 'bateria', nombre: 'Batería genérica', costoPromedio: 20, proveedor: '' }
-    ];
-    let configGeneral = {
-        emailNotifications: false,
-        autoKm: false,
-        costoCombustible: 1.2
-    };
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec'; // REEMPLAZAR
+    let datosConfig = null; // almacenará el objeto cargado
 
-    // Cargar desde localStorage
-    function cargarConfiguracion() {
-        const savedPlats = localStorage.getItem('config_plataformas');
-        if (savedPlats) plataformas = JSON.parse(savedPlats);
-        const savedMants = localStorage.getItem('config_mantenimientos');
-        if (savedMants) mantenimientos = JSON.parse(savedMants);
-        const savedRep = localStorage.getItem('config_repuestos');
-        if (savedRep) repuestos = JSON.parse(savedRep);
-        const savedGen = localStorage.getItem('config_general');
-        if (savedGen) configGeneral = JSON.parse(savedGen);
-        
-        // Actualizar UI
-        renderPlataformas();
-        renderMantenimientos();
-        renderRepuestos();
-        document.getElementById('emailNotifications').checked = configGeneral.emailNotifications;
-        document.getElementById('autoKm').checked = configGeneral.autoKm;
-        document.getElementById('costoCombustible').value = configGeneral.costoCombustible;
-    }
-
-    function guardarConfiguracion() {
-        localStorage.setItem('config_plataformas', JSON.stringify(plataformas));
-        localStorage.setItem('config_mantenimientos', JSON.stringify(mantenimientos));
-        localStorage.setItem('config_repuestos', JSON.stringify(repuestos));
-        configGeneral.emailNotifications = document.getElementById('emailNotifications').checked;
-        configGeneral.autoKm = document.getElementById('autoKm').checked;
-        configGeneral.costoCombustible = parseFloat(document.getElementById('costoCombustible').value) || 0;
-        localStorage.setItem('config_general', JSON.stringify(configGeneral));
-        // También guardar comisiones individualmente para compatibilidad con registro_ingreso.html
-        plataformas.forEach(p => { if(p.activa) localStorage.setItem(`comision_${p.id}`, p.comision); });
-        alert('✅ Configuración guardada correctamente');
-    }
-
-    // Renderizar plataformas
+    // Funciones de renderizado (similares a antes, pero usando datosConfig)
     function renderPlataformas() {
         const container = document.getElementById('listaPlataformas');
         container.innerHTML = '';
-        plataformas.forEach((p, idx) => {
+        datosConfig.plataformas.forEach((p, idx) => {
             const div = document.createElement('div');
             div.className = 'flex justify-between items-center p-3 border-b border-outline-variant';
-            div.innerHTML = `
-                <div class="flex items-center gap-3 flex-1"><label class="toggle-switch"><input type="checkbox" class="plat-activo" data-id="${p.id}" ${p.activa ? 'checked' : ''}><span class="slider"></span></label><input type="text" class="plat-nombre border-b bg-transparent w-32" value="${p.nombre}" data-id="${p.id}"><div class="flex items-center gap-1"><input type="number" step="0.5" class="plat-comision w-20 p-1 border rounded" value="${p.comision}" data-id="${p.id}"><span>%</span></div></div>
-                <span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${p.id}">delete</span>
-            `;
+            div.innerHTML = `<div class="flex items-center gap-3 flex-1"><label class="toggle-switch"><input type="checkbox" class="plat-activo" data-id="${p.id}" ${p.activa ? 'checked' : ''}><span class="slider"></span></label><input type="text" class="plat-nombre border-b bg-transparent w-32" value="${p.nombre}" data-id="${p.id}"><div class="flex items-center gap-1"><input type="number" step="0.5" class="plat-comision w-20 p-1 border rounded" value="${p.comision}" data-id="${p.id}"><span>%</span></div></div><span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${p.id}">delete</span>`;
             container.appendChild(div);
         });
-        // Eventos
-        document.querySelectorAll('.plat-activo').forEach(cb => cb.addEventListener('change', (e) => { const plat = plataformas.find(p=>p.id===e.target.dataset.id); if(plat) plat.activa = e.target.checked; }));
-        document.querySelectorAll('.plat-nombre').forEach(inp => inp.addEventListener('change', (e) => { const plat = plataformas.find(p=>p.id===e.target.dataset.id); if(plat) plat.nombre = e.target.value; }));
-        document.querySelectorAll('.plat-comision').forEach(inp => inp.addEventListener('change', (e) => { const plat = plataformas.find(p=>p.id===e.target.dataset.id); if(plat) plat.comision = parseFloat(e.target.value) || 0; }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { const id = e.currentTarget.dataset.id; plataformas = plataformas.filter(p=>p.id!==id); renderPlataformas(); }));
+        attachPlatformEvents();
+    }
+
+    function attachPlatformEvents() {
+        document.querySelectorAll('.plat-activo').forEach(cb => cb.addEventListener('change', (e) => { const p = datosConfig.plataformas.find(p=>p.id===e.target.dataset.id); if(p) p.activa = e.target.checked; }));
+        document.querySelectorAll('.plat-nombre').forEach(inp => inp.addEventListener('change', (e) => { const p = datosConfig.plataformas.find(p=>p.id===e.target.dataset.id); if(p) p.nombre = e.target.value; }));
+        document.querySelectorAll('.plat-comision').forEach(inp => inp.addEventListener('change', (e) => { const p = datosConfig.plataformas.find(p=>p.id===e.target.dataset.id); if(p) p.comision = parseFloat(e.target.value) || 0; }));
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { const id = e.currentTarget.dataset.id; datosConfig.plataformas = datosConfig.plataformas.filter(p=>p.id!==id); renderPlataformas(); }));
+    }
+
+    function renderMantenimientos() {
+        const container = document.getElementById('listaMantenimientos');
+        container.innerHTML = '';
+        datosConfig.mantenimientos.forEach((m, idx) => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center p-3 border-b border-outline-variant flex-wrap gap-2';
+            div.innerHTML = `<div class="flex items-center gap-2"><label class="toggle-switch"><input type="checkbox" class="mant-activo" data-id="${m.id}" ${m.activo ? 'checked' : ''}><span class="slider"></span></label><input type="text" class="mant-nombre border-b bg-transparent w-36" value="${m.nombre}" data-id="${m.id}"></div><div class="flex items-center gap-2"><span class="text-xs">km:</span><input type="number" class="mant-km w-20 p-1 border rounded" value="${m.intervaloKm}" data-id="${m.id}"><span class="text-xs">meses:</span><input type="number" class="mant-meses w-20 p-1 border rounded" value="${m.intervaloMeses}" data-id="${m.id}"></div><span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${m.id}">delete</span>`;
+            container.appendChild(div);
+        });
+        attachMantenimientoEvents();
+    }
+
+    function attachMantenimientoEvents() {
+        document.querySelectorAll('.mant-activo').forEach(cb => cb.addEventListener('change', (e) => { const m = datosConfig.mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.activo = e.target.checked; }));
+        document.querySelectorAll('.mant-nombre').forEach(inp => inp.addEventListener('change', (e) => { const m = datosConfig.mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.nombre = e.target.value; }));
+        document.querySelectorAll('.mant-km').forEach(inp => inp.addEventListener('change', (e) => { const m = datosConfig.mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.intervaloKm = parseInt(e.target.value)||0; }));
+        document.querySelectorAll('.mant-meses').forEach(inp => inp.addEventListener('change', (e) => { const m = datosConfig.mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.intervaloMeses = parseInt(e.target.value)||0; }));
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { const id = e.currentTarget.dataset.id; datosConfig.mantenimientos = datosConfig.mantenimientos.filter(p=>p.id!==id); renderMantenimientos(); }));
+    }
+
+    function renderRepuestos() {
+        const container = document.getElementById('listaRepuestos');
+        container.innerHTML = '';
+        datosConfig.repuestos.forEach((r, idx) => {
+            const div = document.createElement('div');
+            div.className = 'flex justify-between items-center p-3 border-b border-outline-variant';
+            div.innerHTML = `<div class="flex items-center gap-2 flex-1"><input type="text" class="rep-nombre border-b bg-transparent w-40" value="${r.nombre}" data-id="${r.id}"><input type="number" step="0.01" class="rep-costo w-24 p-1 border rounded" value="${r.costoPromedio}" data-id="${r.id}" placeholder="Costo USD"><input type="text" class="rep-proveedor w-32 p-1 border rounded" value="${r.proveedor || ''}" data-id="${r.id}" placeholder="Proveedor"></div><span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${r.id}">delete</span>`;
+            container.appendChild(div);
+        });
+        attachRepuestosEvents();
+    }
+
+    function attachRepuestosEvents() {
+        document.querySelectorAll('.rep-nombre').forEach(inp => inp.addEventListener('change', (e) => { const r = datosConfig.repuestos.find(p=>p.id===e.target.dataset.id); if(r) r.nombre = e.target.value; }));
+        document.querySelectorAll('.rep-costo').forEach(inp => inp.addEventListener('change', (e) => { const r = datosConfig.repuestos.find(p=>p.id===e.target.dataset.id); if(r) r.costoPromedio = parseFloat(e.target.value)||0; }));
+        document.querySelectorAll('.rep-proveedor').forEach(inp => inp.addEventListener('change', (e) => { const r = datosConfig.repuestos.find(p=>p.id===e.target.dataset.id); if(r) r.proveedor = e.target.value; }));
+        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { const id = e.currentTarget.dataset.id; datosConfig.repuestos = datosConfig.repuestos.filter(p=>p.id!==id); renderRepuestos(); }));
+    }
+
+    function cargarGeneral() {
+        document.getElementById('emailNotifications').checked = datosConfig.general.emailNotifications;
+        document.getElementById('autoKm').checked = datosConfig.general.autoKm;
+        document.getElementById('costoCombustible').value = datosConfig.general.costoCombustible;
+    }
+
+    function guardarGeneral() {
+        datosConfig.general.emailNotifications = document.getElementById('emailNotifications').checked;
+        datosConfig.general.autoKm = document.getElementById('autoKm').checked;
+        datosConfig.general.costoCombustible = parseFloat(document.getElementById('costoCombustible').value) || 0;
     }
 
     function agregarPlataforma() {
         const newId = 'plat_' + Date.now();
-        plataformas.push({ id: newId, nombre: 'Nueva plataforma', activa: true, comision: 15 });
+        datosConfig.plataformas.push({ id: newId, nombre: 'Nueva plataforma', activa: true, comision: 15 });
         renderPlataformas();
     }
-
-    // Renderizar mantenimientos
-    function renderMantenimientos() {
-        const container = document.getElementById('listaMantenimientos');
-        container.innerHTML = '';
-        mantenimientos.forEach((m, idx) => {
-            const div = document.createElement('div');
-            div.className = 'flex justify-between items-center p-3 border-b border-outline-variant flex-wrap gap-2';
-            div.innerHTML = `
-                <div class="flex items-center gap-2"><label class="toggle-switch"><input type="checkbox" class="mant-activo" data-id="${m.id}" ${m.activo ? 'checked' : ''}><span class="slider"></span></label><input type="text" class="mant-nombre border-b bg-transparent w-36" value="${m.nombre}" data-id="${m.id}"></div>
-                <div class="flex items-center gap-2"><span class="text-xs">km:</span><input type="number" class="mant-km w-20 p-1 border rounded" value="${m.intervaloKm}" data-id="${m.id}"><span class="text-xs">meses:</span><input type="number" class="mant-meses w-20 p-1 border rounded" value="${m.intervaloMeses}" data-id="${m.id}"></div>
-                <span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${m.id}">delete</span>
-            `;
-            container.appendChild(div);
-        });
-        document.querySelectorAll('.mant-activo').forEach(cb => cb.addEventListener('change', (e) => { const m = mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.activo = e.target.checked; }));
-        document.querySelectorAll('.mant-nombre').forEach(inp => inp.addEventListener('change', (e) => { const m = mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.nombre = e.target.value; }));
-        document.querySelectorAll('.mant-km').forEach(inp => inp.addEventListener('change', (e) => { const m = mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.intervaloKm = parseInt(e.target.value)||0; }));
-        document.querySelectorAll('.mant-meses').forEach(inp => inp.addEventListener('change', (e) => { const m = mantenimientos.find(p=>p.id===e.target.dataset.id); if(m) m.intervaloMeses = parseInt(e.target.value)||0; }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { const id = e.currentTarget.dataset.id; mantenimientos = mantenimientos.filter(p=>p.id!==id); renderMantenimientos(); }));
-    }
-
     function agregarMantenimiento() {
         const newId = 'mant_' + Date.now();
-        mantenimientos.push({ id: newId, nombre: 'Nuevo servicio', intervaloKm: 10000, intervaloMeses: 12, activo: true });
+        datosConfig.mantenimientos.push({ id: newId, nombre: 'Nuevo servicio', intervaloKm: 10000, intervaloMeses: 12, activo: true });
         renderMantenimientos();
     }
-
-    // Renderizar repuestos
-    function renderRepuestos() {
-        const container = document.getElementById('listaRepuestos');
-        container.innerHTML = '';
-        repuestos.forEach((r, idx) => {
-            const div = document.createElement('div');
-            div.className = 'flex justify-between items-center p-3 border-b border-outline-variant';
-            div.innerHTML = `
-                <div class="flex items-center gap-2 flex-1"><input type="text" class="rep-nombre border-b bg-transparent w-40" value="${r.nombre}" data-id="${r.id}"><input type="number" step="0.01" class="rep-costo w-24 p-1 border rounded" value="${r.costoPromedio}" data-id="${r.id}" placeholder="Costo USD"><input type="text" class="rep-proveedor w-32 p-1 border rounded" value="${r.proveedor || ''}" data-id="${r.id}" placeholder="Proveedor"></div>
-                <span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${r.id}">delete</span>
-            `;
-            container.appendChild(div);
-        });
-        document.querySelectorAll('.rep-nombre').forEach(inp => inp.addEventListener('change', (e) => { const r = repuestos.find(p=>p.id===e.target.dataset.id); if(r) r.nombre = e.target.value; }));
-        document.querySelectorAll('.rep-costo').forEach(inp => inp.addEventListener('change', (e) => { const r = repuestos.find(p=>p.id===e.target.dataset.id); if(r) r.costoPromedio = parseFloat(e.target.value)||0; }));
-        document.querySelectorAll('.rep-proveedor').forEach(inp => inp.addEventListener('change', (e) => { const r = repuestos.find(p=>p.id===e.target.dataset.id); if(r) r.proveedor = e.target.value; }));
-        document.querySelectorAll('.delete-btn').forEach(btn => btn.addEventListener('click', (e) => { const id = e.currentTarget.dataset.id; repuestos = repuestos.filter(p=>p.id!==id); renderRepuestos(); }));
-    }
-
     function agregarRepuesto() {
         const newId = 'rep_' + Date.now();
-        repuestos.push({ id: newId, nombre: 'Nuevo repuesto', costoPromedio: 0, proveedor: '' });
+        datosConfig.repuestos.push({ id: newId, nombre: 'Nuevo repuesto', costoPromedio: 0, proveedor: '' });
         renderRepuestos();
     }
 
-    // Cambio de pestañas
+    async function cargarConfigDesdeServer() {
+        const response = await fetch(`${SCRIPT_URL}?action=getConfig`);
+        datosConfig = await response.json();
+        renderPlataformas();
+        renderMantenimientos();
+        renderRepuestos();
+        cargarGeneral();
+    }
+
+    async function guardarConfigEnServer() {
+        guardarGeneral(); // actualiza datosConfig.general
+        const payload = { action: 'saveConfig', config: JSON.stringify(datosConfig) };
+        const formBody = new URLSearchParams(payload).toString();
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: formBody
+        });
+        const result = await response.text();
+        if (result === 'OK') alert('✅ Configuración guardada en la nube');
+        else alert('❌ Error: ' + result);
+    }
+
+    let currentTab = 'plataformas';
     function mostrarSeccion(seccion) {
+        currentTab = seccion;
         document.getElementById('seccionPlataformas').classList.add('hidden');
         document.getElementById('seccionMantenimiento').classList.add('hidden');
         document.getElementById('seccionRepuestos').classList.add('hidden');
         document.getElementById('seccionGeneral').classList.add('hidden');
-        if (seccion === 'plataformas') document.getElementById('seccionPlataformas').classList.remove('hidden');
-        if (seccion === 'mantenimiento') document.getElementById('seccionMantenimiento').classList.remove('hidden');
-        if (seccion === 'repuestos') document.getElementById('seccionRepuestos').classList.remove('hidden');
-        if (seccion === 'general') document.getElementById('seccionGeneral').classList.remove('hidden');
-        
+        document.getElementById(`seccion${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.remove('hidden');
         // Estilos pestañas
         document.querySelectorAll('#tabPlataformas, #tabMantenimiento, #tabRepuestos, #tabGeneral').forEach(tab => {
             tab.classList.remove('tab-active', 'bg-primary', 'text-white');
             tab.classList.add('text-on-surface-variant');
         });
         document.getElementById(`tab${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.add('tab-active', 'bg-primary', 'text-white');
-        document.getElementById(`tab${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.remove('text-on-surface-variant');
     }
 
-    // Eventos
+    // Eventos de botones
     document.getElementById('agregarPlataformaBtn').addEventListener('click', agregarPlataforma);
     document.getElementById('agregarMantenimientoBtn').addEventListener('click', agregarMantenimiento);
     document.getElementById('agregarRepuestoBtn').addEventListener('click', agregarRepuesto);
-    document.getElementById('guardarTodoBtn').addEventListener('click', guardarConfiguracion);
+    document.getElementById('guardarTodoBtn').addEventListener('click', guardarConfigEnServer);
 
     // Inicializar
-    cargarConfiguracion();
-    mostrarSeccion('plataformas');
+    cargarConfigDesdeServer().then(() => mostrarSeccion('plataformas'));
 </script>
 </body>
 </html>
