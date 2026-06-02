@@ -29,6 +29,8 @@
     .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
+    .btn-primary-solid { background-color: #004831; color: white; }
+    .btn-tertiary-solid { background-color: #752200; color: white; }
 </style>
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
@@ -51,24 +53,19 @@
         <button id="tabGeneral" class="px-4 py-2 rounded-t-lg font-semibold text-on-surface-variant transition-all" onclick="mostrarSeccion('general')">📋 General</button>
     </div>
 
-    <!-- Secciones -->
-    <div id="seccionPlataformas" class="space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Plataformas de transporte</span><button id="agregarPlataformaBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir</button></h3><div id="listaPlataformas" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Desactiva una plataforma para que no aparezca en los formularios de ingreso.</p></div></div>
-    <div id="seccionMantenimiento" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Intervalos de mantenimiento</span><button id="agregarMantenimientoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Nuevo tipo</button></h3><div id="listaMantenimientos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Define cada cuántos kilómetros o meses se debe realizar cada servicio.</p></div></div>
-    <div id="seccionRepuestos" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Repuestos y componentes</span><button id="agregarRepuestoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir repuesto</button></h3><div id="listaRepuestos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Registra repuestos comunes para facilitar la entrada de gastos de electrónica o vehículo.</p></div></div>
+    <div id="seccionPlataformas" class="space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Plataformas de transporte</span><button id="agregarPlataformaBtn" class="text-sm bg-green-700 text-white px-3 py-1 rounded-full flex items-center gap-1 hover:bg-green-800"><span class="material-symbols-outlined text-sm">add</span> Añadir</button></h3><div id="listaPlataformas" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Desactiva una plataforma para que no aparezca en los formularios de ingreso.</p></div></div>
+    <div id="seccionMantenimiento" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Intervalos de mantenimiento</span><button id="agregarMantenimientoBtn" class="text-sm bg-green-700 text-white px-3 py-1 rounded-full flex items-center gap-1 hover:bg-green-800"><span class="material-symbols-outlined text-sm">add</span> Nuevo tipo</button></h3><div id="listaMantenimientos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Define cada cuántos kilómetros o meses se debe realizar cada servicio.</p></div></div>
+    <div id="seccionRepuestos" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Repuestos y componentes</span><button id="agregarRepuestoBtn" class="text-sm bg-green-700 text-white px-3 py-1 rounded-full flex items-center gap-1 hover:bg-green-800"><span class="material-symbols-outlined text-sm">add</span> Añadir repuesto</button></h3><div id="listaRepuestos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Registra repuestos comunes para facilitar la entrada de gastos de electrónica o vehículo.</p></div></div>
     <div id="seccionGeneral" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3">Otras configuraciones</h3><div class="space-y-3"><div class="flex justify-between items-center"><label class="font-semibold">Notificaciones por correo</label><label class="toggle-switch"><input type="checkbox" id="emailNotifications"><span class="slider"></span></label></div><div class="flex justify-between items-center"><label class="font-semibold">Registro automático de kilometraje</label><label class="toggle-switch"><input type="checkbox" id="autoKm"><span class="slider"></span></label></div><div><label class="font-semibold">Costo por defecto de combustible (USD/L)</label><input type="number" step="0.01" id="costoCombustible" class="w-32 p-1 border rounded"></div></div></div></div>
 
-    <div class="pt-4"><button id="guardarTodoBtn" class="w-full h-12 bg-primary text-white rounded-xl font-bold shadow-md hover:shadow-xl transition-all save-btn flex items-center justify-center gap-2"><span class="material-symbols-outlined">save</span> Guardar toda la configuración</button></div>
+    <div class="pt-4"><button id="guardarTodoBtn" class="w-full h-12 bg-green-700 text-white rounded-xl font-bold shadow-md hover:bg-green-800 transition-all save-btn flex items-center justify-center gap-2"><span class="material-symbols-outlined">save</span> Guardar toda la configuración</button></div>
 </main>
 
 <script>
-    // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
-    // CORREGIDO: eliminado la 'h' extra de 'hhttps'
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec';
-    
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyEwtGHbSfHOfmWNCQK4YLuWbDthQajX0zFQYxjV7cjs_ICG7sxZPygSF06XeZbmkneag/exec';
     let datosConfig = null;
     const statusDiv = document.getElementById('statusMsg');
 
-    // Valores por defecto (en caso de que la hoja Configuracion esté vacía)
     const configDefault = {
         plataformas: [
             { id: 'Uber', nombre: 'Uber', activa: true, comision: 25 },
@@ -90,12 +87,11 @@
         general: { emailNotifications: false, autoKm: false, costoCombustible: 1.2 }
     };
 
-    // Funciones de renderizado
     function renderPlataformas() {
         const container = document.getElementById('listaPlataformas');
         if (!container) return;
         container.innerHTML = '';
-        datosConfig.plataformas.forEach((p, idx) => {
+        datosConfig.plataformas.forEach(p => {
             const div = document.createElement('div');
             div.className = 'flex justify-between items-center p-3 border-b border-outline-variant';
             div.innerHTML = `<div class="flex items-center gap-3 flex-1"><label class="toggle-switch"><input type="checkbox" class="plat-activo" data-id="${p.id}" ${p.activa ? 'checked' : ''}><span class="slider"></span></label><input type="text" class="plat-nombre border-b bg-transparent w-32" value="${p.nombre}" data-id="${p.id}"><div class="flex items-center gap-1"><input type="number" step="0.5" class="plat-comision w-20 p-1 border rounded" value="${p.comision}" data-id="${p.id}"><span>%</span></div></div><span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${p.id}">delete</span>`;
@@ -115,7 +111,7 @@
         const container = document.getElementById('listaMantenimientos');
         if (!container) return;
         container.innerHTML = '';
-        datosConfig.mantenimientos.forEach((m, idx) => {
+        datosConfig.mantenimientos.forEach(m => {
             const div = document.createElement('div');
             div.className = 'flex justify-between items-center p-3 border-b border-outline-variant flex-wrap gap-2';
             div.innerHTML = `<div class="flex items-center gap-2"><label class="toggle-switch"><input type="checkbox" class="mant-activo" data-id="${m.id}" ${m.activo ? 'checked' : ''}><span class="slider"></span></label><input type="text" class="mant-nombre border-b bg-transparent w-36" value="${m.nombre}" data-id="${m.id}"></div><div class="flex items-center gap-2"><span class="text-xs">km:</span><input type="number" class="mant-km w-20 p-1 border rounded" value="${m.intervaloKm}" data-id="${m.id}"><span class="text-xs">meses:</span><input type="number" class="mant-meses w-20 p-1 border rounded" value="${m.intervaloMeses}" data-id="${m.id}"></div><span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${m.id}">delete</span>`;
@@ -136,7 +132,7 @@
         const container = document.getElementById('listaRepuestos');
         if (!container) return;
         container.innerHTML = '';
-        datosConfig.repuestos.forEach((r, idx) => {
+        datosConfig.repuestos.forEach(r => {
             const div = document.createElement('div');
             div.className = 'flex justify-between items-center p-3 border-b border-outline-variant';
             div.innerHTML = `<div class="flex items-center gap-2 flex-1"><input type="text" class="rep-nombre border-b bg-transparent w-40" value="${r.nombre}" data-id="${r.id}"><input type="number" step="0.01" class="rep-costo w-24 p-1 border rounded" value="${r.costoPromedio}" data-id="${r.id}" placeholder="Costo USD"><input type="text" class="rep-proveedor w-32 p-1 border rounded" value="${r.proveedor || ''}" data-id="${r.id}" placeholder="Proveedor"></div><span class="material-symbols-outlined delete-btn text-gray-400 hover:text-red-600" data-id="${r.id}">delete</span>`;
@@ -174,17 +170,14 @@
             const response = await fetch(`${SCRIPT_URL}?action=getConfig`);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const data = await response.json();
-            // Si la hoja está vacía, data contendrá los valores por defecto (gracias a cargarConfiguracion en el backend)
-            // Pero por si acaso, validamos que tenga las propiedades mínimas.
             if (data && data.plataformas && data.mantenimientos && data.repuestos && data.general) {
                 datosConfig = data;
                 if (statusDiv) statusDiv.innerHTML = '✅ Configuración cargada';
             } else {
-                throw new Error('Datos inválidos del servidor');
+                throw new Error('Datos inválidos');
             }
         } catch (error) {
             console.error('Error al cargar configuración:', error);
-            // Fallback a valores por defecto
             datosConfig = JSON.parse(JSON.stringify(configDefault));
             if (statusDiv) statusDiv.innerHTML = '⚠️ Usando valores por defecto (sin conexión)';
         }
