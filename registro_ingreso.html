@@ -39,6 +39,7 @@
         <p class="text-sm text-on-surface-variant">Selecciona el rubro y completa los datos</p>
         <div id="conexionStatus" class="status-badge mt-2 justify-center mx-auto w-fit">🔄 Verificando conexión...</div>
         <p class="text-xs text-gray-400 mt-1">Los datos se guardarán en Google Sheets (hoja: Ingresos)</p>
+        <p class="text-xs text-gray-400">La comisión se registrará automáticamente como gasto en la hoja Gastos</p>
     </div>
 
     <!-- ========== RUBRO ========== -->
@@ -136,7 +137,7 @@
 
 <script>
     // ========== CONFIGURACIÓN ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4HNnlovExncdJDPBPsQIBi9eVUGc8ZtbPWuWDxRmIyXt_ChVBF6MwNCOD0Eb8cSniPw/exec'; // REEMPLAZAR
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec'; // REEMPLAZAR
     let rubroActual = 'Transporte';
     let currentPlatform = 'Uber';
     let commissionPercent = 25;
@@ -189,13 +190,20 @@
         const selected = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
         if (selected) selected.classList.add('active', 'ring-2', 'ring-primary');
         loadCommissionForPlatform(platform);
+        calcularPreview();
     }
 
     function loadCommissionForPlatform(platform) {
         let saved = localStorage.getItem(`comision_${platform}`);
-        commissionPercent = (saved && !isNaN(parseFloat(saved))) ? parseFloat(saved) : {Uber:25,DiDi:20,Indriver:15,Cabify:18,Otro:10}[platform]||25;
+        if (saved !== null && !isNaN(parseFloat(saved))) {
+            commissionPercent = parseFloat(saved);
+        } else {
+            const defaults = { Uber: 25, DiDi: 20, Indriver: 15, Cabify: 18, Otro: 10 };
+            commissionPercent = defaults[platform] || 25;
+        }
         const comisionInput = document.getElementById('comisionInput');
         if (comisionInput) comisionInput.value = commissionPercent;
+        document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
         calcularPreview();
     }
 
@@ -205,17 +213,18 @@
         newComm = Math.min(50, Math.max(0, newComm));
         commissionPercent = newComm;
         localStorage.setItem(`comision_${currentPlatform}`, commissionPercent);
-        alert(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`);
+        document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
         calcularPreview();
+        alert(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`);
     }
 
     function calcularPreview() {
         const monto = parseFloat(document.getElementById('monto').value) || 0;
         if (rubroActual === 'Transporte') {
-            const neto = monto * (1 - commissionPercent/100);
+            const neto = monto * (1 - commissionPercent / 100);
             document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
             document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
-            document.getElementById('netoPreview').innerText = `$${neto.toFixed(2)}`;
+            document.getElementById('netoPreview').innerText = `$${isNaN(neto) ? '0.00' : neto.toFixed(2)}`;
         } else {
             document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
             document.getElementById('comisionPreview').innerText = `0%`;
@@ -296,6 +305,8 @@
         params.append('kmTotal', distanciaTotal);
         params.append('horas', horas);
         params.append('notas', notas);
+        // Enviar el porcentaje de comisión (solo para transporte)
+        params.append('comisionPorcentaje', rubroActual === 'Transporte' ? commissionPercent : 0);
 
         const originalHtml = guardarBtn.innerHTML;
         guardarBtn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
@@ -309,7 +320,7 @@
             });
             const text = await response.text();
             if (response.ok && (text.includes('OK') || text.includes('Ingreso registrado'))) {
-                alert(`✅ Ingreso registrado correctamente en Google Sheets\nRubro: ${rubro}\nMonto: $${monto}\nKm app: ${distanciaApp} | Km total: ${distanciaTotal} | Horas: ${horas.toFixed(1)}`);
+                alert(`✅ Ingreso registrado correctamente en Google Sheets\nRubro: ${rubro}\nMonto: $${monto}\nKm app: ${distanciaApp} | Km total: ${distanciaTotal} | Horas: ${horas.toFixed(1)}\n${rubroActual === 'Transporte' ? `Comisión ${commissionPercent}% registrada como gasto automático.` : ''}`);
                 window.location.href = 'Dashboard.html';
             } else {
                 alert('❌ Error del servidor: ' + text);
