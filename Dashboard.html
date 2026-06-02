@@ -4,12 +4,9 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
 <title>Driver Insights - Panel Unificado</title>
-
-<!-- PWA manifest (ruta absoluta a la subcarpeta) -->
 <link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json">
 <meta name="theme-color" content="#004831">
 <meta name="mobile-web-app-capable" content="yes">
-
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -24,27 +21,9 @@
     .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
-    /* Modal simple */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-    .modal-content {
-        background: white;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        width: 90%;
-        max-width: 350px;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-    }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+    .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 350px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+    .date-range { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 </style>
 <script id="tailwind-config">
     tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff", "electronica-primary": "#1E3A8A", "electronica-light": "#DBEAFE" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
@@ -71,9 +50,26 @@
 </div>
 
 <main class="pt-28 px-4 space-y-4 max-w-lg mx-auto">
+    <!-- Filtros de fecha -->
+    <section class="bg-white border border-outline-variant rounded-xl p-3 shadow-sm">
+        <label class="text-xs font-bold uppercase block mb-2">Filtrar por período</label>
+        <div class="flex flex-wrap gap-2 mb-2">
+            <button data-period="today" class="period-btn bg-surface-container-high px-3 py-1 rounded-full text-sm">Hoy</button>
+            <button data-period="week" class="period-btn bg-surface-container-high px-3 py-1 rounded-full text-sm">Esta semana</button>
+            <button data-period="month" class="period-btn bg-surface-container-high px-3 py-1 rounded-full text-sm">Este mes</button>
+            <button data-period="custom" class="period-btn bg-surface-container-high px-3 py-1 rounded-full text-sm">Personalizado</button>
+        </div>
+        <div id="customRange" class="date-range hidden">
+            <input type="date" id="fechaInicio" class="border rounded-lg p-2 text-sm flex-1">
+            <span>—</span>
+            <input type="date" id="fechaFin" class="border rounded-lg p-2 text-sm flex-1">
+            <button id="aplicarFiltro" class="bg-primary text-white px-3 py-2 rounded-lg text-sm">Aplicar</button>
+        </div>
+    </section>
+
     <!-- Resumen global -->
     <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
-        <div><p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global Hoy</p><p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p></div>
+        <div><p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global</p><p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p></div>
         <div class="flex gap-2"><div class="text-right border-r border-outline-variant pr-3"><p class="text-[10px]">Transporte</p><p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p></div><div class="text-right"><p class="text-[10px]">Electrónica</p><p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p></div></div>
     </section>
 
@@ -85,7 +81,7 @@
         <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold"><span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer</span><p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p></div>
     </section>
 
-    <!-- Métricas rápidas (incluye botón para añadir recorrido) -->
+    <!-- Métricas rápidas -->
     <div class="grid grid-cols-2 gap-3">
         <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p><p class="font-data-mono text-lg" id="distanciaTotal">0</p></div>
         <div class="bg-white border rounded-xl p-3 relative">
@@ -95,8 +91,13 @@
         </div>
     </div>
 
-    <!-- Rentabilidad real (costo por km corregido) -->
-    <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div><p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p></div><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p></div></div>
+    <!-- Rentabilidad real y rendimiento -->
+    <div class="bg-surface-container-low rounded-xl p-4 border space-y-3">
+        <h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
+        <div class="flex justify-between"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div><p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p></div>
+        <div class="flex justify-between"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p></div>
+        <div class="flex justify-between border-t pt-2"><div><p class="text-sm font-bold">Rendimiento Combustible</p><p class="text-xs">km/litro (período)</p></div><p class="font-data-mono text-electronica-primary" id="rendimientoCombustible">0.00 km/l</p></div>
+    </div>
 
     <!-- Botones rápidos -->
     <div class="grid grid-cols-2 gap-3"><button onclick="location.href='/registro-taxi-aplicaciones-/registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso</button><button onclick="location.href='/registro-taxi-aplicaciones-/registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto</button></div>
@@ -119,7 +120,6 @@
     </div>
 </div>
 
-<!-- Navegación inferior -->
 <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50"><div class="grid grid-cols-5 gap-1 text-center">
     <a href="/registro-taxi-aplicaciones-/Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span class="text-[10px]">Panel</span></a>
     <a href="/registro-taxi-aplicaciones-/registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span class="text-[10px]">Ingresos</span></a>
@@ -129,54 +129,100 @@
 </div></nav>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTZXCieSPZXLObmEEKY0MEx3Q1CXcd9ctEx8EkXidlL7-nW7qEjXriDnZrl9ix44BK4A/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbycBIvNeVatROEBLM4f8icZ1gsRjdyXk086TEHA7kYKbQpRGeQhDwxUXYfVbVOx4JTHKQ/exec';
     let rubroActual = 'general';
     let statsCompletos = null;
+    let currentPeriod = 'today';
+    let currentStart = null, currentEnd = null;
 
-    async function verificarConexion() {
-        const statusDiv = document.getElementById('connectionStatus');
-        if (!statusDiv) return;
-        statusDiv.innerHTML = '🔄 Verificando...';
-        statusDiv.className = 'status-badge status-error';
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=getStats`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data && typeof data === 'object') {
-                    statusDiv.innerHTML = '✅ Conectado';
-                    statusDiv.className = 'status-badge status-connected';
-                } else {
-                    throw new Error('Respuesta inválida');
-                }
-            } else {
-                throw new Error(`HTTP ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Conexión fallida:', error);
-            statusDiv.innerHTML = '❌ Sin conexión';
-            statusDiv.className = 'status-badge status-error';
+    // Funciones de fechas
+    function getDateRange(period) {
+        const today = new Date();
+        let start = new Date(today);
+        let end = new Date(today);
+        if (period === 'today') {
+            start.setHours(0,0,0,0);
+            end.setHours(23,59,59,999);
+        } else if (period === 'week') {
+            const day = today.getDay();
+            const diff = day === 0 ? 6 : day-1; // lunes como inicio
+            start.setDate(today.getDate() - diff);
+            start.setHours(0,0,0,0);
+            end = new Date(start);
+            end.setDate(start.getDate() + 6);
+            end.setHours(23,59,59,999);
+        } else if (period === 'month') {
+            start = new Date(today.getFullYear(), today.getMonth(), 1);
+            end = new Date(today.getFullYear(), today.getMonth()+1, 0);
+            end.setHours(23,59,59,999);
         }
+        return { start, end };
     }
 
-    function cambiarRubro(rubro) {
-        rubroActual = rubro;
-        const tabGeneral = document.getElementById('tabGeneral');
-        const tabTransporte = document.getElementById('tabTransporte');
-        const tabElectronica = document.getElementById('tabElectronica');
-        if (rubro === 'general') {
-            tabGeneral.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabTransporte.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabElectronica.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-        } else if (rubro === 'transporte') {
-            tabGeneral.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabTransporte.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabElectronica.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+    function formatDateParam(date) {
+        return date.toISOString().slice(0,10);
+    }
+
+    async function cargarDashboard() {
+        let fechaInicio = null, fechaFin = null;
+        if (currentPeriod === 'custom') {
+            if (currentStart && currentEnd) {
+                fechaInicio = formatDateParam(currentStart);
+                fechaFin = formatDateParam(currentEnd);
+            }
         } else {
-            tabGeneral.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabTransporte.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabElectronica.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            const range = getDateRange(currentPeriod);
+            fechaInicio = formatDateParam(range.start);
+            fechaFin = formatDateParam(range.end);
         }
-        actualizarVista();
+
+        try {
+            // Cargar estadísticas
+            let url = `${SCRIPT_URL}?action=getStats`;
+            if (fechaInicio) url += `&fechaInicio=${fechaInicio}`;
+            if (fechaFin) url += `&fechaFin=${fechaFin}`;
+            const res = await fetch(url);
+            statsCompletos = await res.json();
+            
+            document.getElementById('gananciaGlobal').innerText = `$${statsCompletos.ganancia.toFixed(2)}`;
+            document.getElementById('gananciaTransporte').innerText = `$${statsCompletos.gananciaTransporte.toFixed(2)}`;
+            document.getElementById('gananciaElectronica').innerText = `$${statsCompletos.gananciaElectronica.toFixed(2)}`;
+            const gananciaPorHora = statsCompletos.totalHoras > 0 ? statsCompletos.ganancia / statsCompletos.totalHoras : 0;
+            const gastosCombMant = statsCompletos.gastosCombustibleMantenimiento || 0;
+            const costoPorKm = statsCompletos.totalKmTotal > 0 ? gastosCombMant / statsCompletos.totalKmTotal : 0;
+            document.getElementById('gananciaPorHora').innerText = `$${gananciaPorHora.toFixed(2)}`;
+            document.getElementById('costoPorKm').innerText = `$${costoPorKm.toFixed(2)}`;
+            document.getElementById('distanciaTotal').innerText = (statsCompletos.totalKmTotal || 0).toFixed(1);
+            document.getElementById('horasTrabajadas').innerText = (statsCompletos.totalHoras || 0).toFixed(1);
+            actualizarVista();
+
+            // Cargar rendimiento combustible
+            let urlRend = `${SCRIPT_URL}?action=getRendimiento`;
+            if (fechaInicio) urlRend += `&fechaInicio=${fechaInicio}`;
+            if (fechaFin) urlRend += `&fechaFin=${fechaFin}`;
+            const rendRes = await fetch(urlRend);
+            const rendData = await rendRes.json();
+            document.getElementById('rendimientoCombustible').innerText = rendData.rendimientoKmPorLitro.toFixed(2) + ' km/l';
+
+            // Actividad reciente (sin filtrar por ahora, pero se puede mejorar)
+            const actRes = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
+            const actividades = await actRes.json();
+            const container = document.getElementById('recentActivityContainer');
+            if (actividades.length === 0) container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad reciente</div>';
+            else container.innerHTML = actividades.map(a => {
+                if (a.tipo === 'recorrido') {
+                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
+                                <div><p class="font-bold">🚗 Recorrido adicional</p><p class="text-xs text-gray-500">${a.fecha} • ${a.notas || 'Sin notas'}</p></div>
+                                <div class="text-right"><p class="text-primary font-bold">+${a.km} km</p></div>
+                            </div>`;
+                } else {
+                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
+                                <div><p class="font-bold">${a.descripcion}</p><p class="text-xs text-gray-500">${a.fecha} • ${a.rubro}</p></div>
+                                <div class="text-right"><p class="${a.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary'} font-bold">${a.tipo === 'ingreso' ? '+' : '-'}$${a.monto.toFixed(2)}</p></div>
+                            </div>`;
+                }
+            }).join('');
+        } catch(e) { console.error(e); }
     }
 
     function actualizarVista() {
@@ -203,44 +249,64 @@
         document.getElementById('detalleRubro').innerHTML = `Bruto: $${bruto.toFixed(2)} | Gastos: $${gastos.toFixed(2)}`;
     }
 
-    async function cargarDashboard() {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getStats`);
-            statsCompletos = await res.json();
-            document.getElementById('gananciaGlobal').innerText = `$${statsCompletos.ganancia.toFixed(2)}`;
-            document.getElementById('gananciaTransporte').innerText = `$${statsCompletos.gananciaTransporte.toFixed(2)}`;
-            document.getElementById('gananciaElectronica').innerText = `$${statsCompletos.gananciaElectronica.toFixed(2)}`;
-            const gananciaPorHora = statsCompletos.totalHoras > 0 ? statsCompletos.ganancia / statsCompletos.totalHoras : 0;
-            // Costo por km real: solo combustible + mantenimiento
-            const gastosCombMant = statsCompletos.gastosCombustibleMantenimiento || 0;
-            const costoPorKm = statsCompletos.totalKmTotal > 0 ? gastosCombMant / statsCompletos.totalKmTotal : 0;
-            document.getElementById('gananciaPorHora').innerText = `$${gananciaPorHora.toFixed(2)}`;
-            document.getElementById('costoPorKm').innerText = `$${costoPorKm.toFixed(2)}`;
-            document.getElementById('distanciaTotal').innerText = (statsCompletos.totalKmTotal || 0).toFixed(1);
-            document.getElementById('horasTrabajadas').innerText = (statsCompletos.totalHoras || 0).toFixed(1);
-            actualizarVista();
-
-            const actRes = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
-            const actividades = await actRes.json();
-            const container = document.getElementById('recentActivityContainer');
-            if (actividades.length === 0) container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad reciente</div>';
-            else container.innerHTML = actividades.map(a => {
-                if (a.tipo === 'recorrido') {
-                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
-                                <div><p class="font-bold">🚗 Recorrido adicional</p><p class="text-xs text-gray-500">${a.fecha} • ${a.notas || 'Sin notas'}</p></div>
-                                <div class="text-right"><p class="text-primary font-bold">+${a.km} km</p></div>
-                            </div>`;
-                } else {
-                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
-                                <div><p class="font-bold">${a.descripcion}</p><p class="text-xs text-gray-500">${a.fecha} • ${a.rubro}</p></div>
-                                <div class="text-right"><p class="${a.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary'} font-bold">${a.tipo === 'ingreso' ? '+' : '-'}$${a.monto.toFixed(2)}</p></div>
-                            </div>`;
-                }
-            }).join('');
-        } catch(e) { console.error(e); }
+    function cambiarRubro(rubro) {
+        rubroActual = rubro;
+        const tabGeneral = document.getElementById('tabGeneral');
+        const tabTransporte = document.getElementById('tabTransporte');
+        const tabElectronica = document.getElementById('tabElectronica');
+        if (rubro === 'general') {
+            tabGeneral.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            tabTransporte.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            tabElectronica.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+        } else if (rubro === 'transporte') {
+            tabGeneral.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            tabTransporte.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            tabElectronica.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+        } else {
+            tabGeneral.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            tabTransporte.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+            tabElectronica.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
+        }
+        actualizarVista();
     }
 
-    // Registrar recorrido adicional
+    // Filtros
+    function setPeriod(period) {
+        currentPeriod = period;
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.classList.remove('bg-primary', 'text-white');
+            btn.classList.add('bg-surface-container-high');
+        });
+        const activeBtn = document.querySelector(`.period-btn[data-period="${period}"]`);
+        activeBtn.classList.remove('bg-surface-container-high');
+        activeBtn.classList.add('bg-primary', 'text-white');
+        if (period === 'custom') {
+            document.getElementById('customRange').classList.remove('hidden');
+            const today = new Date();
+            document.getElementById('fechaInicio').value = formatDateParam(today);
+            document.getElementById('fechaFin').value = formatDateParam(today);
+            currentStart = today;
+            currentEnd = today;
+        } else {
+            document.getElementById('customRange').classList.add('hidden');
+            cargarDashboard();
+        }
+    }
+
+    function aplicarCustom() {
+        const inicio = document.getElementById('fechaInicio').value;
+        const fin = document.getElementById('fechaFin').value;
+        if (inicio && fin) {
+            currentStart = new Date(inicio);
+            currentEnd = new Date(fin);
+            currentEnd.setHours(23,59,59,999);
+            cargarDashboard();
+        } else {
+            alert('Selecciona ambas fechas');
+        }
+    }
+
+    // Registrar recorrido
     async function registrarRecorrido(fecha, km, notas) {
         try {
             const params = new URLSearchParams();
@@ -252,7 +318,7 @@
             const text = await response.text();
             if (text === "OK") {
                 alert('Recorrido registrado correctamente');
-                cargarDashboard(); // recargar datos
+                cargarDashboard();
             } else {
                 alert('Error al registrar: ' + text);
             }
@@ -261,53 +327,61 @@
         }
     }
 
-    // Manejo del modal
+    // Verificar conexión
+    async function verificarConexion() {
+        const statusDiv = document.getElementById('connectionStatus');
+        statusDiv.innerHTML = '🔄 Verificando...';
+        statusDiv.className = 'status-badge status-error';
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=getStats`);
+            if (response.ok) {
+                statusDiv.innerHTML = '✅ Conectado';
+                statusDiv.className = 'status-badge status-connected';
+            } else throw new Error();
+        } catch(e) {
+            statusDiv.innerHTML = '❌ Sin conexión';
+        }
+    }
+
+    // Eventos
+    document.querySelectorAll('.period-btn').forEach(btn => {
+        btn.addEventListener('click', () => setPeriod(btn.dataset.period));
+    });
+    document.getElementById('aplicarFiltro').addEventListener('click', aplicarCustom);
+    document.getElementById('verTodoBtn')?.addEventListener('click', () => alert('Próximamente historial completo.'));
+    document.getElementById('calendarBtn')?.addEventListener('click', () => alert('Funcionalidad de calendario en desarrollo.'));
+
+    // Modal recorrido
     const modal = document.getElementById('tripModal');
     const addTripBtn = document.getElementById('addTripBtn');
     const confirmBtn = document.getElementById('confirmTripBtn');
     const cancelBtn = document.getElementById('cancelTripBtn');
-    const tripDate = document.getElementById('tripDate');
-    const tripKm = document.getElementById('tripKm');
-    const tripNotes = document.getElementById('tripNotes');
-
     addTripBtn.addEventListener('click', () => {
-        // Establecer fecha actual por defecto
-        const today = new Date().toISOString().slice(0,10);
-        tripDate.value = today;
-        tripKm.value = '';
-        tripNotes.value = '';
+        document.getElementById('tripDate').valueAsDate = new Date();
+        document.getElementById('tripKm').value = '';
+        document.getElementById('tripNotes').value = '';
         modal.style.display = 'flex';
     });
-    cancelBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
+    cancelBtn.addEventListener('click', () => modal.style.display = 'none');
     confirmBtn.addEventListener('click', async () => {
-        const fecha = tripDate.value;
-        const km = parseFloat(tripKm.value);
+        const fecha = document.getElementById('tripDate').value;
+        const km = parseFloat(document.getElementById('tripKm').value);
         if (!fecha || isNaN(km) || km <= 0) {
-            alert('Por favor ingresa una fecha válida y kilómetros positivos');
+            alert('Ingresa fecha y km válidos');
             return;
         }
         modal.style.display = 'none';
-        await registrarRecorrido(fecha, km, tripNotes.value);
+        await registrarRecorrido(fecha, km, document.getElementById('tripNotes').value);
     });
-    // Cerrar modal si se hace clic fuera del contenido
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-    document.getElementById('verTodoBtn')?.addEventListener('click', () => alert('Próximamente historial completo.'));
-    document.getElementById('calendarBtn')?.addEventListener('click', () => alert('Funcionalidad de calendario en desarrollo. Próximamente podrás filtrar por fechas.'));
-
-    // Registrar Service Worker para PWA
+    // Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js')
-            .then(reg => console.log('SW registrado:', reg))
-            .catch(err => console.error('Error al registrar SW:', err));
+        navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js').catch(console.error);
     }
 
+    setPeriod('today');
     verificarConexion();
-    cargarDashboard();
 </script>
 </body>
 </html>
