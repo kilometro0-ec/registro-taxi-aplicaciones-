@@ -10,7 +10,6 @@
 <meta name="theme-color" content="#004831">
 <meta name="mobile-web-app-capable" content="yes">
 
-
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -25,6 +24,27 @@
     .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
+    /* Modal simple */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+    .modal-content {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        width: 90%;
+        max-width: 350px;
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+    }
 </style>
 <script id="tailwind-config">
     tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff", "electronica-primary": "#1E3A8A", "electronica-light": "#DBEAFE" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
@@ -65,10 +85,17 @@
         <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold"><span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer</span><p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p></div>
     </section>
 
-    <!-- Métricas rápidas (ahora con totales reales) -->
-    <div class="grid grid-cols-2 gap-3"><div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p><p class="font-data-mono text-lg" id="distanciaTotal">0</p></div><div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p><p class="font-data-mono text-lg" id="horasTrabajadas">0</p></div></div>
+    <!-- Métricas rápidas (incluye botón para añadir recorrido) -->
+    <div class="grid grid-cols-2 gap-3">
+        <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p><p class="font-data-mono text-lg" id="distanciaTotal">0</p></div>
+        <div class="bg-white border rounded-xl p-3 relative">
+            <p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p>
+            <p class="font-data-mono text-lg" id="horasTrabajadas">0</p>
+            <button id="addTripBtn" class="absolute bottom-2 right-2 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido adicional"><span class="material-symbols-outlined text-sm" style="font-size:16px">add_road</span></button>
+        </div>
+    </div>
 
-    <!-- Rentabilidad real -->
+    <!-- Rentabilidad real (costo por km corregido) -->
     <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div><p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p></div><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p></div></div>
 
     <!-- Botones rápidos -->
@@ -77,6 +104,20 @@
     <!-- Actividad reciente -->
     <section><div class="flex justify-between"><h3 class="font-bold text-md">Actividad Reciente</h3><button id="verTodoBtn" class="text-secondary text-xs uppercase">Ver Todo</button></div><div id="recentActivityContainer" class="space-y-2 mt-2"></div></section>
 </main>
+
+<!-- Modal para registrar recorrido -->
+<div id="tripModal" class="modal-overlay hidden" style="display: none;">
+    <div class="modal-content">
+        <h3 class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
+        <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2" value="">
+        <input type="number" id="tripKm" placeholder="Kilómetros recorridos" class="w-full border rounded-lg p-2 mb-2" step="0.1">
+        <input type="text" id="tripNotes" placeholder="Notas (opcional)" class="w-full border rounded-lg p-2 mb-4">
+        <div class="flex gap-2">
+            <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1">Guardar</button>
+            <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1">Cancelar</button>
+        </div>
+    </div>
+</div>
 
 <!-- Navegación inferior -->
 <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50"><div class="grid grid-cols-5 gap-1 text-center">
@@ -88,7 +129,7 @@
 </div></nav>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTZXCieSPZXLObmEEKY0MEx3Q1CXcd9ctEx8EkXidlL7-nW7qEjXriDnZrl9ix44BK4A/exec';
     let rubroActual = 'general';
     let statsCompletos = null;
 
@@ -170,7 +211,9 @@
             document.getElementById('gananciaTransporte').innerText = `$${statsCompletos.gananciaTransporte.toFixed(2)}`;
             document.getElementById('gananciaElectronica').innerText = `$${statsCompletos.gananciaElectronica.toFixed(2)}`;
             const gananciaPorHora = statsCompletos.totalHoras > 0 ? statsCompletos.ganancia / statsCompletos.totalHoras : 0;
-            const costoPorKm = statsCompletos.totalKmTotal > 0 ? statsCompletos.totalGastos / statsCompletos.totalKmTotal : 0;
+            // Costo por km real: solo combustible + mantenimiento
+            const gastosCombMant = statsCompletos.gastosCombustibleMantenimiento || 0;
+            const costoPorKm = statsCompletos.totalKmTotal > 0 ? gastosCombMant / statsCompletos.totalKmTotal : 0;
             document.getElementById('gananciaPorHora').innerText = `$${gananciaPorHora.toFixed(2)}`;
             document.getElementById('costoPorKm').innerText = `$${costoPorKm.toFixed(2)}`;
             document.getElementById('distanciaTotal').innerText = (statsCompletos.totalKmTotal || 0).toFixed(1);
@@ -181,9 +224,77 @@
             const actividades = await actRes.json();
             const container = document.getElementById('recentActivityContainer');
             if (actividades.length === 0) container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad reciente</div>';
-            else container.innerHTML = actividades.map(a => `<div class="bg-white border p-3 rounded-xl flex justify-between items-center"><div><p class="font-bold">${a.descripcion}</p><p class="text-xs text-gray-500">${a.fecha} • ${a.rubro}</p></div><div class="text-right"><p class="${a.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary'} font-bold">${a.tipo === 'ingreso' ? '+' : '-'}$${a.monto.toFixed(2)}</p></div></div>`).join('');
+            else container.innerHTML = actividades.map(a => {
+                if (a.tipo === 'recorrido') {
+                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
+                                <div><p class="font-bold">🚗 Recorrido adicional</p><p class="text-xs text-gray-500">${a.fecha} • ${a.notas || 'Sin notas'}</p></div>
+                                <div class="text-right"><p class="text-primary font-bold">+${a.km} km</p></div>
+                            </div>`;
+                } else {
+                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
+                                <div><p class="font-bold">${a.descripcion}</p><p class="text-xs text-gray-500">${a.fecha} • ${a.rubro}</p></div>
+                                <div class="text-right"><p class="${a.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary'} font-bold">${a.tipo === 'ingreso' ? '+' : '-'}$${a.monto.toFixed(2)}</p></div>
+                            </div>`;
+                }
+            }).join('');
         } catch(e) { console.error(e); }
     }
+
+    // Registrar recorrido adicional
+    async function registrarRecorrido(fecha, km, notas) {
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'addTrip');
+            params.append('fecha', fecha);
+            params.append('km', km);
+            params.append('notas', notas);
+            const response = await fetch(`${SCRIPT_URL}?${params.toString()}`, { method: 'POST' });
+            const text = await response.text();
+            if (text === "OK") {
+                alert('Recorrido registrado correctamente');
+                cargarDashboard(); // recargar datos
+            } else {
+                alert('Error al registrar: ' + text);
+            }
+        } catch(e) {
+            alert('Error de conexión: ' + e.message);
+        }
+    }
+
+    // Manejo del modal
+    const modal = document.getElementById('tripModal');
+    const addTripBtn = document.getElementById('addTripBtn');
+    const confirmBtn = document.getElementById('confirmTripBtn');
+    const cancelBtn = document.getElementById('cancelTripBtn');
+    const tripDate = document.getElementById('tripDate');
+    const tripKm = document.getElementById('tripKm');
+    const tripNotes = document.getElementById('tripNotes');
+
+    addTripBtn.addEventListener('click', () => {
+        // Establecer fecha actual por defecto
+        const today = new Date().toISOString().slice(0,10);
+        tripDate.value = today;
+        tripKm.value = '';
+        tripNotes.value = '';
+        modal.style.display = 'flex';
+    });
+    cancelBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
+    });
+    confirmBtn.addEventListener('click', async () => {
+        const fecha = tripDate.value;
+        const km = parseFloat(tripKm.value);
+        if (!fecha || isNaN(km) || km <= 0) {
+            alert('Por favor ingresa una fecha válida y kilómetros positivos');
+            return;
+        }
+        modal.style.display = 'none';
+        await registrarRecorrido(fecha, km, tripNotes.value);
+    });
+    // Cerrar modal si se hace clic fuera del contenido
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
 
     document.getElementById('verTodoBtn')?.addEventListener('click', () => alert('Próximamente historial completo.'));
     document.getElementById('calendarBtn')?.addEventListener('click', () => alert('Funcionalidad de calendario en desarrollo. Próximamente podrás filtrar por fechas.'));
