@@ -1,5 +1,5 @@
 // sw.js - Service Worker para Driver & Tech Companion
-const CACHE_NAME = 'driver-tech-v10';
+const CACHE_NAME = 'driver-tech-v11';
 const urlsToCache = [
   '/registro-taxi-aplicaciones-/',
   '/registro-taxi-aplicaciones-/Dashboard.html',
