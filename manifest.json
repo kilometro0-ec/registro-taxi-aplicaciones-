@@ -1,6 +1,6 @@
 {
-  "name": "Driver Insights",
-  "short_name": "DriverInsights",
+  "name": "Driver & Tech Companion",
+  "short_name": "DriverTech",
   "description": "Gestión mixta para conductores y técnicos electrónicos",
   "start_url": "/Dashboard.html",
   "display": "standalone",
