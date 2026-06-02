@@ -1,5 +1,5 @@
-// sw.js - Service Worker para Driver Insights
-const CACHE_NAME = 'driver-insights-v1';
+// sw.js - Service Worker para Driver & Tech Companion
+const CACHE_NAME = 'driver-tech-v1';
 const urlsToCache = [
   '/',
   '/Dashboard.html',
