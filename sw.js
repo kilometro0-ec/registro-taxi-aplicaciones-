@@ -1,39 +1,33 @@
-const CACHE_NAME = 'driver-tech-v1';
-const urlsToCache = [
-  '/registro-taxi-aplicaciones-/',
-  '/registro-taxi-aplicaciones-/Dashboard.html',
-  '/registro-taxi-aplicaciones-/registro_ingreso.html',
-  '/registro-taxi-aplicaciones-/registro_gasto.html',
-  '/registro-taxi-aplicaciones-/vehiculo_mantenimiento.html',
-  '/registro-taxi-aplicaciones-/reporte_estadisticas.html',
-  '/registro-taxi-aplicaciones-/configuracion.html',
-  '/registro-taxi-aplicaciones-/manifest.json'
+const CACHE_NAME = 'driver-tech-v1.0.1';
+const ASSETS = [
+  'Dashboard.html',
+  'registro_ingreso.html',
+  'registro_gasto.html',
+  'vehiculo_mantenimiento.html',
+  'reporte_estadisticas.html',
+  'configuracion.html',
+  'manifest.json'
 ];
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+self.addEventListener('install', (e) => {
+  self.skipWaiting();
+  e.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
-self.addEventListener('fetch', event => {
-  // Para recursos externos (CDN), solo red y NO cache
-  if (event.request.url.startsWith('https://cdn.tailwindcss.com') ||
-      event.request.url.startsWith('https://fonts.googleapis.com')) {
-    event.respondWith(fetch(event.request));
-    return;
-  }
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
-});
-
-self.addEventListener('activate', event => {
-  event.waitUntil(
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
     caches.keys().then(keys => Promise.all(
-      keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
+      keys.map(key => {
+        if (key !== CACHE_NAME) return caches.delete(key);
+      })
     ))
+  );
+});
+
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    fetch(e.request).catch(() => caches.match(e.request))
   );
 });
