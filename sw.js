@@ -1,5 +1,4 @@
-// sw.js - Service Worker para Driver & Tech Companion
-const CACHE_NAME = 'driver-tech-v11';
+const CACHE_NAME = 'driver-tech-v1';
 const urlsToCache = [
   '/registro-taxi-aplicaciones-/',
   '/registro-taxi-aplicaciones-/Dashboard.html',
@@ -8,10 +7,7 @@ const urlsToCache = [
   '/registro-taxi-aplicaciones-/vehiculo_mantenimiento.html',
   '/registro-taxi-aplicaciones-/reporte_estadisticas.html',
   '/registro-taxi-aplicaciones-/configuracion.html',
-  '/registro-taxi-aplicaciones-/manifest.json',
-  'https://cdn.tailwindcss.com',
-  'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap',
-  'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap'
+  '/registro-taxi-aplicaciones-/manifest.json'
 ];
 
 self.addEventListener('install', event => {
@@ -22,6 +18,12 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Para recursos externos (CDN), solo red y NO cache
+  if (event.request.url.startsWith('https://cdn.tailwindcss.com') ||
+      event.request.url.startsWith('https://fonts.googleapis.com')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
   event.respondWith(
     caches.match(event.request)
       .then(response => response || fetch(event.request))
