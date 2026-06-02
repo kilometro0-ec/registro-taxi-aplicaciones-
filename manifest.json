@@ -1,7 +1,7 @@
 {
   "name": "Driver & Tech Companion",
   "short_name": "DriverTech",
-  "start_url": "/Dashboard.html",
+  "start_url": "/registro-taxi-aplicaciones-/Dashboard.html",
   "display": "standalone",
   "theme_color": "#004831",
   "background_color": "#f8f9ff"
