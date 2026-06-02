@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>Driver & Tech Companion</title>
     <!-- PWA manifest con ruta absoluta a subcarpeta -->
-    <link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json">
+   <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#004831">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -75,9 +75,9 @@
 
     // Registrar Service Worker (ruta absoluta a la subcarpeta)
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js')
-            .then(reg => console.log('Service Worker registrado:', reg))
-            .catch(err => console.error('Error al registrar SW:', err));
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker registrado', reg))
+      .catch(err => console.log('Error al registrar SW', err));
     }
 </script>
 </body>
