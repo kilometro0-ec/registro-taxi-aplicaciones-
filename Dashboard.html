@@ -4,11 +4,10 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
 <title>Driver Insights - Panel Unificado</title>
-<!-- PWA manifest -->
-<link rel="manifest" href="/manifest.json">
+<!-- PWA -->
+<link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json">
 <meta name="theme-color" content="#004831">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -30,14 +29,10 @@
 </head>
 <body class="bg-surface text-on-surface min-h-screen pb-24">
 <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-4 h-12 w-full shadow-sm">
-<div class="flex items-center gap-3">
-    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-white" style="font-size:20px">person</span></div>
-    <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
-    <div id="connectionStatus" class="status-badge status-error">🔄 Conectando...</div>
-</div>
+<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-white" style="font-size:20px">person</span></div><h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
 <div class="flex gap-2">
-    <a href="configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">settings</a>
-    <button id="calendarBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">calendar_today</button>
+    <a href="/registro-taxi-aplicaciones-/configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">settings</a>
+    <button class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">calendar_today</button>
 </div>
 </header>
 
@@ -49,13 +44,11 @@
 </div>
 
 <main class="pt-28 px-4 space-y-4 max-w-lg mx-auto">
-    <!-- Resumen global -->
     <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
-        <div><p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global</p><p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p></div>
+        <div><p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global Hoy</p><p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p></div>
         <div class="flex gap-2"><div class="text-right border-r border-outline-variant pr-3"><p class="text-[10px]">Transporte</p><p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p></div><div class="text-right"><p class="text-[10px]">Electrónica</p><p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p></div></div>
     </section>
 
-    <!-- Tarjeta dinámica según rubro -->
     <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden">
         <div class="absolute top-0 right-0 p-3 opacity-10"><span class="material-symbols-outlined" style="font-size:48px">trending_up</span></div>
         <p class="font-label-caps text-label-caps text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
@@ -63,26 +56,21 @@
         <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold"><span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer</span><p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p></div>
     </section>
 
-    <!-- Métricas rápidas -->
     <div class="grid grid-cols-2 gap-3"><div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p><p class="font-data-mono text-lg" id="distanciaTotal">0</p></div><div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p><p class="font-data-mono text-lg" id="horasTrabajadas">0</p></div></div>
 
-    <!-- Rentabilidad real -->
     <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div><p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p></div><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p></div></div>
 
-    <!-- Botones rápidos -->
-    <div class="grid grid-cols-2 gap-3"><button onclick="location.href='registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso</button><button onclick="location.href='registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto</button></div>
+    <div class="grid grid-cols-2 gap-3"><button onclick="location.href='/registro-taxi-aplicaciones-/registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso</button><button onclick="location.href='/registro-taxi-aplicaciones-/registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto</button></div>
 
-    <!-- Actividad reciente -->
     <section><div class="flex justify-between"><h3 class="font-bold text-md">Actividad Reciente</h3><button id="verTodoBtn" class="text-secondary text-xs uppercase">Ver Todo</button></div><div id="recentActivityContainer" class="space-y-2 mt-2"></div></section>
 </main>
 
-<!-- Navegación inferior -->
 <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50"><div class="grid grid-cols-5 gap-1 text-center">
-    <a href="Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span class="text-[10px]">Panel</span></a>
-    <a href="registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span class="text-[10px]">Ingresos</span></a>
-    <a href="registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">receipt_long</span><span class="text-[10px]">Gastos</span></a>
-    <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">directions_car</span><span class="text-[10px]">Vehículo</span></a>
-    <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">analytics</span><span class="text-[10px]">Análisis</span></a>
+    <a href="/registro-taxi-aplicaciones-/Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span class="text-[10px]">Panel</span></a>
+    <a href="/registro-taxi-aplicaciones-/registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span class="text-[10px]">Ingresos</span></a>
+    <a href="/registro-taxi-aplicaciones-/registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">receipt_long</span><span class="text-[10px]">Gastos</span></a>
+    <a href="/registro-taxi-aplicaciones-/vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">directions_car</span><span class="text-[10px]">Vehículo</span></a>
+    <a href="/registro-taxi-aplicaciones-/reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">analytics</span><span class="text-[10px]">Análisis</span></a>
 </div></nav>
 
 <script>
@@ -92,17 +80,19 @@
 
     async function verificarConexion() {
         const statusDiv = document.getElementById('connectionStatus');
+        if (!statusDiv) return;
         try {
             const response = await fetch(`${SCRIPT_URL}?action=getStats`);
             if (response.ok) {
-                statusDiv.innerHTML = '✅ Conectado';
-                statusDiv.classList.add('status-connected');
-                statusDiv.classList.remove('status-error');
-            } else throw new Error('HTTP error');
+                const data = await response.json();
+                if (data && typeof data === 'object') {
+                    statusDiv.innerHTML = '✅ Conectado';
+                    statusDiv.className = 'status-badge status-connected';
+                } else throw new Error('Respuesta inválida');
+            } else throw new Error(`HTTP ${response.status}`);
         } catch (error) {
             statusDiv.innerHTML = '❌ Sin conexión';
-            statusDiv.classList.add('status-error');
-            statusDiv.classList.remove('status-connected');
+            statusDiv.className = 'status-badge status-error';
         }
     }
 
@@ -173,18 +163,9 @@
             else container.innerHTML = actividades.map(a => `<div class="bg-white border p-3 rounded-xl flex justify-between items-center"><div><p class="font-bold">${a.descripcion}</p><p class="text-xs text-gray-500">${a.fecha} • ${a.rubro}</p></div><div class="text-right"><p class="${a.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary'} font-bold">${a.tipo === 'ingreso' ? '+' : '-'}$${a.monto.toFixed(2)}</p></div></div>`).join('');
         } catch(e) { console.error(e); }
     }
-
     document.getElementById('verTodoBtn')?.addEventListener('click', () => alert('Próximamente historial completo.'));
-    document.getElementById('calendarBtn')?.addEventListener('click', () => alert('Funcionalidad de calendario en desarrollo.'));
-    verificarConexion();
     cargarDashboard();
-
-    // Registrar Service Worker
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('SW registrado:', reg))
-            .catch(err => console.error('Error SW:', err));
-    }
+    verificarConexion();
 </script>
 </body>
 </html>
