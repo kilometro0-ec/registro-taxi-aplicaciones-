@@ -6,6 +6,61 @@
     <title>Vehículo y Mantenimiento</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <!-- Configuración de colores personalizados (igual que Dashboard) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed-variant": "#832700",
+                        "secondary": "#455f88",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-tint": "#1c6b4d",
+                        "outline": "#6f7973",
+                        "primary-fixed": "#a6f2cc",
+                        "secondary-container": "#b6d0ff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bfc9c1",
+                        "primary-fixed-dim": "#8bd6b1",
+                        "on-surface-variant": "#3f4943",
+                        "on-tertiary-fixed": "#390c00",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-container": "#90dbb6",
+                        "on-background": "#0b1c30",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "primary-container": "#0e6245",
+                        "inverse-surface": "#213145",
+                        "surface-bright": "#f8f9ff",
+                        "background": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#8bd6b1",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-container": "#e5eeff",
+                        "primary": "#004831",
+                        "tertiary": "#752200",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed": "#001b3c",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-fixed-dim": "#adc7f7",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-primary-fixed-variant": "#005138",
+                        "on-secondary-fixed-variant": "#2d476f",
+                        "on-secondary-container": "#3f5882",
+                        "tertiary-fixed": "#ffdbcf",
+                        "inverse-on-surface": "#eaf1ff",
+                        "electronica-primary": "#1E3A8A"
+                    }
+                }
+            }
+        }
+    </script>
     <style>
         body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
@@ -55,7 +110,7 @@
             <div>
                 <label class="block text-sm font-semibold mb-1">Kilometraje actual</label>
                 <input type="number" id="kmActual" step="1" class="w-full p-3 border rounded-lg" placeholder="0">
-                <button id="btnActualizarKm" class="mt-2 text-sm text-primary font-semibold flex items-center gap-1"><span class="material-symbols-outlined text-sm">autorenew</span> Actualizar solo kilometraje</button>
+                <button id="btnActualizarKm" class="mt-2 text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">autorenew</span> Actualizar solo kilometraje</button>
             </div>
             <div>
                 <label class="block text-sm font-semibold mb-1">Email para notificaciones</label>
