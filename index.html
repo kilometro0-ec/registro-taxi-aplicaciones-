@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
     <title>Driver & Tech Companion</title>
-    <!-- PWA manifest con ruta a subcarpeta -->
+    <!-- PWA manifest con ruta absoluta a subcarpeta -->
     <link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json">
     <meta name="theme-color" content="#004831">
     <meta name="mobile-web-app-capable" content="yes">
@@ -73,7 +73,7 @@
         setTimeout(() => { window.location.href = '/registro-taxi-aplicaciones-/Dashboard.html'; }, 350);
     }, 2600);
 
-    // Registrar Service Worker para PWA (ruta dentro de la subcarpeta)
+    // Registrar Service Worker (ruta absoluta a la subcarpeta)
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js')
             .then(reg => console.log('Service Worker registrado:', reg))
