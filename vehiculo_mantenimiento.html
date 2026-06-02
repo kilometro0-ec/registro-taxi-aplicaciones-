@@ -10,6 +10,12 @@
         body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .tab-active { border-bottom: 3px solid #004831; color: #004831; font-weight: 600; }
+        .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; }
+        .status-connected { background: #dcfce7; color: #166534; }
+        .status-error { background: #fee2e2; color: #991b1b; }
+        .loading-spinner { width: 20px; height: 20px; border: 2px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; display: inline-block; margin-right: 6px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
     </style>
 </head>
 <body class="bg-surface text-on-surface pb-24">
@@ -20,7 +26,10 @@
         <button onclick="history.back()" class="material-symbols-outlined text-primary">arrow_back</button>
         <h1 class="text-xl font-bold text-primary">Mi Vehículo</h1>
     </div>
-    <button onclick="location.href='Dashboard.html'" class="material-symbols-outlined text-primary">home</button>
+    <div class="flex items-center gap-2">
+        <div id="connectionStatus" class="status-badge status-error">🔄 Conectando...</div>
+        <button onclick="location.href='Dashboard.html'" class="material-symbols-outlined text-primary">home</button>
+    </div>
 </header>
 
 <main class="px-4 py-4 max-w-lg mx-auto space-y-5">
@@ -53,7 +62,9 @@
                 <input type="email" id="email" class="w-full p-3 border rounded-lg" placeholder="tu@email.com">
                 <p class="text-xs text-on-surface-variant mt-1">Recibirás alertas de mantenimiento por correo (opcional)</p>
             </div>
-            <button id="btnGuardarVehiculo" class="w-full bg-primary text-white py-3 rounded-xl font-bold mt-2">Guardar Datos</button>
+            <button id="btnGuardarVehiculo" class="w-full bg-primary text-white py-3 rounded-xl font-bold mt-2 flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">save</span> Guardar Datos
+            </button>
         </div>
         <div class="bg-white rounded-xl border border-outline-variant p-4">
             <h3 class="font-bold mb-2">Alertas activas</h3>
@@ -91,7 +102,9 @@
                 <label class="block text-sm font-semibold mb-1">Observaciones</label>
                 <textarea id="obsMantenimiento" rows="2" class="w-full p-3 border rounded-lg" placeholder="Ej: cambio de aceite sintético"></textarea>
             </div>
-            <button id="btnRegistrarMantenimiento" class="w-full bg-tertiary text-white py-3 rounded-xl font-bold">Registrar Servicio</button>
+            <button id="btnRegistrarMantenimiento" class="w-full bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined">build</span> Registrar Servicio
+            </button>
         </div>
     </div>
 
@@ -103,24 +116,55 @@
                 <button id="btnRefrescarHistorial" class="text-primary text-sm flex items-center gap-1"><span class="material-symbols-outlined text-sm">refresh</span> Actualizar</button>
             </div>
             <div id="historialList" class="space-y-3 max-h-96 overflow-y-auto">
-                <!-- Aquí se cargarán dinámicamente los mantenimientos -->
                 <p class="text-center text-on-surface-variant">Cargando historial...</p>
             </div>
         </div>
     </div>
 </main>
 
-<!-- Bottom Navigation (opcional, para coherencia) -->
-<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-14 px-2 bg-surface border-t border-outline-variant">
-    <a href="Dashboard.html" class="flex flex-col items-center text-on-surface-variant text-xs"><span class="material-symbols-outlined">dashboard</span><span>Dashboard</span></a>
-    <a href="registro_ingresos.html" class="flex flex-col items-center text-on-surface-variant text-xs"><span class="material-symbols-outlined">payments</span><span>Ingresos</span></a>
-    <a href="registro_gastos.html" class="flex flex-col items-center text-on-surface-variant text-xs"><span class="material-symbols-outlined">receipt_long</span><span>Gastos</span></a>
-    <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center bg-primary-container text-primary rounded-lg px-3 py-1 text-xs"><span class="material-symbols-outlined">directions_car</span><span>Vehículo</span></a>
-    <a href="reporte_estadisticas.html" class="flex flex-col items-center text-on-surface-variant text-xs"><span class="material-symbols-outlined">analytics</span><span>Analytics</span></a>
+<!-- Bottom Navigation (5 botones unificado) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-surface/90 backdrop-blur-md border-t py-1">
+    <div class="grid grid-cols-5 gap-1 text-center">
+        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
+        <a href="registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">payments</span><span class="text-[10px]">Ingresos</span></a>
+        <a href="registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
+        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
+        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Análisis</span></a>
+    </div>
 </nav>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqiJKDDXKRM_7xBR8NhDC43BVpsyrqyI3mZeY5w_w6vroHubh1KjlBExGw66MmeZX_Rg/exec';  // <--- REEMPLAZA
+    const SCRIPT_URL = 'https://script.google.com/macros/s/TU_ID_DE_SCRIPT/exec';  // REEMPLAZAR
+
+    // ----- Conexión y helpers -----
+    async function verificarConexion() {
+        const statusDiv = document.getElementById('connectionStatus');
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=getStats`);
+            if (response.ok) {
+                statusDiv.innerHTML = '✅ Conectado';
+                statusDiv.classList.add('status-connected');
+                statusDiv.classList.remove('status-error');
+            } else {
+                throw new Error('Error HTTP');
+            }
+        } catch (error) {
+            statusDiv.innerHTML = '❌ Sin conexión';
+            statusDiv.classList.add('status-error');
+            statusDiv.classList.remove('status-connected');
+        }
+    }
+
+    function setLoading(button, isLoading, originalText = null) {
+        if (isLoading) {
+            button.disabled = true;
+            button.dataset.originalText = button.innerHTML;
+            button.innerHTML = '<div class="loading-spinner"></div> Guardando...';
+        } else {
+            button.disabled = false;
+            button.innerHTML = button.dataset.originalText || originalText || button.innerHTML;
+        }
+    }
 
     // Mostrar pestañas
     function showTab(tab) {
@@ -157,66 +201,119 @@
                 container.innerHTML = alertas.map(a => `<div class="p-2 rounded-lg ${a.urgente ? 'bg-red-50 text-red-800' : 'bg-yellow-50'} text-sm">${a.mensaje}</div>`).join('');
                 if (alertas.length === 0) container.innerHTML = '<div class="text-green-600">✅ Todo en orden</div>';
             }
-        } catch(e) { console.error(e); }
+        } catch(e) { 
+            console.error(e);
+            document.getElementById('alertasPreview').innerHTML = '<div class="text-red-500">Error al cargar alertas</div>';
+        }
     }
 
     // Guardar datos del vehículo
-    document.getElementById('btnGuardarVehiculo').addEventListener('click', async () => {
-        const params = new URLSearchParams();
-        params.append('action', 'updateVehicle');
-        params.append('modelo', document.getElementById('modelo').value);
-        params.append('anio', document.getElementById('anio').value);
-        params.append('km_actual', document.getElementById('kmActual').value);
-        params.append('email', document.getElementById('email').value);
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: params });
-        alert('Datos guardados');
-        cargarDatosVehiculo();
+    const btnGuardarVehiculo = document.getElementById('btnGuardarVehiculo');
+    btnGuardarVehiculo.addEventListener('click', async () => {
+        const modelo = document.getElementById('modelo').value.trim();
+        const anio = parseInt(document.getElementById('anio').value);
+        const km = parseFloat(document.getElementById('kmActual').value);
+        const email = document.getElementById('email').value.trim();
+
+        if (!modelo) { alert('❌ Ingresa el modelo del vehículo'); return; }
+        if (isNaN(anio) || anio < 1900 || anio > new Date().getFullYear()+1) { alert('❌ Año inválido'); return; }
+        if (isNaN(km) || km < 0) { alert('❌ Kilometraje inválido'); return; }
+        if (email && !/^\S+@\S+\.\S+$/.test(email)) { alert('❌ Email inválido (opcional)'); return; }
+
+        setLoading(btnGuardarVehiculo, true);
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'updateVehicle');
+            params.append('modelo', modelo);
+            params.append('anio', anio);
+            params.append('km_actual', km);
+            params.append('email', email);
+            const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
+            const text = await response.text();
+            if (response.ok && text.includes('OK')) {
+                alert('✅ Datos del vehículo guardados correctamente');
+                await cargarDatosVehiculo();
+            } else {
+                alert('❌ Error al guardar: ' + text);
+            }
+        } catch(e) {
+            alert('❌ Error de conexión: ' + e.message);
+        } finally {
+            setLoading(btnGuardarVehiculo, false);
+        }
     });
 
     // Actualizar solo kilometraje
-    document.getElementById('btnActualizarKm').addEventListener('click', async () => {
-        const km = document.getElementById('kmActual').value;
-        const params = new URLSearchParams();
-        params.append('action', 'updateKm');
-        params.append('km', km);
-        await fetch(SCRIPT_URL, { method: 'POST', body: params });
-        alert(`Kilometraje actualizado a ${km} km`);
-        cargarDatosVehiculo();
+    const btnActualizarKm = document.getElementById('btnActualizarKm');
+    btnActualizarKm.addEventListener('click', async () => {
+        const km = parseFloat(document.getElementById('kmActual').value);
+        if (isNaN(km) || km < 0) { alert('❌ Kilometraje inválido'); return; }
+        setLoading(btnActualizarKm, true);
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'updateKm');
+            params.append('km', km);
+            const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
+            const text = await response.text();
+            if (response.ok && text.includes('OK')) {
+                alert(`✅ Kilometraje actualizado a ${km} km`);
+                await cargarDatosVehiculo();
+            } else {
+                alert('❌ Error: ' + text);
+            }
+        } catch(e) {
+            alert('❌ Error de conexión: ' + e.message);
+        } finally {
+            setLoading(btnActualizarKm, false);
+        }
     });
 
     // Registrar mantenimiento
-    document.getElementById('btnRegistrarMantenimiento').addEventListener('click', async () => {
+    const btnRegistrarMantenimiento = document.getElementById('btnRegistrarMantenimiento');
+    btnRegistrarMantenimiento.addEventListener('click', async () => {
         const tipo = document.getElementById('tipoMantenimiento').value;
         const costo = parseFloat(document.getElementById('costoMantenimiento').value);
         const km = parseInt(document.getElementById('kmMantenimiento').value);
         const fecha = document.getElementById('fechaMantenimiento').value;
         const obs = document.getElementById('obsMantenimiento').value;
 
-        if (isNaN(costo) || costo <= 0) { alert('Costo inválido'); return; }
-        if (isNaN(km) || km <= 0) { alert('Kilometraje inválido'); return; }
-        if (!fecha) { alert('Selecciona fecha'); return; }
+        if (isNaN(costo) || costo <= 0) { alert('❌ Costo inválido'); return; }
+        if (isNaN(km) || km <= 0) { alert('❌ Kilometraje al servicio inválido'); return; }
+        if (!fecha) { alert('❌ Selecciona una fecha'); return; }
 
-        const params = new URLSearchParams();
-        params.append('action', 'addMaintenance');
-        params.append('tipo', tipo);
-        params.append('costo', costo);
-        params.append('kilometraje', km);
-        params.append('fecha', fecha);
-        params.append('observaciones', obs);
-
-        await fetch(SCRIPT_URL, { method: 'POST', body: params });
-        alert('Servicio registrado');
-        // Limpiar campos
-        document.getElementById('costoMantenimiento').value = '';
-        document.getElementById('obsMantenimiento').value = '';
-        document.getElementById('kmMantenimiento').value = '';
-        // Actualizar km actual si es mayor
-        const kmActualInput = document.getElementById('kmActual');
-        if (km > parseInt(kmActualInput.value)) {
-            kmActualInput.value = km;
-            await fetch(SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateKm', km: km }) });
+        setLoading(btnRegistrarMantenimiento, true);
+        try {
+            const params = new URLSearchParams();
+            params.append('action', 'addMaintenance');
+            params.append('tipo', tipo);
+            params.append('costo', costo);
+            params.append('kilometraje', km);
+            params.append('fecha', fecha);
+            params.append('observaciones', obs);
+            const response = await fetch(SCRIPT_URL, { method: 'POST', body: params });
+            const text = await response.text();
+            if (response.ok && text.includes('OK')) {
+                alert('✅ Servicio registrado correctamente');
+                // Limpiar campos
+                document.getElementById('costoMantenimiento').value = '';
+                document.getElementById('obsMantenimiento').value = '';
+                document.getElementById('kmMantenimiento').value = '';
+                // Actualizar km actual si es mayor
+                const kmActualInput = document.getElementById('kmActual');
+                if (km > parseInt(kmActualInput.value)) {
+                    kmActualInput.value = km;
+                    await fetch(SCRIPT_URL, { method: 'POST', body: new URLSearchParams({ action: 'updateKm', km: km }) });
+                }
+                await cargarDatosVehiculo();
+                if (document.getElementById('tabHistorial').classList.contains('tab-active')) cargarHistorial();
+            } else {
+                alert('❌ Error al registrar: ' + text);
+            }
+        } catch(e) {
+            alert('❌ Error de conexión: ' + e.message);
+        } finally {
+            setLoading(btnRegistrarMantenimiento, false);
         }
-        cargarDatosVehiculo();
     });
 
     // Cargar historial de mantenimientos
@@ -245,13 +342,19 @@
                     </div>
                 </div>
             `).join('');
-        } catch(e) { container.innerHTML = '<p class="text-red-500">Error al cargar historial</p>'; }
+        } catch(e) { 
+            container.innerHTML = '<p class="text-red-500">Error al cargar historial</p>';
+        }
     }
+
+    // Refrescar historial
+    document.getElementById('btnRefrescarHistorial').addEventListener('click', cargarHistorial);
 
     // Fecha por defecto en el formulario de mantenimiento
     document.getElementById('fechaMantenimiento').valueAsDate = new Date();
 
     // Inicializar
+    verificarConexion();
     cargarDatosVehiculo();
     showTab('vehiculo');
 </script>
