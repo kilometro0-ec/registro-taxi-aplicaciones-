@@ -26,17 +26,21 @@
     .delete-btn:hover { color: #ba1a1a; transform: scale(1.1); }
     .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; }
+    .status-connected { background: #dcfce7; color: #166534; }
+    .status-error { background: #fee2e2; color: #991b1b; }
 </style>
 </head>
 <body class="bg-background text-on-background min-h-screen pb-32">
-<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-margin-mobile h-touch-target-min shadow-md">
-    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">settings</span></div><h1 class="font-headline-lg-mobile text-headline-lg-mobile bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
+<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant flex justify-between items-center px-4 h-12 shadow-md">
+    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">settings</span></div><h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
     <button onclick="window.location.href='Dashboard.html'" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-all active:scale-95"><span class="material-symbols-outlined text-on-surface-variant">close</span></button>
 </header>
-<main class="px-margin-mobile py-gutter space-y-6 max-w-4xl mx-auto">
+<main class="px-4 py-4 space-y-6 max-w-4xl mx-auto">
     <div class="text-center animate-card">
-        <h2 class="font-headline-lg-mobile text-headline-lg-mobile">Centro de Configuración</h2>
-        <p class="text-on-surface-variant text-sm">Gestiona plataformas, comisiones, mantenimiento y más</p>
+        <h2 class="text-xl font-bold">Centro de Configuración</h2>
+        <p class="text-sm text-on-surface-variant">Gestiona plataformas, comisiones, mantenimiento y más</p>
+        <div id="statusMsg" class="status-badge mt-2 justify-center mx-auto w-fit">🔄 Cargando configuración...</div>
     </div>
 
     <!-- Pestañas principales -->
@@ -47,7 +51,7 @@
         <button id="tabGeneral" class="px-4 py-2 rounded-t-lg font-semibold text-on-surface-variant transition-all" onclick="mostrarSeccion('general')">📋 General</button>
     </div>
 
-    <!-- Secciones (idem anterior pero con renderizado dinámico desde datos) -->
+    <!-- Secciones -->
     <div id="seccionPlataformas" class="space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Plataformas de transporte</span><button id="agregarPlataformaBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir</button></h3><div id="listaPlataformas" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Desactiva una plataforma para que no aparezca en los formularios de ingreso.</p></div></div>
     <div id="seccionMantenimiento" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Intervalos de mantenimiento</span><button id="agregarMantenimientoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Nuevo tipo</button></h3><div id="listaMantenimientos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Define cada cuántos kilómetros o meses se debe realizar cada servicio.</p></div></div>
     <div id="seccionRepuestos" class="hidden space-y-4 animate-card"><div class="bg-white/80 backdrop-blur-sm border border-outline-variant rounded-xl p-5 shadow-lg"><h3 class="font-bold text-lg mb-3 flex justify-between"><span>Repuestos y componentes</span><button id="agregarRepuestoBtn" class="text-sm bg-primary text-white px-3 py-1 rounded-full flex items-center gap-1"><span class="material-symbols-outlined text-sm">add</span> Añadir repuesto</button></h3><div id="listaRepuestos" class="space-y-3"></div><p class="text-xs text-on-surface-variant mt-4">* Registra repuestos comunes para facilitar la entrada de gastos de electrónica o vehículo.</p></div></div>
@@ -57,12 +61,39 @@
 </main>
 
 <script>
-    const SCRIPT_URL = 'hhttps://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec'; // REEMPLAZAR
-    let datosConfig = null; // almacenará el objeto cargado
+    // ========== CONFIGURACIÓN - REEMPLAZA CON TU URL REAL ==========
+    // CORREGIDO: eliminado la 'h' extra de 'hhttps'
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec';
+    
+    let datosConfig = null;
+    const statusDiv = document.getElementById('statusMsg');
 
-    // Funciones de renderizado (similares a antes, pero usando datosConfig)
+    // Valores por defecto (en caso de que la hoja Configuracion esté vacía)
+    const configDefault = {
+        plataformas: [
+            { id: 'Uber', nombre: 'Uber', activa: true, comision: 25 },
+            { id: 'DiDi', nombre: 'DiDi', activa: true, comision: 20 },
+            { id: 'Indriver', nombre: 'Indriver', activa: true, comision: 15 },
+            { id: 'Cabify', nombre: 'Cabify', activa: true, comision: 18 },
+            { id: 'Otro', nombre: 'Otro', activa: true, comision: 10 }
+        ],
+        mantenimientos: [
+            { id: 'aceite', nombre: 'Cambio de aceite', intervaloKm: 5000, intervaloMeses: 6, activo: true },
+            { id: 'frenos', nombre: 'Frenos', intervaloKm: 20000, intervaloMeses: 12, activo: true },
+            { id: 'neumaticos', nombre: 'Neumáticos', intervaloKm: 30000, intervaloMeses: 24, activo: true },
+            { id: 'transmision', nombre: 'Transmisión', intervaloKm: 40000, intervaloMeses: 36, activo: true }
+        ],
+        repuestos: [
+            { id: 'pantalla_iphone', nombre: 'Pantalla iPhone X', costoPromedio: 45, proveedor: '' },
+            { id: 'bateria', nombre: 'Batería genérica', costoPromedio: 20, proveedor: '' }
+        ],
+        general: { emailNotifications: false, autoKm: false, costoCombustible: 1.2 }
+    };
+
+    // Funciones de renderizado
     function renderPlataformas() {
         const container = document.getElementById('listaPlataformas');
+        if (!container) return;
         container.innerHTML = '';
         datosConfig.plataformas.forEach((p, idx) => {
             const div = document.createElement('div');
@@ -82,6 +113,7 @@
 
     function renderMantenimientos() {
         const container = document.getElementById('listaMantenimientos');
+        if (!container) return;
         container.innerHTML = '';
         datosConfig.mantenimientos.forEach((m, idx) => {
             const div = document.createElement('div');
@@ -102,6 +134,7 @@
 
     function renderRepuestos() {
         const container = document.getElementById('listaRepuestos');
+        if (!container) return;
         container.innerHTML = '';
         datosConfig.repuestos.forEach((r, idx) => {
             const div = document.createElement('div');
@@ -131,25 +164,30 @@
         datosConfig.general.costoCombustible = parseFloat(document.getElementById('costoCombustible').value) || 0;
     }
 
-    function agregarPlataforma() {
-        const newId = 'plat_' + Date.now();
-        datosConfig.plataformas.push({ id: newId, nombre: 'Nueva plataforma', activa: true, comision: 15 });
-        renderPlataformas();
-    }
-    function agregarMantenimiento() {
-        const newId = 'mant_' + Date.now();
-        datosConfig.mantenimientos.push({ id: newId, nombre: 'Nuevo servicio', intervaloKm: 10000, intervaloMeses: 12, activo: true });
-        renderMantenimientos();
-    }
-    function agregarRepuesto() {
-        const newId = 'rep_' + Date.now();
-        datosConfig.repuestos.push({ id: newId, nombre: 'Nuevo repuesto', costoPromedio: 0, proveedor: '' });
-        renderRepuestos();
-    }
+    function agregarPlataforma() { const newId = 'plat_' + Date.now(); datosConfig.plataformas.push({ id: newId, nombre: 'Nueva plataforma', activa: true, comision: 15 }); renderPlataformas(); }
+    function agregarMantenimiento() { const newId = 'mant_' + Date.now(); datosConfig.mantenimientos.push({ id: newId, nombre: 'Nuevo servicio', intervaloKm: 10000, intervaloMeses: 12, activo: true }); renderMantenimientos(); }
+    function agregarRepuesto() { const newId = 'rep_' + Date.now(); datosConfig.repuestos.push({ id: newId, nombre: 'Nuevo repuesto', costoPromedio: 0, proveedor: '' }); renderRepuestos(); }
 
     async function cargarConfigDesdeServer() {
-        const response = await fetch(`${SCRIPT_URL}?action=getConfig`);
-        datosConfig = await response.json();
+        if (statusDiv) statusDiv.innerHTML = '🔄 Cargando configuración...';
+        try {
+            const response = await fetch(`${SCRIPT_URL}?action=getConfig`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const data = await response.json();
+            // Si la hoja está vacía, data contendrá los valores por defecto (gracias a cargarConfiguracion en el backend)
+            // Pero por si acaso, validamos que tenga las propiedades mínimas.
+            if (data && data.plataformas && data.mantenimientos && data.repuestos && data.general) {
+                datosConfig = data;
+                if (statusDiv) statusDiv.innerHTML = '✅ Configuración cargada';
+            } else {
+                throw new Error('Datos inválidos del servidor');
+            }
+        } catch (error) {
+            console.error('Error al cargar configuración:', error);
+            // Fallback a valores por defecto
+            datosConfig = JSON.parse(JSON.stringify(configDefault));
+            if (statusDiv) statusDiv.innerHTML = '⚠️ Usando valores por defecto (sin conexión)';
+        }
         renderPlataformas();
         renderMantenimientos();
         renderRepuestos();
@@ -157,17 +195,28 @@
     }
 
     async function guardarConfigEnServer() {
-        guardarGeneral(); // actualiza datosConfig.general
+        guardarGeneral();
         const payload = { action: 'saveConfig', config: JSON.stringify(datosConfig) };
         const formBody = new URLSearchParams(payload).toString();
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: formBody
-        });
-        const result = await response.text();
-        if (result === 'OK') alert('✅ Configuración guardada en la nube');
-        else alert('❌ Error: ' + result);
+        const btn = document.getElementById('guardarTodoBtn');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
+        btn.disabled = true;
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: formBody
+            });
+            const result = await response.text();
+            if (result === 'OK') alert('✅ Configuración guardada en la nube');
+            else alert('❌ Error: ' + result);
+        } catch(e) {
+            alert('❌ Error de conexión: ' + e.message);
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
     }
 
     let currentTab = 'plataformas';
@@ -178,7 +227,6 @@
         document.getElementById('seccionRepuestos').classList.add('hidden');
         document.getElementById('seccionGeneral').classList.add('hidden');
         document.getElementById(`seccion${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.remove('hidden');
-        // Estilos pestañas
         document.querySelectorAll('#tabPlataformas, #tabMantenimiento, #tabRepuestos, #tabGeneral').forEach(tab => {
             tab.classList.remove('tab-active', 'bg-primary', 'text-white');
             tab.classList.add('text-on-surface-variant');
@@ -186,13 +234,11 @@
         document.getElementById(`tab${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.add('tab-active', 'bg-primary', 'text-white');
     }
 
-    // Eventos de botones
     document.getElementById('agregarPlataformaBtn').addEventListener('click', agregarPlataforma);
     document.getElementById('agregarMantenimientoBtn').addEventListener('click', agregarMantenimiento);
     document.getElementById('agregarRepuestoBtn').addEventListener('click', agregarRepuesto);
     document.getElementById('guardarTodoBtn').addEventListener('click', guardarConfigEnServer);
 
-    // Inicializar
     cargarConfigDesdeServer().then(() => mostrarSeccion('plataformas'));
 </script>
 </body>
