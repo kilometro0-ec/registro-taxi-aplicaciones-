@@ -5,8 +5,8 @@
     <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport" />
     <title>Driver Insights - Panel Unificado</title>
 
-    <!-- PWA manifest -->
-    <link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json" />
+    <!-- PWA manifest (ruta relativa) -->
+    <link rel="manifest" href="./manifest.json" />
     <meta name="theme-color" content="#004831" />
     <meta name="mobile-web-app-capable" content="yes" />
 
@@ -70,7 +70,6 @@
             background: #fee2e2;
             color: #991b1b;
         }
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 80px;
@@ -97,7 +96,6 @@
         .toast.success {
             background: #16a34a;
         }
-        /* Spinner */
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
@@ -115,7 +113,6 @@
                 transform: rotate(360deg);
             }
         }
-        /* Skeleton */
         .skeleton {
             background: #e5e7eb;
             border-radius: 4px;
@@ -130,7 +127,6 @@
                 opacity: 0.5;
             }
         }
-        /* Modal overlay */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -246,7 +242,7 @@
 </head>
 <body class="bg-surface text-on-surface min-h-screen pb-24">
 
-    <!-- Toast de notificaciones -->
+    <!-- Toast -->
     <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
     <!-- Header -->
@@ -259,12 +255,12 @@
             <div id="connectionStatus" class="status-badge status-error" role="status">🔄 Verificando...</div>
         </div>
         <div class="flex gap-2">
-            <a href="/registro-taxi-aplicaciones-/configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px" aria-label="Configuración">settings</a>
+            <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px" aria-label="Configuración">settings</a>
             <button id="calendarBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px" aria-label="Filtrar por fecha">calendar_today</button>
         </div>
     </header>
 
-    <!-- Pestañas de rubro -->
+    <!-- Pestañas -->
     <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-4 py-2 flex gap-2 overflow-x-auto" role="tablist">
         <button id="tabGeneral" class="tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="true" onclick="cambiarRubro('general')">📊 General</button>
         <button id="tabTransporte" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
@@ -272,7 +268,7 @@
     </div>
 
     <main class="pt-28 px-4 space-y-4 max-w-lg mx-auto">
-        <!-- Resumen global -->
+        <!-- Resumen -->
         <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
             <div>
                 <p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global Hoy</p>
@@ -290,7 +286,7 @@
             </div>
         </section>
 
-        <!-- Tarjeta dinámica según rubro -->
+        <!-- Tarjeta rubro -->
         <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
             <div class="absolute top-0 right-0 p-3 opacity-10" aria-hidden="true">
                 <span class="material-symbols-outlined" style="font-size:48px">trending_up</span>
@@ -305,7 +301,7 @@
             </div>
         </section>
 
-        <!-- Métricas rápidas y botón añadir recorrido -->
+        <!-- Métricas -->
         <div class="grid grid-cols-2 gap-3">
             <div class="bg-white border rounded-xl p-3">
                 <p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p>
@@ -320,7 +316,7 @@
             </div>
         </div>
 
-        <!-- Rentabilidad real -->
+        <!-- Rentabilidad -->
         <div class="bg-surface-container-low rounded-xl p-4 border">
             <h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
             <div class="flex justify-between mt-2">
@@ -339,23 +335,23 @@
             </div>
         </div>
 
-        <!-- Gráfico (ingresos vs gastos por rubro) -->
+        <!-- Gráfico -->
         <div class="bg-white border rounded-xl p-3">
             <h3 class="font-label-caps text-label-caps mb-2">INGRESOS VS GASTOS (HOY)</h3>
             <canvas id="chartCanvas" height="150" style="max-height:180px; width:100%"></canvas>
         </div>
 
-        <!-- Botones rápidos -->
+        <!-- Botones -->
         <div class="grid grid-cols-2 gap-3">
-            <button onclick="location.href='/registro-taxi-aplicaciones-/registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+            <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 focus:ring-2 focus:ring-offset-2 focus:ring-primary">
                 <span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso
             </button>
-            <button onclick="location.href='/registro-taxi-aplicaciones-/registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 focus:ring-2 focus:ring-offset-2 focus:ring-tertiary">
+            <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 focus:ring-2 focus:ring-offset-2 focus:ring-tertiary">
                 <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto
             </button>
         </div>
 
-        <!-- Actividad reciente con filtro de fechas -->
+        <!-- Actividad reciente -->
         <section>
             <div class="flex justify-between items-center">
                 <h3 class="font-bold text-md">Actividad Reciente</h3>
@@ -366,7 +362,6 @@
                     </button>
                 </div>
             </div>
-            <!-- Filtro de fechas (oculto) -->
             <div id="dateFilterContainer" class="hidden mt-2 p-2 bg-surface-container-low rounded-lg flex gap-2 items-center flex-wrap">
                 <label for="fechaInicio" class="text-xs">Desde:</label>
                 <input type="date" id="fechaInicio" class="border rounded p-1 text-sm" />
@@ -376,13 +371,12 @@
                 <button id="clearFilterBtn" class="bg-gray-200 text-xs px-3 py-1 rounded">Limpiar</button>
             </div>
             <div id="recentActivityContainer" class="space-y-2 mt-2">
-                <!-- Aquí se llena con JS -->
                 <div class="flex justify-center py-4"><div class="spinner"></div></div>
             </div>
         </section>
     </main>
 
-    <!-- Modal para registrar recorrido -->
+    <!-- Modal recorrido -->
     <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="tripModalTitle">
         <div class="modal-content">
             <h3 id="tripModalTitle" class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
@@ -402,23 +396,23 @@
     <!-- Navegación inferior -->
     <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50" aria-label="Navegación principal">
         <div class="grid grid-cols-5 gap-1 text-center">
-            <a href="/registro-taxi-aplicaciones-/Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg" aria-current="page">
+            <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg" aria-current="page">
                 <span class="material-symbols-outlined" style="font-size:20px">dashboard</span>
                 <span class="text-[10px]">Panel</span>
             </a>
-            <a href="/registro-taxi-aplicaciones-/registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+            <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant">
                 <span class="material-symbols-outlined" style="font-size:20px">payments</span>
                 <span class="text-[10px]">Ingresos</span>
             </a>
-            <a href="/registro-taxi-aplicaciones-/registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+            <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant">
                 <span class="material-symbols-outlined" style="font-size:20px">receipt_long</span>
                 <span class="text-[10px]">Gastos</span>
             </a>
-            <a href="/registro-taxi-aplicaciones-/vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+            <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant">
                 <span class="material-symbols-outlined" style="font-size:20px">directions_car</span>
                 <span class="text-[10px]">Vehículo</span>
             </a>
-            <a href="/registro-taxi-aplicaciones-/reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+            <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant">
                 <span class="material-symbols-outlined" style="font-size:20px">analytics</span>
                 <span class="text-[10px]">Análisis</span>
             </a>
@@ -427,7 +421,7 @@
 
     <script>
         // ============================================================
-        // CONFIGURACIÓN Y ESTADO GLOBAL
+        // CONFIGURACIÓN Y ESTADO
         // ============================================================
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTZXCieSPZXLObmEEKY0MEx3Q1CXcd9ctEx8EkXidlL7-nW7qEjXriDnZrl9ix44BK4A/exec';
         const CACHE_KEY = 'driverInsightsCache';
@@ -479,7 +473,7 @@
         }
 
         // ============================================================
-        // NOTIFICACIONES DE CONEXIÓN
+        // CONEXIÓN
         // ============================================================
         async function verificarConexion() {
             const statusDiv = document.getElementById('connectionStatus');
@@ -506,16 +500,14 @@
         }
 
         // ============================================================
-        // OBTENER DATOS DEL SERVIDOR (con caché)
+        // FETCH DATOS
         // ============================================================
         async function fetchStats() {
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getStats`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-                // Validar mínimos
                 if (typeof data !== 'object' || data === null) throw new Error('Datos inválidos');
-                // Asegurar campos
                 data.ganancia = data.ganancia || 0;
                 data.totalIngresos = data.totalIngresos || 0;
                 data.totalGastos = data.totalGastos || 0;
@@ -528,12 +520,10 @@
                 data.totalHoras = data.totalHoras || 0;
                 data.totalKmTotal = data.totalKmTotal || 0;
                 data.gastosCombustibleMantenimiento = data.gastosCombustibleMantenimiento || 0;
-                // Guardar en caché
                 setCachedData(data);
                 return data;
             } catch (error) {
                 console.error('Error fetchStats:', error);
-                // Intentar caché
                 const cached = getCachedData();
                 if (cached) {
                     showToast('Usando datos en caché (sin conexión al servidor)', 'error', 3000);
@@ -557,7 +547,7 @@
         }
 
         // ============================================================
-        // RENDERIZADO DE UI
+        // RENDER
         // ============================================================
         function actualizarVista() {
             if (!statsCompletos) return;
@@ -600,19 +590,15 @@
             document.getElementById('distanciaTotal').textContent = (data.totalKmTotal || 0).toFixed(1);
             document.getElementById('horasTrabajadas').textContent = (data.totalHoras || 0).toFixed(1);
             actualizarVista();
-            // Actualizar gráfico
             actualizarGrafico(data);
         }
 
         function actualizarGrafico(data) {
             const ctx = document.getElementById('chartCanvas').getContext('2d');
             if (chartInstance) chartInstance.destroy();
-
-            // Datos: ingresos y gastos por rubro
             const labels = ['Transporte', 'Electrónica'];
             const ingresos = [data.ingresosTransporte || 0, data.ingresosElectronica || 0];
             const gastos = [data.gastosTransporte || 0, data.gastosElectronica || 0];
-
             chartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -661,7 +647,6 @@
                 container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad en este período</div>';
                 return;
             }
-            // Sanitizar y construir elementos
             const fragment = document.createDocumentFragment();
             actividadesFiltradas.slice(0, 10).forEach(a => {
                 const div = document.createElement('div');
@@ -701,7 +686,7 @@
         }
 
         // ============================================================
-        // FILTRO POR FECHAS (local)
+        // FILTRO
         // ============================================================
         function filtrarActividad(fechaInicio, fechaFin) {
             if (!actividades || actividades.length === 0) return [];
@@ -737,12 +722,10 @@
                 transporte: document.getElementById('tabTransporte'),
                 electronica: document.getElementById('tabElectronica')
             };
-            // Resetear todas
             Object.values(tabs).forEach(tab => {
                 tab.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
                 tab.setAttribute('aria-selected', 'false');
             });
-            // Activar la seleccionada
             const active = tabs[rubro];
             if (rubro === 'electronica') {
                 active.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
@@ -754,20 +737,18 @@
         }
 
         // ============================================================
-        // REGISTRAR RECORRIDO (POST con JSON)
+        // REGISTRAR RECORRIDO
         // ============================================================
         async function registrarRecorrido(fecha, km, notas) {
             try {
                 const payload = { action: 'addTrip', fecha, km, notas };
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Google Apps Script no soporta CORS, usamos no-cors
+                    mode: 'no-cors',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                // Con no-cors no podemos leer la respuesta, pero asumimos éxito si no hay error de red
                 showToast('Recorrido registrado correctamente', 'success');
-                // Recargar datos
                 await cargarDashboard();
             } catch (error) {
                 console.error('Error registrar recorrido:', error);
@@ -779,19 +760,13 @@
         // CARGA INICIAL
         // ============================================================
         async function cargarDashboard() {
-            // Mostrar spinner en actividad reciente
             const container = document.getElementById('recentActivityContainer');
             container.innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
-
             try {
-                // Obtener stats (con caché)
                 const data = await fetchStats();
                 actualizarDashboard(data);
-
-                // Obtener actividad reciente
                 const act = await fetchRecentActivity();
                 actividades = act;
-                // Aplicar filtro si está activo
                 const inicio = document.getElementById('fechaInicio').value;
                 const fin = document.getElementById('fechaFin').value;
                 if (inicio || fin) {
@@ -799,13 +774,10 @@
                 } else {
                     renderActividad(actividades);
                 }
-
-                // Verificar conexión después de cargar
                 await verificarConexion();
             } catch (error) {
                 console.error('Error cargando dashboard:', error);
                 showToast('Error al cargar los datos. Intenta de nuevo.', 'error', 4000);
-                // Intentar mostrar caché si existe
                 const cached = getCachedData();
                 if (cached) {
                     actualizarDashboard(cached);
@@ -815,10 +787,10 @@
         }
 
         // ============================================================
-        // EVENTOS Y MANEJO DE MODALES
+        // EVENTOS
         // ============================================================
         document.addEventListener('DOMContentLoaded', function() {
-            // Modal de recorrido
+            // Modal
             const modal = document.getElementById('tripModal');
             const addTripBtn = document.getElementById('addTripBtn');
             const confirmBtn = document.getElementById('confirmTripBtn');
@@ -827,7 +799,6 @@
             const tripKm = document.getElementById('tripKm');
             const tripNotes = document.getElementById('tripNotes');
 
-            // Fecha actual por defecto
             const today = new Date().toISOString().slice(0, 10);
             tripDate.value = today;
 
@@ -835,7 +806,6 @@
                 tripKm.value = '';
                 tripNotes.value = '';
                 modal.style.display = 'flex';
-                // Enfoque al primer input
                 setTimeout(() => tripDate.focus(), 100);
             });
 
@@ -860,19 +830,17 @@
                 await registrarRecorrido(fecha, km, tripNotes.value.trim());
             });
 
-            // Cerrar modal al hacer clic fuera
             modal.addEventListener('click', (e) => {
                 if (e.target === modal) modal.style.display = 'none';
             });
 
-            // Cerrar con Escape
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && modal.style.display === 'flex') {
                     modal.style.display = 'none';
                 }
             });
 
-            // Filtro de fechas
+            // Filtro
             const filterDateBtn = document.getElementById('filterDateBtn');
             const dateFilterContainer = document.getElementById('dateFilterContainer');
             let filterVisible = false;
@@ -892,27 +860,22 @@
                 renderActividad(actividades);
             });
 
-            // Ver todo
             document.getElementById('verTodoBtn')?.addEventListener('click', () => {
-                // Mostrar todas las actividades en un modal o alert
                 const total = actividades.length;
                 showToast(`Hay ${total} actividades registradas. Próximamente historial completo.`, 'info', 3000);
             });
 
-            // Calendario (botón header)
             document.getElementById('calendarBtn')?.addEventListener('click', () => {
-                // Mostrar/ocultar filtro de fechas (simulación)
                 filterDateBtn.click();
             });
 
-            // Registrar Service Worker
+            // Service Worker (ruta relativa)
             if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then(reg => console.log('SW registrado:', reg))
                     .catch(err => console.error('Error al registrar SW:', err));
             }
 
-            // Cargar datos iniciales
             cargarDashboard();
         });
     </script>
