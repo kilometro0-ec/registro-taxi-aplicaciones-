@@ -14,8 +14,6 @@
         .filter-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .stat-card { transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-2px); }
-        .tab-btn.active { background: #004831; color: white; }
-        .tab-btn { transition: all 0.2s; padding: 6px 14px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
     </style>
 </head>
 <body class="bg-surface text-on-surface pb-24">
@@ -165,25 +163,42 @@
 
 <script>
 // ========================= CONFIGURACIÓN =========================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec'; // CAMBIA POR TU URL
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec'; // <-- CAMBIA POR TU URL
 
 // ========================= ESTADO =========================
-let datosCompletos = null; // { ingresos, gastos, recorridos }
+let datosCompletos = null;
 let datosFiltrados = null;
 let charts = {};
 
-// ========================= CARGAR DATOS (con fallback a ejemplo) =========================
+// ========================= CARGAR DATOS REALES (con fallback a ejemplo) =========================
 async function cargarDatos() {
     try {
-        // Intenta obtener datos reales del backend.
-        // Como no tenemos un endpoint único, usamos getRecentActivity para obtener registros recientes.
-        const res = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
-        if (!res.ok) throw new Error('Error en la carga');
-        const actividad = await res.json();
-        // Separar por tipo (asumiendo que cada item tiene 'tipo', 'monto', 'fecha', 'rubro', etc.)
+        // Primero intentamos obtener stats generales (para totales)
+        const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
+        if (!resStats.ok) throw new Error('Error en getStats');
+        const stats = await resStats.json();
+
+        // Luego obtenemos actividad reciente (para los detalles)
+        const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
+        if (!resAct.ok) throw new Error('Error en getRecentActivity');
+        const actividad = await resAct.json();
+
+        // Separar por tipo
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
         const recorridos = actividad.filter(a => a.tipo === 'recorrido');
+
+        // Usar stats para totales si no hay datos en actividad
+        if (ingresos.length === 0 && stats.totalIngresos) {
+            // Crear un registro ficticio con el total del día (para visualización)
+            const hoy = new Date().toISOString().slice(0,10);
+            ingresos.push({ fecha: hoy, rubro: 'transporte', plataforma: 'Uber', monto: stats.totalIngresos, descripcion: 'Total del día', tipo: 'ingreso' });
+        }
+        if (gastos.length === 0 && stats.totalGastos) {
+            const hoy = new Date().toISOString().slice(0,10);
+            gastos.push({ fecha: hoy, rubro: 'transporte', categoria: 'otros', monto: stats.totalGastos, descripcion: 'Total del día', tipo: 'gasto' });
+        }
+
         datosCompletos = { ingresos, gastos, recorridos };
     } catch (e) {
         console.warn('Usando datos de ejemplo porque el backend no responde:', e);
@@ -202,15 +217,12 @@ function generarDatosEjemplo() {
         fecha.setDate(fecha.getDate() - i);
         const f = fecha.toISOString().slice(0,10);
 
-        // Ingresos (alternando transporte y electrónica)
         if (i % 2 === 0) {
             ingresos.push({ fecha: f, rubro: 'transporte', plataforma: plataformas[i%3], monto: 15 + Math.random()*35, descripcion: 'Viaje '+(i+1), tipo: 'ingreso' });
         } else {
             ingresos.push({ fecha: f, rubro: 'electronica', plataforma: 'Venta', monto: 5 + Math.random()*25, descripcion: 'Venta prod '+(i+1), tipo: 'ingreso' });
         }
-        // Gastos
         gastos.push({ fecha: f, rubro: (i%3===0)?'transporte':'electronica', categoria: categorias[i%categorias.length], monto: 2 + Math.random()*12, descripcion: 'Gasto '+(i+1), tipo: 'gasto' });
-        // Recorridos
         if (i%2===0) recorridos.push({ fecha: f, km: 10 + Math.random()*30, notas: 'Recorrido '+(i+1) });
     }
     return { ingresos, gastos, recorridos };
