@@ -6,48 +6,39 @@
     <title>Driver Insights - Estadísticas Avanzadas</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">
-        tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <style>
-        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-        body { font-family: 'Inter', sans-serif; background-color: #f8f9ff; }
-        body { min-height: max(884px, 100dvh); }
-        .tab-btn.active { background-color: #004831; color: white; }
-        .tab-btn { transition: all 0.2s; }
-        .filter-card { background: white; border-radius: 12px; padding: 16px; }
+        body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
+        .material-symbols-outlined { font-size: 24px; }
+        .filter-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
         .stat-card { transition: transform 0.2s; }
         .stat-card:hover { transform: translateY(-2px); }
+        .tab-btn.active { background: #004831; color: white; }
+        .tab-btn { transition: all 0.2s; padding: 6px 14px; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; }
     </style>
 </head>
-<body class="bg-background text-on-background pb-20">
+<body class="bg-surface text-on-surface pb-24">
 
-<!-- HEADER -->
-<header class="bg-surface border-b border-outline-variant fixed top-0 w-full z-50 flex justify-between items-center px-4 h-12 shadow-sm">
+<!-- Header -->
+<header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 w-full flex justify-between items-center px-4 h-12 shadow-sm">
     <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant">
             <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH1O4D8wU5EtEDaBEpNBwRCH7vQ3WS9GvJBzpjUd8J3BoLn2STmJYTgvXHyBxPN6LK3qtOA834UyLWqHziQo0IkuuaQ2ecc-cgIaOUx2mEg7BJwfSefAlhGoqbcSdfTCmP49Fa6gONrxvvM3ru8_3kTuqIMN0PfFgNLdBxxgPCTt06oDL0wzfkdTf_NntTX-bdLMV5kSUMtfS08Nu3E34mhbDsIDn2IiAMzY1YmmKeQBPU_P6jEcabn0CoNO5FZ35M4mQizBs9L85C" alt="Avatar"/>
         </div>
         <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
     </div>
-    <div class="flex items-center gap-2">
-        <button id="refreshBtn" class="w-10 h-10 flex items-center justify-center transition-colors hover:bg-surface-container-high rounded-full">
-            <span class="material-symbols-outlined text-primary">refresh</span>
-        </button>
-        <button id="exportCsvBtn" class="w-10 h-10 flex items-center justify-center transition-colors hover:bg-surface-container-high rounded-full">
-            <span class="material-symbols-outlined text-primary">download</span>
-        </button>
+    <div class="flex gap-2">
+        <button id="refreshBtn" class="material-symbols-outlined hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">refresh</button>
+        <button id="exportCsvBtn" class="material-symbols-outlined hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">download</button>
     </div>
 </header>
 
-<!-- MAIN -->
-<main class="mt-16 px-4 pt-4 max-w-5xl mx-auto">
+<!-- Main -->
+<main class="mt-16 px-4 pt-4 max-w-6xl mx-auto">
 
-    <!-- FILTROS -->
-    <section class="filter-card mb-4 border border-outline-variant shadow-sm">
+    <!-- Filtros -->
+    <section class="filter-card mb-4 border border-outline-variant">
         <div class="flex flex-wrap items-end gap-3">
             <div class="flex-1 min-w-[120px]">
                 <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
@@ -72,7 +63,7 @@
         </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO -->
+    <!-- Resumen ejecutivo -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
             <p class="text-xs text-on-surface-variant uppercase font-bold">Ingresos Totales</p>
@@ -92,46 +83,31 @@
         </div>
     </section>
 
-    <!-- GRÁFICOS PRINCIPALES -->
+    <!-- Gráficos principales -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="bg-white border border-outline-variant rounded-xl p-4">
-            <h3 class="font-bold text-sm mb-2">📊 Ingresos vs Gastos</h3>
+            <h3 class="font-bold text-sm mb-2">📊 Evolución diaria (Ingresos vs Gastos)</h3>
             <canvas id="ingresosGastosChart" height="200"></canvas>
         </div>
         <div class="bg-white border border-outline-variant rounded-xl p-4">
-            <h3 class="font-bold text-sm mb-2">🧩 Distribución de Gastos</h3>
+            <h3 class="font-bold text-sm mb-2">🧩 Distribución de Gastos por Categoría</h3>
             <canvas id="gastosPieChart" height="200"></canvas>
         </div>
     </div>
 
-    <!-- ANÁLISIS POR CATEGORÍA Y PLATAFORMA -->
+    <!-- Análisis por plataforma y categoría -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <div class="bg-white border border-outline-variant rounded-xl p-4">
             <h3 class="font-bold text-sm mb-2">🚖 Ingresos por Plataforma</h3>
             <canvas id="platformChart" height="180"></canvas>
         </div>
         <div class="bg-white border border-outline-variant rounded-xl p-4">
-            <h3 class="font-bold text-sm mb-2">⛽ Gastos por Categoría</h3>
+            <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos por Categoría</h3>
             <div id="categoriaGastosList" class="space-y-2 max-h-[200px] overflow-y-auto"></div>
         </div>
     </div>
 
-    <!-- TABLA DE ACTIVIDAD RECIENTE FILTRADA -->
-    <div class="bg-white border border-outline-variant rounded-xl p-4 mb-4">
-        <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
-        <div id="tablaActividad" class="overflow-x-auto">
-            <table class="w-full text-sm">
-                <thead class="bg-surface-container-low text-left text-xs uppercase">
-                    <tr><th class="p-2">Fecha</th><th class="p-2">Tipo</th><th class="p-2">Rubro</th><th class="p-2">Descripción</th><th class="p-2 text-right">Monto</th></tr>
-                </thead>
-                <tbody id="tablaBody" class="divide-y divide-gray-100">
-                    <tr><td colspan="5" class="text-center py-4 text-gray-500">Cargando datos...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- KPI AVANZADOS -->
+    <!-- KPIs avanzados -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
         <div class="bg-white border border-outline-variant rounded-xl p-3">
             <p class="text-xs text-on-surface-variant uppercase font-bold">Ganancia / Hora</p>
@@ -150,380 +126,302 @@
             <p class="text-xl font-bold text-secondary" id="totalKm">0</p>
         </div>
     </div>
+
+    <!-- Tabla detallada -->
+    <div class="bg-white border border-outline-variant rounded-xl p-4 mb-4">
+        <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-surface-container-low text-left text-xs uppercase">
+                    <tr><th class="p-2">Fecha</th><th class="p-2">Tipo</th><th class="p-2">Rubro</th><th class="p-2">Categoría/Plataforma</th><th class="p-2">Descripción</th><th class="p-2 text-right">Monto</th></tr>
+                </thead>
+                <tbody id="tablaBody" class="divide-y divide-gray-100">
+                    <tr><td colspan="6" class="text-center py-4 text-gray-500">Cargando datos...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </main>
 
-<!-- NAVEGACIÓN INFERIOR -->
+<!-- Navegación inferior -->
 <nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-16 px-4 bg-surface border-t border-outline-variant">
-    <a href="./registro-taxi-aplicaciones-/Dashboard.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+    <a href="index.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
         <span class="material-symbols-outlined">dashboard</span>
         <span class="text-[10px] font-bold">Panel</span>
     </a>
-    <a href="./registro-taxi-aplicaciones-/registro_ingresos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+    <a href="registro_ingresos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
         <span class="material-symbols-outlined">payments</span>
         <span class="text-[10px] font-bold">Viajes</span>
     </a>
-    <a href="./registro-taxi-aplicaciones-/registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
+    <a href="registro_gastos.html" class="flex flex-col items-center justify-center text-on-surface-variant px-4 py-1">
         <span class="material-symbols-outlined">receipt_long</span>
         <span class="text-[10px] font-bold">Gastos</span>
     </a>
-    <a href="./registro-taxi-aplicaciones-/reporte_estadisticas.html" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1">
+    <a href="reporte_estadisticas.html" class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-xl px-4 py-1">
         <span class="material-symbols-outlined" style="font-variation-settings:'FILL'1;">analytics</span>
         <span class="text-[10px] font-bold">Analytics</span>
     </a>
 </nav>
 
 <script>
-    // ================= CONFIGURACIÓN =================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec'; // CAMBIAR POR TU URL
+// ========================= CONFIGURACIÓN =========================
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec'; // CAMBIA POR TU URL
 
-    // ================= ESTADO GLOBAL =================
-    let datosCompletos = null; // Todos los datos (ingresos, gastos, recorridos)
-    let datosFiltrados = null;
-    let charts = {};
+// ========================= ESTADO =========================
+let datosCompletos = null; // { ingresos, gastos, recorridos }
+let datosFiltrados = null;
+let charts = {};
 
-    // ================= FUNCIONES DE CARGA DE DATOS =================
-    async function cargarDatosCompletos() {
-        try {
-            // Obtener todos los ingresos, gastos y recorridos del backend
-            // Simulamos una respuesta unificada (en realidad tendrías que hacer varias llamadas o modificar tu backend)
-            const res = await fetch(`${SCRIPT_URL}?action=getFullData`);
-            if (!res.ok) throw new Error('Error en la carga de datos');
-            const data = await res.json();
-            datosCompletos = data;
-            return data;
-        } catch (e) {
-            console.error('Error cargando datos completos:', e);
-            // Si falla, generamos datos de ejemplo para demostración
-            datosCompletos = generarDatosEjemplo();
-            return datosCompletos;
+// ========================= CARGAR DATOS (con fallback a ejemplo) =========================
+async function cargarDatos() {
+    try {
+        // Intenta obtener datos reales del backend.
+        // Como no tenemos un endpoint único, usamos getRecentActivity para obtener registros recientes.
+        const res = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
+        if (!res.ok) throw new Error('Error en la carga');
+        const actividad = await res.json();
+        // Separar por tipo (asumiendo que cada item tiene 'tipo', 'monto', 'fecha', 'rubro', etc.)
+        const ingresos = actividad.filter(a => a.tipo === 'ingreso');
+        const gastos = actividad.filter(a => a.tipo === 'gasto');
+        const recorridos = actividad.filter(a => a.tipo === 'recorrido');
+        datosCompletos = { ingresos, gastos, recorridos };
+    } catch (e) {
+        console.warn('Usando datos de ejemplo porque el backend no responde:', e);
+        datosCompletos = generarDatosEjemplo();
+    }
+}
+
+function generarDatosEjemplo() {
+    const hoy = new Date();
+    const ingresos = [], gastos = [], recorridos = [];
+    const categorias = ['combustible', 'mantenimiento', 'seguro', 'reparaciones', 'otros'];
+    const plataformas = ['Uber', 'DiDi', 'InDriver'];
+
+    for (let i = 0; i < 40; i++) {
+        const fecha = new Date(hoy);
+        fecha.setDate(fecha.getDate() - i);
+        const f = fecha.toISOString().slice(0,10);
+
+        // Ingresos (alternando transporte y electrónica)
+        if (i % 2 === 0) {
+            ingresos.push({ fecha: f, rubro: 'transporte', plataforma: plataformas[i%3], monto: 15 + Math.random()*35, descripcion: 'Viaje '+(i+1), tipo: 'ingreso' });
+        } else {
+            ingresos.push({ fecha: f, rubro: 'electronica', plataforma: 'Venta', monto: 5 + Math.random()*25, descripcion: 'Venta prod '+(i+1), tipo: 'ingreso' });
         }
+        // Gastos
+        gastos.push({ fecha: f, rubro: (i%3===0)?'transporte':'electronica', categoria: categorias[i%categorias.length], monto: 2 + Math.random()*12, descripcion: 'Gasto '+(i+1), tipo: 'gasto' });
+        // Recorridos
+        if (i%2===0) recorridos.push({ fecha: f, km: 10 + Math.random()*30, notas: 'Recorrido '+(i+1) });
+    }
+    return { ingresos, gastos, recorridos };
+}
+
+// ========================= FILTRADO =========================
+function filtrarDatos(fechaInicio, fechaFin, rubro) {
+    if (!datosCompletos) return null;
+    const { ingresos, gastos, recorridos } = datosCompletos;
+    const inicio = fechaInicio ? new Date(fechaInicio) : null;
+    const fin = fechaFin ? new Date(fechaFin) : null;
+    if (fin) fin.setHours(23,59,59);
+
+    function filtrarFecha(item) {
+        if (!item.fecha) return true;
+        const d = new Date(item.fecha);
+        if (inicio && d < inicio) return false;
+        if (fin && d > fin) return false;
+        return true;
+    }
+    function filtrarRubro(item) {
+        if (rubro === 'all') return true;
+        return item.rubro === rubro;
     }
 
-    function generarDatosEjemplo() {
-        // Generar 50 registros de ingresos y gastos aleatorios
-        const hoy = new Date();
-        const ingresos = [];
-        const gastos = [];
-        const recorridos = [];
+    const iF = ingresos.filter(i => filtrarFecha(i) && filtrarRubro(i));
+    const gF = gastos.filter(g => filtrarFecha(g) && filtrarRubro(g));
+    const rF = recorridos.filter(r => filtrarFecha(r));
+    return { ingresos: iF, gastos: gF, recorridos: rF };
+}
 
-        for (let i = 0; i < 30; i++) {
-            const fecha = new Date(hoy);
-            fecha.setDate(fecha.getDate() - i);
-            const fechaStr = fecha.toISOString().slice(0,10);
+// ========================= RENDER =========================
+function renderizar(datos) {
+    if (!datos) return;
+    const { ingresos, gastos, recorridos } = datos;
 
-            // Ingresos
-            if (i % 2 === 0) {
-                ingresos.push({
-                    fecha: fechaStr,
-                    rubro: 'transporte',
-                    plataforma: ['Uber','DiDi','InDriver'][Math.floor(Math.random()*3)],
-                    monto: Math.round((15 + Math.random() * 40) * 100) / 100,
-                    descripcion: 'Viaje ' + (i+1),
-                    tipo: 'ingreso'
-                });
-            } else {
-                ingresos.push({
-                    fecha: fechaStr,
-                    rubro: 'electronica',
-                    plataforma: 'Venta',
-                    monto: Math.round((5 + Math.random() * 30) * 100) / 100,
-                    descripcion: 'Venta producto ' + (i+1),
-                    tipo: 'ingreso'
-                });
-            }
+    // Totales
+    const totalIngresos = ingresos.reduce((s,i) => s + i.monto, 0);
+    const totalGastos = gastos.reduce((s,g) => s + g.monto, 0);
+    const ganancia = totalIngresos - totalGastos;
+    const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
 
-            // Gastos
-            const categorias = ['combustible', 'mantenimiento', 'seguro', 'reparaciones', 'otros'];
-            gastos.push({
-                fecha: fechaStr,
-                rubro: i % 2 === 0 ? 'transporte' : 'electronica',
-                categoria: categorias[i % categorias.length],
-                monto: Math.round((2 + Math.random() * 15) * 100) / 100,
-                descripcion: 'Gasto ' + (i+1),
-                tipo: 'gasto'
-            });
+    document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toFixed(2);
+    document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
+    document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
+    document.getElementById('margen').textContent = margen.toFixed(1) + '%';
 
-            // Recorridos (solo transporte)
-            if (i % 2 === 0) {
-                recorridos.push({
-                    fecha: fechaStr,
-                    km: Math.round((10 + Math.random() * 40) * 10) / 10,
-                    notas: 'Recorrido ' + (i+1)
-                });
-            }
+    // KPIs
+    const totalKm = recorridos.reduce((s,r) => s + (r.km || 0), 0);
+    const totalViajes = ingresos.filter(i => i.rubro === 'transporte').length;
+    const horas = recorridos.length * 0.5; // supuesto
+    const gananciaHora = horas > 0 ? ganancia / horas : 0;
+    const gananciaKm = totalKm > 0 ? ganancia / totalKm : 0;
+    document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
+    document.getElementById('gananciaKm').textContent = '$' + gananciaKm.toFixed(2);
+    document.getElementById('totalViajes').textContent = totalViajes;
+    document.getElementById('totalKm').textContent = totalKm.toFixed(1);
+
+    // Gráficos
+    renderGraficoIngresosGastos(ingresos, gastos);
+    renderGraficoGastosPie(gastos);
+    renderGraficoPlataformas(ingresos);
+    renderListaCategorias(gastos);
+    renderTabla(ingresos, gastos);
+}
+
+// ========================= GRÁFICOS =========================
+function renderGraficoIngresosGastos(ingresos, gastos) {
+    const ctx = document.getElementById('ingresosGastosChart').getContext('2d');
+    if (charts.ig) charts.ig.destroy();
+    const fechas = [...new Set([...ingresos.map(i=>i.fecha), ...gastos.map(g=>g.fecha)])].sort();
+    const dataIng = fechas.map(f => ingresos.filter(i=>i.fecha===f).reduce((s,i)=>s+i.monto,0));
+    const dataGas = fechas.map(f => gastos.filter(g=>g.fecha===f).reduce((s,g)=>s+g.monto,0));
+    charts.ig = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: fechas,
+            datasets: [
+                { label: 'Ingresos', data: dataIng, backgroundColor: '#004831', borderRadius: 4 },
+                { label: 'Gastos', data: dataGas, backgroundColor: '#752200', borderRadius: 4 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
+            scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } } }
         }
-
-        return { ingresos, gastos, recorridos };
-    }
-
-    // ================= FILTRADO =================
-    function filtrarDatos(fechaInicio, fechaFin, rubro) {
-        if (!datosCompletos) return null;
-        const { ingresos, gastos, recorridos } = datosCompletos;
-
-        const inicio = fechaInicio ? new Date(fechaInicio) : null;
-        const fin = fechaFin ? new Date(fechaFin) : null;
-        fin && fin.setHours(23,59,59);
-
-        function filtrarPorFecha(item) {
-            if (!item.fecha) return true;
-            const d = new Date(item.fecha);
-            if (inicio && d < inicio) return false;
-            if (fin && d > fin) return false;
-            return true;
-        }
-
-        function filtrarPorRubro(item) {
-            if (rubro === 'all') return true;
-            return item.rubro === rubro;
-        }
-
-        const ingresosFiltrados = ingresos.filter(i => filtrarPorFecha(i) && filtrarPorRubro(i));
-        const gastosFiltrados = gastos.filter(g => filtrarPorFecha(g) && filtrarPorRubro(g));
-        const recorridosFiltrados = recorridos.filter(r => filtrarPorFecha(r));
-
-        return { ingresos: ingresosFiltrados, gastos: gastosFiltrados, recorridos: recorridosFiltrados };
-    }
-
-    // ================= RENDERIZADO DE ESTADÍSTICAS =================
-    function renderizarEstadisticas(datos) {
-        if (!datos) return;
-        const { ingresos, gastos, recorridos } = datos;
-
-        // Totales
-        const totalIngresos = ingresos.reduce((sum, i) => sum + i.monto, 0);
-        const totalGastos = gastos.reduce((sum, g) => sum + g.monto, 0);
-        const ganancia = totalIngresos - totalGastos;
-        const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
-
-        document.getElementById('totalIngresos').textContent = '$' + totalIngresos.toFixed(2);
-        document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
-        document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
-        document.getElementById('margen').textContent = margen.toFixed(1) + '%';
-
-        // KPIs avanzados
-        const totalHoras = recorridos.length * 0.5; // supongamos 0.5h por recorrido
-        const gananciaHora = totalHoras > 0 ? ganancia / totalHoras : 0;
-        const totalKm = recorridos.reduce((sum, r) => sum + (r.km || 0), 0);
-        const gananciaKm = totalKm > 0 ? ganancia / totalKm : 0;
-
-        document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
-        document.getElementById('gananciaKm').textContent = '$' + gananciaKm.toFixed(2);
-        document.getElementById('totalViajes').textContent = ingresos.filter(i => i.rubro === 'transporte').length;
-        document.getElementById('totalKm').textContent = totalKm.toFixed(1);
-
-        // Gráficos
-        renderGraficoIngresosGastos(ingresos, gastos);
-        renderGraficoGastosPie(gastos);
-        renderGraficoPlataformas(ingresos);
-        renderListaCategorias(gastos);
-        renderTablaActividad(ingresos, gastos);
-    }
-
-    // ================= GRÁFICOS =================
-    function renderGraficoIngresosGastos(ingresos, gastos) {
-        const ctx = document.getElementById('ingresosGastosChart').getContext('2d');
-        if (charts.ingresosGastos) charts.ingresosGastos.destroy();
-
-        // Agrupar por fecha
-        const fechas = [...new Set([...ingresos.map(i=>i.fecha), ...gastos.map(g=>g.fecha)])].sort();
-        const dataIngresos = fechas.map(f => ingresos.filter(i=>i.fecha===f).reduce((s,i)=>s+i.monto,0));
-        const dataGastos = fechas.map(f => gastos.filter(g=>g.fecha===f).reduce((s,g)=>s+g.monto,0));
-
-        charts.ingresosGastos = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: fechas,
-                datasets: [
-                    { label: 'Ingresos', data: dataIngresos, backgroundColor: '#004831', borderRadius: 4 },
-                    { label: 'Gastos', data: dataGastos, backgroundColor: '#752200', borderRadius: 4 }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
-                scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } } }
-            }
-        });
-    }
-
-    function renderGraficoGastosPie(gastos) {
-        const ctx = document.getElementById('gastosPieChart').getContext('2d');
-        if (charts.gastosPie) charts.gastosPie.destroy();
-
-        const categorias = {};
-        gastos.forEach(g => {
-            const cat = g.categoria || 'otros';
-            categorias[cat] = (categorias[cat] || 0) + g.monto;
-        });
-        const labels = Object.keys(categorias);
-        const data = Object.values(categorias);
-        const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280'];
-
-        charts.gastosPie = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colores.slice(0, labels.length),
-                    borderColor: '#fff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
-            }
-        });
-    }
-
-    function renderGraficoPlataformas(ingresos) {
-        const ctx = document.getElementById('platformChart').getContext('2d');
-        if (charts.platform) charts.platform.destroy();
-
-        const plataformas = {};
-        ingresos.filter(i => i.rubro === 'transporte').forEach(i => {
-            const p = i.plataforma || 'Otros';
-            plataformas[p] = (plataformas[p] || 0) + i.monto;
-        });
-        const labels = Object.keys(plataformas);
-        const data = Object.values(plataformas);
-        const colores = ['#004831','#1E3A8A','#D97706','#6B7280'];
-
-        charts.platform = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: data,
-                    backgroundColor: colores.slice(0, labels.length),
-                    borderColor: '#fff',
-                    borderWidth: 2
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }
-            }
-        });
-    }
-
-    function renderListaCategorias(gastos) {
-        const container = document.getElementById('categoriaGastosList');
-        const categorias = {};
-        gastos.forEach(g => {
-            const cat = g.categoria || 'otros';
-            categorias[cat] = (categorias[cat] || 0) + g.monto;
-        });
-        const total = gastos.reduce((s,g) => s + g.monto, 0);
-        const sorted = Object.entries(categorias).sort((a,b) => b[1] - a[1]);
-
-        container.innerHTML = sorted.map(([cat, monto]) => {
-            const pct = total > 0 ? (monto / total) * 100 : 0;
-            return `<div class="flex justify-between items-center border-b border-gray-100 py-1">
-                        <span class="text-sm capitalize">${cat}</span>
-                        <span class="text-sm font-bold">$${monto.toFixed(2)} <span class="text-xs text-gray-500">(${pct.toFixed(1)}%)</span></span>
-                    </div>`;
-        }).join('');
-    }
-
-    function renderTablaActividad(ingresos, gastos) {
-        const tbody = document.getElementById('tablaBody');
-        const combined = [
-            ...ingresos.map(i => ({ ...i, tipo: 'ingreso' })),
-            ...gastos.map(g => ({ ...g, tipo: 'gasto' }))
-        ].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-
-        if (combined.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4 text-gray-500">No hay actividad en este período</td></tr>';
-            return;
-        }
-
-        tbody.innerHTML = combined.slice(0, 20).map(item => {
-            const monto = item.monto || 0;
-            const signo = item.tipo === 'ingreso' ? '+' : '-';
-            const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary';
-            return `<tr>
-                        <td class="p-2">${item.fecha || ''}</td>
-                        <td class="p-2 capitalize">${item.tipo}</td>
-                        <td class="p-2 capitalize">${item.rubro || ''}</td>
-                        <td class="p-2">${item.descripcion || ''}</td>
-                        <td class="p-2 text-right font-bold ${color}">${signo}$${monto.toFixed(2)}</td>
-                    </tr>`;
-        }).join('');
-    }
-
-    // ================= EXPORTAR CSV =================
-    function exportarCSV(datos) {
-        if (!datos) return;
-        const { ingresos, gastos } = datos;
-        const all = [...ingresos.map(i => ({ ...i, tipo: 'ingreso' })), ...gastos.map(g => ({ ...g, tipo: 'gasto' }))];
-        if (all.length === 0) { alert('No hay datos para exportar'); return; }
-
-        const headers = ['Fecha', 'Tipo', 'Rubro', 'Categoría/Plataforma', 'Descripción', 'Monto'];
-        const rows = all.map(item => [
-            item.fecha || '',
-            item.tipo,
-            item.rubro || '',
-            item.plataforma || item.categoria || '',
-            item.descripcion || '',
-            item.monto || 0
-        ]);
-
-        let csv = headers.join(',') + '\n' + rows.map(row => row.join(',')).join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `reporte_${new Date().toISOString().slice(0,10)}.csv`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(link.href);
-    }
-
-    // ================= INICIALIZACIÓN =================
-    async function init() {
-        // Fechas por defecto: últimos 30 días
-        const hoy = new Date();
-        const hace30 = new Date(hoy);
-        hace30.setDate(hace30.getDate() - 30);
-        document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
-        document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
-
-        await cargarDatosCompletos();
-        aplicarFiltros();
-    }
-
-    function aplicarFiltros() {
-        const inicio = document.getElementById('fechaInicio').value;
-        const fin = document.getElementById('fechaFin').value;
-        const rubro = document.getElementById('rubroFilter').value;
-        datosFiltrados = filtrarDatos(inicio, fin, rubro);
-        renderizarEstadisticas(datosFiltrados);
-    }
-
-    // ================= EVENTOS =================
-    document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
-    document.getElementById('clearFiltersBtn').addEventListener('click', () => {
-        document.getElementById('fechaInicio').value = '';
-        document.getElementById('fechaFin').value = '';
-        document.getElementById('rubroFilter').value = 'all';
-        aplicarFiltros();
     });
-    document.getElementById('refreshBtn').addEventListener('click', async () => {
-        await cargarDatosCompletos();
-        aplicarFiltros();
-    });
-    document.getElementById('exportCsvBtn').addEventListener('click', () => {
-        if (datosFiltrados) exportarCSV(datosFiltrados);
-    });
+}
 
-    // ================= INICIO =================
-    document.addEventListener('DOMContentLoaded', init);
+function renderGraficoGastosPie(gastos) {
+    const ctx = document.getElementById('gastosPieChart').getContext('2d');
+    if (charts.gp) charts.gp.destroy();
+    const cats = {};
+    gastos.forEach(g => { const c = g.categoria || 'otros'; cats[c] = (cats[c]||0) + g.monto; });
+    const labels = Object.keys(cats);
+    const data = Object.values(cats);
+    const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280'];
+    charts.gp = new Chart(ctx, {
+        type: 'pie',
+        data: { labels, datasets: [{ data, backgroundColor: colores.slice(0, labels.length), borderColor: '#fff', borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+    });
+}
+
+function renderGraficoPlataformas(ingresos) {
+    const ctx = document.getElementById('platformChart').getContext('2d');
+    if (charts.pl) charts.pl.destroy();
+    const plat = {};
+    ingresos.filter(i=>i.rubro==='transporte').forEach(i => { const p = i.plataforma || 'Otros'; plat[p] = (plat[p]||0) + i.monto; });
+    const labels = Object.keys(plat);
+    const data = Object.values(plat);
+    const colores = ['#004831','#1E3A8A','#D97706','#6B7280'];
+    charts.pl = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels, datasets: [{ data, backgroundColor: colores.slice(0, labels.length), borderColor: '#fff', borderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+    });
+}
+
+function renderListaCategorias(gastos) {
+    const container = document.getElementById('categoriaGastosList');
+    const cats = {};
+    gastos.forEach(g => { const c = g.categoria || 'otros'; cats[c] = (cats[c]||0) + g.monto; });
+    const total = gastos.reduce((s,g) => s + g.monto, 0);
+    const sorted = Object.entries(cats).sort((a,b) => b[1] - a[1]);
+    container.innerHTML = sorted.map(([cat, monto]) => {
+        const pct = total > 0 ? (monto/total)*100 : 0;
+        return `<div class="flex justify-between items-center border-b border-gray-100 py-1">
+                    <span class="text-sm capitalize">${cat}</span>
+                    <span class="text-sm font-bold">$${monto.toFixed(2)} <span class="text-xs text-gray-500">(${pct.toFixed(1)}%)</span></span>
+                </div>`;
+    }).join('');
+}
+
+function renderTabla(ingresos, gastos) {
+    const tbody = document.getElementById('tablaBody');
+    const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
+    all.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+    if (all.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No hay actividad</td></tr>';
+        return;
+    }
+    tbody.innerHTML = all.slice(0, 30).map(item => {
+        const signo = item.tipo === 'ingreso' ? '+' : '-';
+        const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary';
+        const categoria = item.plataforma || item.categoria || '';
+        return `<tr>
+                    <td class="p-2">${item.fecha || ''}</td>
+                    <td class="p-2 capitalize">${item.tipo}</td>
+                    <td class="p-2 capitalize">${item.rubro || ''}</td>
+                    <td class="p-2">${categoria}</td>
+                    <td class="p-2">${item.descripcion || ''}</td>
+                    <td class="p-2 text-right font-bold ${color}">${signo}$${(item.monto||0).toFixed(2)}</td>
+                </tr>`;
+    }).join('');
+}
+
+// ========================= EXPORTAR CSV =========================
+function exportarCSV(datos) {
+    if (!datos) return;
+    const { ingresos, gastos } = datos;
+    const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
+    if (all.length === 0) { alert('No hay datos para exportar'); return; }
+    const headers = ['Fecha','Tipo','Rubro','Categoría/Plataforma','Descripción','Monto'];
+    const rows = all.map(item => [item.fecha||'', item.tipo, item.rubro||'', item.plataforma||item.categoria||'', item.descripcion||'', item.monto||0]);
+    let csv = headers.join(',') + '\n' + rows.map(row => row.join(',')).join('\n');
+    const blob = new Blob([csv], {type: 'text/csv'});
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `reporte_${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
+
+// ========================= EVENTOS =========================
+document.addEventListener('DOMContentLoaded', async () => {
+    // Fechas por defecto: últimos 30 días
+    const hoy = new Date();
+    const hace30 = new Date(hoy); hace30.setDate(hace30.getDate() - 30);
+    document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
+    document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
+
+    await cargarDatos();
+    aplicarFiltros();
+});
+
+function aplicarFiltros() {
+    const inicio = document.getElementById('fechaInicio').value;
+    const fin = document.getElementById('fechaFin').value;
+    const rubro = document.getElementById('rubroFilter').value;
+    datosFiltrados = filtrarDatos(inicio, fin, rubro);
+    renderizar(datosFiltrados);
+}
+
+document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
+document.getElementById('clearFiltersBtn').addEventListener('click', () => {
+    document.getElementById('fechaInicio').value = '';
+    document.getElementById('fechaFin').value = '';
+    document.getElementById('rubroFilter').value = 'all';
+    aplicarFiltros();
+});
+document.getElementById('refreshBtn').addEventListener('click', async () => {
+    await cargarDatos();
+    aplicarFiltros();
+});
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+    if (datosFiltrados) exportarCSV(datosFiltrados);
+});
 </script>
 </body>
 </html>
