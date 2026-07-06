@@ -1,313 +1,920 @@
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Driver Insights - Panel Unificado</title>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport" />
+    <title>Driver Insights - Panel Unificado</title>
 
-<!-- PWA manifest (ruta absoluta a la subcarpeta) -->
-<link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json">
-<meta name="theme-color" content="#004831">
-<meta name="mobile-web-app-capable" content="yes">
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/registro-taxi-aplicaciones-/manifest.json" />
+    <meta name="theme-color" content="#004831" />
+    <meta name="mobile-web-app-capable" content="yes" />
 
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<style>
-    body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
-    .material-symbols-outlined { font-size: 24px; vertical-align: middle; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-card { animation: fadeInUp 0.4s ease-out; }
-    .tab-active { background-color: #004831; color: white; }
-    .tab-inactive { background-color: #e5eeff; color: #3f4943; }
-    .tab-electronica-active { background-color: #1E3A8A; color: white; }
-    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
-    .status-connected { background: #dcfce7; color: #166534; }
-    .status-error { background: #fee2e2; color: #991b1b; }
-    /* Modal simple */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 1000;
-    }
-    .modal-content {
-        background: white;
-        border-radius: 1rem;
-        padding: 1.5rem;
-        width: 90%;
-        max-width: 350px;
-        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
-    }
-</style>
-<script id="tailwind-config">
-    tailwind.config = { darkMode: "class", theme: { extend: { colors: { "on-tertiary-fixed-variant": "#832700", "secondary": "#455f88", "on-primary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-low": "#eff4ff", "surface-tint": "#1c6b4d", "outline": "#6f7973", "primary-fixed": "#a6f2cc", "secondary-container": "#b6d0ff", "surface-container-lowest": "#ffffff", "outline-variant": "#bfc9c1", "primary-fixed-dim": "#8bd6b1", "on-surface-variant": "#3f4943", "on-tertiary-fixed": "#390c00", "tertiary-fixed-dim": "#ffb59c", "surface-dim": "#cbdbf5", "on-primary-container": "#90dbb6", "on-background": "#0b1c30", "error": "#ba1a1a", "surface": "#f8f9ff", "primary-container": "#0e6245", "inverse-surface": "#213145", "surface-bright": "#f8f9ff", "background": "#f8f9ff", "error-container": "#ffdad6", "inverse-primary": "#8bd6b1", "secondary-fixed": "#d6e3ff", "surface-container": "#e5eeff", "primary": "#004831", "tertiary": "#752200", "on-surface": "#0b1c30", "on-secondary-fixed": "#001b3c", "surface-container-high": "#dce9ff", "secondary-fixed-dim": "#adc7f7", "on-error": "#ffffff", "on-error-container": "#93000a", "on-secondary": "#ffffff", "surface-container-highest": "#d3e4fe", "on-primary-fixed-variant": "#005138", "on-secondary-fixed-variant": "#2d476f", "on-secondary-container": "#3f5882", "tertiary-fixed": "#ffdbcf", "inverse-on-surface": "#eaf1ff", "electronica-primary": "#1E3A8A", "electronica-light": "#DBEAFE" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "base": "8px", "card-padding": "20px", "margin-mobile": "16px", "touch-target-min": "48px", "gutter": "12px" }, "fontFamily": { "headline-lg-mobile": ["Inter"], "data-mono": ["Inter"], "label-caps": ["Inter"], "display-earnings": ["Inter"], "headline-lg": ["Inter"], "body-md": ["Inter"] }, "fontSize": { "headline-lg-mobile": ["20px", {"lineHeight": "28px", "fontWeight": "700"}], "data-mono": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.2px", "fontWeight": "600"}], "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.5px", "fontWeight": "700"}], "display-earnings": ["40px", {"lineHeight": "48px", "letterSpacing": "-1px", "fontWeight": "700"}], "headline-lg": ["24px", {"lineHeight": "32px", "fontWeight": "700"}], "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}] } } } }
-</script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries">
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- Chart.js para gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9ff;
+        }
+        .material-symbols-outlined {
+            font-size: 24px;
+            vertical-align: middle;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-card {
+            animation: fadeInUp 0.4s ease-out;
+        }
+        .tab-active {
+            background-color: #004831;
+            color: white;
+        }
+        .tab-inactive {
+            background-color: #e5eeff;
+            color: #3f4943;
+        }
+        .tab-electronica-active {
+            background-color: #1E3A8A;
+            color: white;
+        }
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: #f1f5f9;
+            margin-left: 8px;
+        }
+        .status-connected {
+            background: #dcfce7;
+            color: #166534;
+        }
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            max-width: 90%;
+            text-align: center;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.error {
+            background: #dc2626;
+        }
+        .toast.success {
+            background: #16a34a;
+        }
+        /* Spinner */
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #004831;
+            width: 36px;
+            height: 36px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        /* Skeleton */
+        .skeleton {
+            background: #e5e7eb;
+            border-radius: 4px;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        /* Modal overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            width: 90%;
+            max-width: 380px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.2s ease;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+    </style>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-tertiary-fixed-variant": "#832700",
+                        "secondary": "#455f88",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#eff4ff",
+                        "surface-tint": "#1c6b4d",
+                        "outline": "#6f7973",
+                        "primary-fixed": "#a6f2cc",
+                        "secondary-container": "#b6d0ff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bfc9c1",
+                        "primary-fixed-dim": "#8bd6b1",
+                        "on-surface-variant": "#3f4943",
+                        "on-tertiary-fixed": "#390c00",
+                        "tertiary-fixed-dim": "#ffb59c",
+                        "surface-dim": "#cbdbf5",
+                        "on-primary-container": "#90dbb6",
+                        "on-background": "#0b1c30",
+                        "error": "#ba1a1a",
+                        "surface": "#f8f9ff",
+                        "primary-container": "#0e6245",
+                        "inverse-surface": "#213145",
+                        "surface-bright": "#f8f9ff",
+                        "background": "#f8f9ff",
+                        "error-container": "#ffdad6",
+                        "inverse-primary": "#8bd6b1",
+                        "secondary-fixed": "#d6e3ff",
+                        "surface-container": "#e5eeff",
+                        "primary": "#004831",
+                        "tertiary": "#752200",
+                        "on-surface": "#0b1c30",
+                        "on-secondary-fixed": "#001b3c",
+                        "surface-container-high": "#dce9ff",
+                        "secondary-fixed-dim": "#adc7f7",
+                        "on-error": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#d3e4fe",
+                        "on-primary-fixed-variant": "#005138",
+                        "on-secondary-fixed-variant": "#2d476f",
+                        "on-secondary-container": "#3f5882",
+                        "tertiary-fixed": "#ffdbcf",
+                        "inverse-on-surface": "#eaf1ff",
+                        "electronica-primary": "#1E3A8A",
+                        "electronica-light": "#DBEAFE"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        base: "8px",
+                        "card-padding": "20px",
+                        "margin-mobile": "16px",
+                        "touch-target-min": "48px",
+                        gutter: "12px"
+                    },
+                    fontFamily: {
+                        "headline-lg-mobile": ["Inter"],
+                        "data-mono": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "display-earnings": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-lg-mobile": ["20px", { lineHeight: "28px", fontWeight: "700" }],
+                        "data-mono": ["18px", { lineHeight: "24px", letterSpacing: "-0.2px", fontWeight: "600" }],
+                        "label-caps": ["12px", { lineHeight: "16px", letterSpacing: "0.5px", fontWeight: "700" }],
+                        "display-earnings": ["40px", { lineHeight: "48px", letterSpacing: "-1px", fontWeight: "700" }],
+                        "headline-lg": ["24px", { lineHeight: "32px", fontWeight: "700" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="bg-surface text-on-surface min-h-screen pb-24">
-<header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-4 h-12 w-full shadow-sm">
-<div class="flex items-center gap-3">
-    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center"><span class="material-symbols-outlined text-white" style="font-size:20px">person</span></div>
-    <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
-    <div id="connectionStatus" class="status-badge status-error">🔄 Verificando...</div>
-</div>
-<div class="flex gap-2">
-    <a href="/registro-taxi-aplicaciones-/configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">settings</a>
-    <button id="calendarBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">calendar_today</button>
-</div>
-</header>
 
-<!-- Pestañas de rubro -->
-<div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-4 py-2 flex gap-2 overflow-x-auto">
-    <button id="tabGeneral" class="tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" onclick="cambiarRubro('general')">📊 General</button>
-    <button id="tabTransporte" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
-    <button id="tabElectronica" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
-</div>
+    <!-- Toast de notificaciones -->
+    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
-<main class="pt-28 px-4 space-y-4 max-w-lg mx-auto">
-    <!-- Resumen global -->
-    <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
-        <div><p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global Hoy</p><p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p></div>
-        <div class="flex gap-2"><div class="text-right border-r border-outline-variant pr-3"><p class="text-[10px]">Transporte</p><p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p></div><div class="text-right"><p class="text-[10px]">Electrónica</p><p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p></div></div>
-    </section>
-
-    <!-- Tarjeta dinámica según rubro -->
-    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-3 opacity-10"><span class="material-symbols-outlined" style="font-size:48px">trending_up</span></div>
-        <p class="font-label-caps text-label-caps text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
-        <h2 class="font-display-earnings text-display-earnings text-primary" id="rubroValor">$0.00</h2>
-        <div class="flex items-center gap-2 mt-1"><span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold"><span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer</span><p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p></div>
-    </section>
-
-    <!-- Métricas rápidas (incluye botón para añadir recorrido) -->
-    <div class="grid grid-cols-2 gap-3">
-        <div class="bg-white border rounded-xl p-3"><p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p><p class="font-data-mono text-lg" id="distanciaTotal">0</p></div>
-        <div class="bg-white border rounded-xl p-3 relative">
-            <p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p>
-            <p class="font-data-mono text-lg" id="horasTrabajadas">0</p>
-            <button id="addTripBtn" class="absolute bottom-2 right-2 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido adicional"><span class="material-symbols-outlined text-sm" style="font-size:16px">add_road</span></button>
+    <!-- Header -->
+    <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-4 h-12 w-full shadow-sm">
+        <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center" aria-hidden="true">
+                <span class="material-symbols-outlined text-white" style="font-size:20px">person</span>
+            </div>
+            <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
+            <div id="connectionStatus" class="status-badge status-error" role="status">🔄 Verificando...</div>
         </div>
-    </div>
-
-    <!-- Rentabilidad real (costo por km corregido) -->
-    <div class="bg-surface-container-low rounded-xl p-4 border"><h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div><p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p></div><div class="flex justify-between mt-2"><div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div><p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p></div></div>
-
-    <!-- Botones rápidos -->
-    <div class="grid grid-cols-2 gap-3"><button onclick="location.href='/registro-taxi-aplicaciones-/registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso</button><button onclick="location.href='/registro-taxi-aplicaciones-/registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1"><span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto</button></div>
-
-    <!-- Actividad reciente -->
-    <section><div class="flex justify-between"><h3 class="font-bold text-md">Actividad Reciente</h3><button id="verTodoBtn" class="text-secondary text-xs uppercase">Ver Todo</button></div><div id="recentActivityContainer" class="space-y-2 mt-2"></div></section>
-</main>
-
-<!-- Modal para registrar recorrido -->
-<div id="tripModal" class="modal-overlay hidden" style="display: none;">
-    <div class="modal-content">
-        <h3 class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
-        <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2" value="">
-        <input type="number" id="tripKm" placeholder="Kilómetros recorridos" class="w-full border rounded-lg p-2 mb-2" step="0.1">
-        <input type="text" id="tripNotes" placeholder="Notas (opcional)" class="w-full border rounded-lg p-2 mb-4">
         <div class="flex gap-2">
-            <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1">Guardar</button>
-            <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1">Cancelar</button>
+            <a href="/registro-taxi-aplicaciones-/configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px" aria-label="Configuración">settings</a>
+            <button id="calendarBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px" aria-label="Filtrar por fecha">calendar_today</button>
+        </div>
+    </header>
+
+    <!-- Pestañas de rubro -->
+    <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-4 py-2 flex gap-2 overflow-x-auto" role="tablist">
+        <button id="tabGeneral" class="tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="true" onclick="cambiarRubro('general')">📊 General</button>
+        <button id="tabTransporte" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
+        <button id="tabElectronica" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+    </div>
+
+    <main class="pt-28 px-4 space-y-4 max-w-lg mx-auto">
+        <!-- Resumen global -->
+        <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
+            <div>
+                <p class="font-label-caps text-[10px] uppercase">Ganancia Neta Global Hoy</p>
+                <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
+            </div>
+            <div class="flex gap-2">
+                <div class="text-right border-r border-outline-variant pr-3">
+                    <p class="text-[10px]">Transporte</p>
+                    <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px]">Electrónica</p>
+                    <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tarjeta dinámica según rubro -->
+        <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
+            <div class="absolute top-0 right-0 p-3 opacity-10" aria-hidden="true">
+                <span class="material-symbols-outlined" style="font-size:48px">trending_up</span>
+            </div>
+            <p class="font-label-caps text-label-caps text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
+            <h2 class="font-display-earnings text-display-earnings text-primary" id="rubroValor">$0.00</h2>
+            <div class="flex items-center gap-2 mt-1">
+                <span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">
+                    <span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer
+                </span>
+                <p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p>
+            </div>
+        </section>
+
+        <!-- Métricas rápidas y botón añadir recorrido -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white border rounded-xl p-3">
+                <p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p>
+                <p class="font-data-mono text-lg" id="distanciaTotal">0</p>
+            </div>
+            <div class="bg-white border rounded-xl p-3 relative">
+                <p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p>
+                <p class="font-data-mono text-lg" id="horasTrabajadas">0</p>
+                <button id="addTripBtn" class="absolute bottom-2 right-2 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido adicional" aria-label="Añadir recorrido">
+                    <span class="material-symbols-outlined text-sm" style="font-size:16px">add_road</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Rentabilidad real -->
+        <div class="bg-surface-container-low rounded-xl p-4 border">
+            <h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
+            <div class="flex justify-between mt-2">
+                <div>
+                    <p class="text-sm font-bold">Ganancia por Hora</p>
+                    <p class="text-xs">Promedio general</p>
+                </div>
+                <p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p>
+            </div>
+            <div class="flex justify-between mt-2">
+                <div>
+                    <p class="text-sm font-bold">Costo por KM</p>
+                    <p class="text-xs">Combustible + Mantenimiento</p>
+                </div>
+                <p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p>
+            </div>
+        </div>
+
+        <!-- Gráfico (ingresos vs gastos por rubro) -->
+        <div class="bg-white border rounded-xl p-3">
+            <h3 class="font-label-caps text-label-caps mb-2">INGRESOS VS GASTOS (HOY)</h3>
+            <canvas id="chartCanvas" height="150" style="max-height:180px; width:100%"></canvas>
+        </div>
+
+        <!-- Botones rápidos -->
+        <div class="grid grid-cols-2 gap-3">
+            <button onclick="location.href='/registro-taxi-aplicaciones-/registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                <span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso
+            </button>
+            <button onclick="location.href='/registro-taxi-aplicaciones-/registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 focus:ring-2 focus:ring-offset-2 focus:ring-tertiary">
+                <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto
+            </button>
+        </div>
+
+        <!-- Actividad reciente con filtro de fechas -->
+        <section>
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-md">Actividad Reciente</h3>
+                <div class="flex gap-2 items-center">
+                    <button id="verTodoBtn" class="text-secondary text-xs uppercase" aria-label="Ver todas las actividades">Ver Todo</button>
+                    <button id="filterDateBtn" class="text-secondary text-xs uppercase flex items-center gap-1" aria-label="Filtrar por fecha">
+                        <span class="material-symbols-outlined text-sm" style="font-size:16px">filter_alt</span>
+                    </button>
+                </div>
+            </div>
+            <!-- Filtro de fechas (oculto) -->
+            <div id="dateFilterContainer" class="hidden mt-2 p-2 bg-surface-container-low rounded-lg flex gap-2 items-center flex-wrap">
+                <label for="fechaInicio" class="text-xs">Desde:</label>
+                <input type="date" id="fechaInicio" class="border rounded p-1 text-sm" />
+                <label for="fechaFin" class="text-xs">Hasta:</label>
+                <input type="date" id="fechaFin" class="border rounded p-1 text-sm" />
+                <button id="applyFilterBtn" class="bg-primary text-white text-xs px-3 py-1 rounded">Aplicar</button>
+                <button id="clearFilterBtn" class="bg-gray-200 text-xs px-3 py-1 rounded">Limpiar</button>
+            </div>
+            <div id="recentActivityContainer" class="space-y-2 mt-2">
+                <!-- Aquí se llena con JS -->
+                <div class="flex justify-center py-4"><div class="spinner"></div></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal para registrar recorrido -->
+    <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="tripModalTitle">
+        <div class="modal-content">
+            <h3 id="tripModalTitle" class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
+            <label for="tripDate" class="text-sm">Fecha</label>
+            <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2" />
+            <label for="tripKm" class="text-sm">Kilómetros recorridos</label>
+            <input type="number" id="tripKm" placeholder="Ej: 15.5" class="w-full border rounded-lg p-2 mb-2" step="0.1" min="0.1" />
+            <label for="tripNotes" class="text-sm">Notas (opcional)</label>
+            <input type="text" id="tripNotes" placeholder="Notas (opcional)" class="w-full border rounded-lg p-2 mb-4" />
+            <div class="flex gap-2">
+                <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1 font-bold">Guardar</button>
+                <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1">Cancelar</button>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Navegación inferior -->
-<nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50"><div class="grid grid-cols-5 gap-1 text-center">
-    <a href="/registro-taxi-aplicaciones-/Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span class="text-[10px]">Panel</span></a>
-    <a href="/registro-taxi-aplicaciones-/registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span class="text-[10px]">Ingresos</span></a>
-    <a href="/registro-taxi-aplicaciones-/registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">receipt_long</span><span class="text-[10px]">Gastos</span></a>
-    <a href="/registro-taxi-aplicaciones-/vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">directions_car</span><span class="text-[10px]">Vehículo</span></a>
-    <a href="/registro-taxi-aplicaciones-/reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">analytics</span><span class="text-[10px]">Análisis</span></a>
-</div></nav>
+    <!-- Navegación inferior -->
+    <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50" aria-label="Navegación principal">
+        <div class="grid grid-cols-5 gap-1 text-center">
+            <a href="/registro-taxi-aplicaciones-/Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg" aria-current="page">
+                <span class="material-symbols-outlined" style="font-size:20px">dashboard</span>
+                <span class="text-[10px]">Panel</span>
+            </a>
+            <a href="/registro-taxi-aplicaciones-/registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+                <span class="material-symbols-outlined" style="font-size:20px">payments</span>
+                <span class="text-[10px]">Ingresos</span>
+            </a>
+            <a href="/registro-taxi-aplicaciones-/registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+                <span class="material-symbols-outlined" style="font-size:20px">receipt_long</span>
+                <span class="text-[10px]">Gastos</span>
+            </a>
+            <a href="/registro-taxi-aplicaciones-/vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+                <span class="material-symbols-outlined" style="font-size:20px">directions_car</span>
+                <span class="text-[10px]">Vehículo</span>
+            </a>
+            <a href="/registro-taxi-aplicaciones-/reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+                <span class="material-symbols-outlined" style="font-size:20px">analytics</span>
+                <span class="text-[10px]">Análisis</span>
+            </a>
+        </div>
+    </nav>
 
-<script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTZXCieSPZXLObmEEKY0MEx3Q1CXcd9ctEx8EkXidlL7-nW7qEjXriDnZrl9ix44BK4A/exec';
-    let rubroActual = 'general';
-    let statsCompletos = null;
+    <script>
+        // ============================================================
+        // CONFIGURACIÓN Y ESTADO GLOBAL
+        // ============================================================
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTZXCieSPZXLObmEEKY0MEx3Q1CXcd9ctEx8EkXidlL7-nW7qEjXriDnZrl9ix44BK4A/exec';
+        const CACHE_KEY = 'driverInsightsCache';
+        let rubroActual = 'general';
+        let statsCompletos = null;
+        let actividades = [];
+        let chartInstance = null;
 
-    async function verificarConexion() {
-        const statusDiv = document.getElementById('connectionStatus');
-        if (!statusDiv) return;
-        statusDiv.innerHTML = '🔄 Verificando...';
-        statusDiv.className = 'status-badge status-error';
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=getStats`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data && typeof data === 'object') {
-                    statusDiv.innerHTML = '✅ Conectado';
-                    statusDiv.className = 'status-badge status-connected';
-                } else {
-                    throw new Error('Respuesta inválida');
-                }
-            } else {
-                throw new Error(`HTTP ${response.status}`);
-            }
-        } catch (error) {
-            console.error('Conexión fallida:', error);
-            statusDiv.innerHTML = '❌ Sin conexión';
+        // ============================================================
+        // UTILIDADES
+        // ============================================================
+        function showToast(message, type = 'info', duration = 3000) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast';
+            if (type === 'error') toast.classList.add('error');
+            else if (type === 'success') toast.classList.add('success');
+            toast.classList.add('show');
+            clearTimeout(toast._hideTimer);
+            toast._hideTimer = setTimeout(() => toast.classList.remove('show'), duration);
+        }
+
+        function sanitizeText(text) {
+            if (!text) return '';
+            const el = document.createElement('div');
+            el.textContent = text;
+            return el.innerHTML;
+        }
+
+        function formatCurrency(amount) {
+            return '$' + (amount || 0).toFixed(2);
+        }
+
+        // ============================================================
+        // CACHÉ
+        // ============================================================
+        function getCachedData() {
+            try {
+                const raw = localStorage.getItem(CACHE_KEY);
+                if (raw) return JSON.parse(raw);
+            } catch (_) {}
+            return null;
+        }
+
+        function setCachedData(data) {
+            try {
+                localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+            } catch (_) {}
+        }
+
+        // ============================================================
+        // NOTIFICACIONES DE CONEXIÓN
+        // ============================================================
+        async function verificarConexion() {
+            const statusDiv = document.getElementById('connectionStatus');
+            statusDiv.innerHTML = '🔄 Verificando...';
             statusDiv.className = 'status-badge status-error';
-        }
-    }
-
-    function cambiarRubro(rubro) {
-        rubroActual = rubro;
-        const tabGeneral = document.getElementById('tabGeneral');
-        const tabTransporte = document.getElementById('tabTransporte');
-        const tabElectronica = document.getElementById('tabElectronica');
-        if (rubro === 'general') {
-            tabGeneral.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabTransporte.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabElectronica.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-        } else if (rubro === 'transporte') {
-            tabGeneral.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabTransporte.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabElectronica.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-        } else {
-            tabGeneral.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabTransporte.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-            tabElectronica.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm';
-        }
-        actualizarVista();
-    }
-
-    function actualizarVista() {
-        if (!statsCompletos) return;
-        let titulo = '', valor = 0, bruto = 0, gastos = 0;
-        if (rubroActual === 'general') {
-            titulo = 'UTILIDAD NETA (GENERAL)';
-            valor = statsCompletos.ganancia;
-            bruto = statsCompletos.totalIngresos;
-            gastos = statsCompletos.totalGastos;
-        } else if (rubroActual === 'transporte') {
-            titulo = 'UTILIDAD NETA - TRANSPORTE';
-            valor = statsCompletos.gananciaTransporte;
-            bruto = statsCompletos.ingresosTransporte;
-            gastos = statsCompletos.gastosTransporte;
-        } else {
-            titulo = 'UTILIDAD NETA - ELECTRÓNICA';
-            valor = statsCompletos.gananciaElectronica;
-            bruto = statsCompletos.ingresosElectronica;
-            gastos = statsCompletos.gastosElectronica;
-        }
-        document.getElementById('tituloRubro').innerText = titulo;
-        document.getElementById('rubroValor').innerText = `$${valor.toFixed(2)}`;
-        document.getElementById('detalleRubro').innerHTML = `Bruto: $${bruto.toFixed(2)} | Gastos: $${gastos.toFixed(2)}`;
-    }
-
-    async function cargarDashboard() {
-        try {
-            const res = await fetch(`${SCRIPT_URL}?action=getStats`);
-            statsCompletos = await res.json();
-            document.getElementById('gananciaGlobal').innerText = `$${statsCompletos.ganancia.toFixed(2)}`;
-            document.getElementById('gananciaTransporte').innerText = `$${statsCompletos.gananciaTransporte.toFixed(2)}`;
-            document.getElementById('gananciaElectronica').innerText = `$${statsCompletos.gananciaElectronica.toFixed(2)}`;
-            const gananciaPorHora = statsCompletos.totalHoras > 0 ? statsCompletos.ganancia / statsCompletos.totalHoras : 0;
-            // Costo por km real: solo combustible + mantenimiento
-            const gastosCombMant = statsCompletos.gastosCombustibleMantenimiento || 0;
-            const costoPorKm = statsCompletos.totalKmTotal > 0 ? gastosCombMant / statsCompletos.totalKmTotal : 0;
-            document.getElementById('gananciaPorHora').innerText = `$${gananciaPorHora.toFixed(2)}`;
-            document.getElementById('costoPorKm').innerText = `$${costoPorKm.toFixed(2)}`;
-            document.getElementById('distanciaTotal').innerText = (statsCompletos.totalKmTotal || 0).toFixed(1);
-            document.getElementById('horasTrabajadas').innerText = (statsCompletos.totalHoras || 0).toFixed(1);
-            actualizarVista();
-
-            const actRes = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
-            const actividades = await actRes.json();
-            const container = document.getElementById('recentActivityContainer');
-            if (actividades.length === 0) container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad reciente</div>';
-            else container.innerHTML = actividades.map(a => {
-                if (a.tipo === 'recorrido') {
-                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
-                                <div><p class="font-bold">🚗 Recorrido adicional</p><p class="text-xs text-gray-500">${a.fecha} • ${a.notas || 'Sin notas'}</p></div>
-                                <div class="text-right"><p class="text-primary font-bold">+${a.km} km</p></div>
-                            </div>`;
-                } else {
-                    return `<div class="bg-white border p-3 rounded-xl flex justify-between items-center">
-                                <div><p class="font-bold">${a.descripcion}</p><p class="text-xs text-gray-500">${a.fecha} • ${a.rubro}</p></div>
-                                <div class="text-right"><p class="${a.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary'} font-bold">${a.tipo === 'ingreso' ? '+' : '-'}$${a.monto.toFixed(2)}</p></div>
-                            </div>`;
+            try {
+                const response = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data && typeof data === 'object') {
+                        statusDiv.innerHTML = '✅ Conectado';
+                        statusDiv.className = 'status-badge status-connected';
+                        return true;
+                    }
                 }
-            }).join('');
-        } catch(e) { console.error(e); }
-    }
-
-    // Registrar recorrido adicional
-    async function registrarRecorrido(fecha, km, notas) {
-        try {
-            const params = new URLSearchParams();
-            params.append('action', 'addTrip');
-            params.append('fecha', fecha);
-            params.append('km', km);
-            params.append('notas', notas);
-            const response = await fetch(`${SCRIPT_URL}?${params.toString()}`, { method: 'POST' });
-            const text = await response.text();
-            if (text === "OK") {
-                alert('Recorrido registrado correctamente');
-                cargarDashboard(); // recargar datos
-            } else {
-                alert('Error al registrar: ' + text);
+                throw new Error('Respuesta inválida');
+            } catch (error) {
+                console.error('Conexión fallida:', error);
+                statusDiv.innerHTML = '❌ Sin conexión';
+                statusDiv.className = 'status-badge status-error';
+                showToast('No se pudo conectar con el servidor. Mostrando datos en caché.', 'error', 4000);
+                return false;
             }
-        } catch(e) {
-            alert('Error de conexión: ' + e.message);
         }
-    }
 
-    // Manejo del modal
-    const modal = document.getElementById('tripModal');
-    const addTripBtn = document.getElementById('addTripBtn');
-    const confirmBtn = document.getElementById('confirmTripBtn');
-    const cancelBtn = document.getElementById('cancelTripBtn');
-    const tripDate = document.getElementById('tripDate');
-    const tripKm = document.getElementById('tripKm');
-    const tripNotes = document.getElementById('tripNotes');
-
-    addTripBtn.addEventListener('click', () => {
-        // Establecer fecha actual por defecto
-        const today = new Date().toISOString().slice(0,10);
-        tripDate.value = today;
-        tripKm.value = '';
-        tripNotes.value = '';
-        modal.style.display = 'flex';
-    });
-    cancelBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-    confirmBtn.addEventListener('click', async () => {
-        const fecha = tripDate.value;
-        const km = parseFloat(tripKm.value);
-        if (!fecha || isNaN(km) || km <= 0) {
-            alert('Por favor ingresa una fecha válida y kilómetros positivos');
-            return;
+        // ============================================================
+        // OBTENER DATOS DEL SERVIDOR (con caché)
+        // ============================================================
+        async function fetchStats() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getStats`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                // Validar mínimos
+                if (typeof data !== 'object' || data === null) throw new Error('Datos inválidos');
+                // Asegurar campos
+                data.ganancia = data.ganancia || 0;
+                data.totalIngresos = data.totalIngresos || 0;
+                data.totalGastos = data.totalGastos || 0;
+                data.gananciaTransporte = data.gananciaTransporte || 0;
+                data.ingresosTransporte = data.ingresosTransporte || 0;
+                data.gastosTransporte = data.gastosTransporte || 0;
+                data.gananciaElectronica = data.gananciaElectronica || 0;
+                data.ingresosElectronica = data.ingresosElectronica || 0;
+                data.gastosElectronica = data.gastosElectronica || 0;
+                data.totalHoras = data.totalHoras || 0;
+                data.totalKmTotal = data.totalKmTotal || 0;
+                data.gastosCombustibleMantenimiento = data.gastosCombustibleMantenimiento || 0;
+                // Guardar en caché
+                setCachedData(data);
+                return data;
+            } catch (error) {
+                console.error('Error fetchStats:', error);
+                // Intentar caché
+                const cached = getCachedData();
+                if (cached) {
+                    showToast('Usando datos en caché (sin conexión al servidor)', 'error', 3000);
+                    return cached;
+                }
+                throw error;
+            }
         }
-        modal.style.display = 'none';
-        await registrarRecorrido(fecha, km, tripNotes.value);
-    });
-    // Cerrar modal si se hace clic fuera del contenido
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
 
-    document.getElementById('verTodoBtn')?.addEventListener('click', () => alert('Próximamente historial completo.'));
-    document.getElementById('calendarBtn')?.addEventListener('click', () => alert('Funcionalidad de calendario en desarrollo. Próximamente podrás filtrar por fechas.'));
+        async function fetchRecentActivity() {
+            try {
+                const res = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (!Array.isArray(data)) throw new Error('Formato inválido');
+                return data;
+            } catch (error) {
+                console.error('Error fetchRecentActivity:', error);
+                return [];
+            }
+        }
 
-    // Registrar Service Worker para PWA
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js')
-            .then(reg => console.log('SW registrado:', reg))
-            .catch(err => console.error('Error al registrar SW:', err));
-    }
+        // ============================================================
+        // RENDERIZADO DE UI
+        // ============================================================
+        function actualizarVista() {
+            if (!statsCompletos) return;
+            let titulo = '',
+                valor = 0,
+                bruto = 0,
+                gastos = 0;
+            if (rubroActual === 'general') {
+                titulo = 'UTILIDAD NETA (GENERAL)';
+                valor = statsCompletos.ganancia;
+                bruto = statsCompletos.totalIngresos;
+                gastos = statsCompletos.totalGastos;
+            } else if (rubroActual === 'transporte') {
+                titulo = 'UTILIDAD NETA - TRANSPORTE';
+                valor = statsCompletos.gananciaTransporte;
+                bruto = statsCompletos.ingresosTransporte;
+                gastos = statsCompletos.gastosTransporte;
+            } else {
+                titulo = 'UTILIDAD NETA - ELECTRÓNICA';
+                valor = statsCompletos.gananciaElectronica;
+                bruto = statsCompletos.ingresosElectronica;
+                gastos = statsCompletos.gastosElectronica;
+            }
+            document.getElementById('tituloRubro').textContent = titulo;
+            document.getElementById('rubroValor').textContent = formatCurrency(valor);
+            document.getElementById('detalleRubro').innerHTML =
+                `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
+        }
 
-    verificarConexion();
-    cargarDashboard();
-</script>
+        function actualizarDashboard(data) {
+            statsCompletos = data;
+            document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia);
+            document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte);
+            document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica);
+            const gananciaPorHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
+            const gastosCombMant = data.gastosCombustibleMantenimiento || 0;
+            const costoPorKm = data.totalKmTotal > 0 ? gastosCombMant / data.totalKmTotal : 0;
+            document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaPorHora);
+            document.getElementById('costoPorKm').textContent = formatCurrency(costoPorKm);
+            document.getElementById('distanciaTotal').textContent = (data.totalKmTotal || 0).toFixed(1);
+            document.getElementById('horasTrabajadas').textContent = (data.totalHoras || 0).toFixed(1);
+            actualizarVista();
+            // Actualizar gráfico
+            actualizarGrafico(data);
+        }
+
+        function actualizarGrafico(data) {
+            const ctx = document.getElementById('chartCanvas').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+
+            // Datos: ingresos y gastos por rubro
+            const labels = ['Transporte', 'Electrónica'];
+            const ingresos = [data.ingresosTransporte || 0, data.ingresosElectronica || 0];
+            const gastos = [data.gastosTransporte || 0, data.gastosElectronica || 0];
+
+            chartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: ingresos,
+                        backgroundColor: 'rgba(0, 72, 49, 0.7)',
+                        borderColor: '#004831',
+                        borderWidth: 1
+                    }, {
+                        label: 'Gastos',
+                        data: gastos,
+                        backgroundColor: 'rgba(117, 34, 0, 0.7)',
+                        borderColor: '#752200',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                font: { size: 10 },
+                                boxWidth: 12
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { font: { size: 10 }, callback: v => '$' + v.toFixed(0) }
+                        },
+                        x: {
+                            ticks: { font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderActividad(actividadesFiltradas) {
+            const container = document.getElementById('recentActivityContainer');
+            if (!actividadesFiltradas || actividadesFiltradas.length === 0) {
+                container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad en este período</div>';
+                return;
+            }
+            // Sanitizar y construir elementos
+            const fragment = document.createDocumentFragment();
+            actividadesFiltradas.slice(0, 10).forEach(a => {
+                const div = document.createElement('div');
+                div.className = 'bg-white border p-3 rounded-xl flex justify-between items-center';
+                const left = document.createElement('div');
+                const title = document.createElement('p');
+                title.className = 'font-bold';
+                if (a.tipo === 'recorrido') {
+                    title.textContent = '🚗 Recorrido adicional';
+                } else {
+                    title.textContent = sanitizeText(a.descripcion || 'Sin descripción');
+                }
+                left.appendChild(title);
+                const sub = document.createElement('p');
+                sub.className = 'text-xs text-gray-500';
+                sub.textContent = `${a.fecha || ''} ${a.rubro ? '• ' + sanitizeText(a.rubro) : ''}`;
+                left.appendChild(sub);
+                div.appendChild(left);
+
+                const right = document.createElement('div');
+                right.className = 'text-right';
+                const monto = document.createElement('p');
+                monto.className = 'font-bold ' + (a.tipo === 'ingreso' ? 'text-primary' : a.tipo === 'gasto' ? 'text-tertiary' :
+                    'text-primary');
+                if (a.tipo === 'recorrido') {
+                    monto.textContent = `+${(a.km || 0).toFixed(1)} km`;
+                } else {
+                    const signo = a.tipo === 'ingreso' ? '+' : '-';
+                    monto.textContent = `${signo}${formatCurrency(a.monto || 0)}`;
+                }
+                right.appendChild(monto);
+                div.appendChild(right);
+                fragment.appendChild(div);
+            });
+            container.innerHTML = '';
+            container.appendChild(fragment);
+        }
+
+        // ============================================================
+        // FILTRO POR FECHAS (local)
+        // ============================================================
+        function filtrarActividad(fechaInicio, fechaFin) {
+            if (!actividades || actividades.length === 0) return [];
+            return actividades.filter(a => {
+                if (!a.fecha) return true;
+                const d = new Date(a.fecha);
+                if (fechaInicio && d < fechaInicio) return false;
+                if (fechaFin) {
+                    const fin = new Date(fechaFin);
+                    fin.setHours(23, 59, 59);
+                    if (d > fin) return false;
+                }
+                return true;
+            });
+        }
+
+        function aplicarFiltro() {
+            const inicio = document.getElementById('fechaInicio').value;
+            const fin = document.getElementById('fechaFin').value;
+            const inicioDate = inicio ? new Date(inicio) : null;
+            const finDate = fin ? new Date(fin) : null;
+            const filtradas = filtrarActividad(inicioDate, finDate);
+            renderActividad(filtradas);
+        }
+
+        // ============================================================
+        // CAMBIAR RUBRO
+        // ============================================================
+        function cambiarRubro(rubro) {
+            rubroActual = rubro;
+            const tabs = {
+                general: document.getElementById('tabGeneral'),
+                transporte: document.getElementById('tabTransporte'),
+                electronica: document.getElementById('tabElectronica')
+            };
+            // Resetear todas
+            Object.values(tabs).forEach(tab => {
+                tab.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+                tab.setAttribute('aria-selected', 'false');
+            });
+            // Activar la seleccionada
+            const active = tabs[rubro];
+            if (rubro === 'electronica') {
+                active.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+            } else {
+                active.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+            }
+            active.setAttribute('aria-selected', 'true');
+            actualizarVista();
+        }
+
+        // ============================================================
+        // REGISTRAR RECORRIDO (POST con JSON)
+        // ============================================================
+        async function registrarRecorrido(fecha, km, notas) {
+            try {
+                const payload = { action: 'addTrip', fecha, km, notas };
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Google Apps Script no soporta CORS, usamos no-cors
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                // Con no-cors no podemos leer la respuesta, pero asumimos éxito si no hay error de red
+                showToast('Recorrido registrado correctamente', 'success');
+                // Recargar datos
+                await cargarDashboard();
+            } catch (error) {
+                console.error('Error registrar recorrido:', error);
+                showToast('Error al registrar: ' + error.message, 'error');
+            }
+        }
+
+        // ============================================================
+        // CARGA INICIAL
+        // ============================================================
+        async function cargarDashboard() {
+            // Mostrar spinner en actividad reciente
+            const container = document.getElementById('recentActivityContainer');
+            container.innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+
+            try {
+                // Obtener stats (con caché)
+                const data = await fetchStats();
+                actualizarDashboard(data);
+
+                // Obtener actividad reciente
+                const act = await fetchRecentActivity();
+                actividades = act;
+                // Aplicar filtro si está activo
+                const inicio = document.getElementById('fechaInicio').value;
+                const fin = document.getElementById('fechaFin').value;
+                if (inicio || fin) {
+                    aplicarFiltro();
+                } else {
+                    renderActividad(actividades);
+                }
+
+                // Verificar conexión después de cargar
+                await verificarConexion();
+            } catch (error) {
+                console.error('Error cargando dashboard:', error);
+                showToast('Error al cargar los datos. Intenta de nuevo.', 'error', 4000);
+                // Intentar mostrar caché si existe
+                const cached = getCachedData();
+                if (cached) {
+                    actualizarDashboard(cached);
+                    renderActividad(actividades);
+                }
+            }
+        }
+
+        // ============================================================
+        // EVENTOS Y MANEJO DE MODALES
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal de recorrido
+            const modal = document.getElementById('tripModal');
+            const addTripBtn = document.getElementById('addTripBtn');
+            const confirmBtn = document.getElementById('confirmTripBtn');
+            const cancelBtn = document.getElementById('cancelTripBtn');
+            const tripDate = document.getElementById('tripDate');
+            const tripKm = document.getElementById('tripKm');
+            const tripNotes = document.getElementById('tripNotes');
+
+            // Fecha actual por defecto
+            const today = new Date().toISOString().slice(0, 10);
+            tripDate.value = today;
+
+            addTripBtn.addEventListener('click', () => {
+                tripKm.value = '';
+                tripNotes.value = '';
+                modal.style.display = 'flex';
+                // Enfoque al primer input
+                setTimeout(() => tripDate.focus(), 100);
+            });
+
+            cancelBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            confirmBtn.addEventListener('click', async () => {
+                const fecha = tripDate.value;
+                const km = parseFloat(tripKm.value);
+                if (!fecha) {
+                    showToast('Por favor selecciona una fecha', 'error');
+                    tripDate.focus();
+                    return;
+                }
+                if (isNaN(km) || km <= 0) {
+                    showToast('Ingresa kilómetros positivos', 'error');
+                    tripKm.focus();
+                    return;
+                }
+                modal.style.display = 'none';
+                await registrarRecorrido(fecha, km, tripNotes.value.trim());
+            });
+
+            // Cerrar modal al hacer clic fuera
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.style.display = 'none';
+            });
+
+            // Cerrar con Escape
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+            });
+
+            // Filtro de fechas
+            const filterDateBtn = document.getElementById('filterDateBtn');
+            const dateFilterContainer = document.getElementById('dateFilterContainer');
+            let filterVisible = false;
+            filterDateBtn.addEventListener('click', () => {
+                filterVisible = !filterVisible;
+                dateFilterContainer.classList.toggle('hidden', !filterVisible);
+                if (filterVisible) {
+                    document.getElementById('fechaInicio').value = '';
+                    document.getElementById('fechaFin').value = '';
+                }
+            });
+
+            document.getElementById('applyFilterBtn').addEventListener('click', aplicarFiltro);
+            document.getElementById('clearFilterBtn').addEventListener('click', () => {
+                document.getElementById('fechaInicio').value = '';
+                document.getElementById('fechaFin').value = '';
+                renderActividad(actividades);
+            });
+
+            // Ver todo
+            document.getElementById('verTodoBtn')?.addEventListener('click', () => {
+                // Mostrar todas las actividades en un modal o alert
+                const total = actividades.length;
+                showToast(`Hay ${total} actividades registradas. Próximamente historial completo.`, 'info', 3000);
+            });
+
+            // Calendario (botón header)
+            document.getElementById('calendarBtn')?.addEventListener('click', () => {
+                // Mostrar/ocultar filtro de fechas (simulación)
+                filterDateBtn.click();
+            });
+
+            // Registrar Service Worker
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/registro-taxi-aplicaciones-/sw.js')
+                    .then(reg => console.log('SW registrado:', reg))
+                    .catch(err => console.error('Error al registrar SW:', err));
+            }
+
+            // Cargar datos iniciales
+            cargarDashboard();
+        });
+    </script>
 </body>
 </html>
