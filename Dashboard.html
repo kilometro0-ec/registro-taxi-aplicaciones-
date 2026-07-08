@@ -1,651 +1,573 @@
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport" />
-    <title>Driver Insights - Panel Unificado</title>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+  <title>Driver Insights - Panel Unificado</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#004831" />
+  <meta name="mobile-web-app-capable" content="yes" />
 
-    <link rel="manifest" href="./manifest.json" />
-    <meta name="theme-color" content="#004831" />
-    <meta name="mobile-web-app-capable" content="yes" />
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-
-    <style>
-        body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
-        .material-symbols-outlined { font-size: 24px; }
-        .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
-        .status-connected { background: #dcfce7; color: #166534; }
-        .status-error { background: #fee2e2; color: #991b1b; }
-        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; }
-        .toast.show { opacity: 1; }
-        .toast.error { background: #dc2626; }
-        .toast.success { background: #16a34a; }
-        .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-        .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2); }
-        .tab-active { background-color: #004831; color: white; }
-        .tab-inactive { background-color: #e5eeff; color: #3f4943; }
-        .tab-electronica-active { background-color: #1E3A8A; color: white; }
-        .animate-card { animation: fadeInUp 0.4s ease-out; }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        .filter-section { background: white; border-radius: 12px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    </style>
-    <script id="tailwind-config">
-        tailwind.config = {
-            darkMode: "class",
-            theme: {
-                extend: {
-                    colors: {
-                        "primary": "#004831",
-                        "tertiary": "#752200",
-                        "electronica-primary": "#1E3A8A",
-                        "surface": "#f8f9ff",
-                        "on-surface": "#0b1c30",
-                        "surface-container-low": "#eff4ff",
-                        "outline-variant": "#bfc9c1",
-                        "primary-fixed": "#a6f2cc",
-                        "on-primary-fixed": "#005138",
-                        "secondary": "#455f88",
-                        "on-surface-variant": "#3f4943",
-                        "primary-container": "#0e6245",
-                        "on-primary": "#ffffff",
-                        "on-tertiary": "#ffffff",
-                        "error": "#dc2626",
-                        "success": "#16a34a"
-                    }
-                }
-            }
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
+    .material-symbols-outlined { font-size: 24px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
+    .status-connected { background: #dcfce7; color: #166534; }
+    .status-error { background: #fee2e2; color: #991b1b; }
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; }
+    .toast.show { opacity: 1; }
+    .toast.error { background: #dc2626; }
+    .toast.success { background: #16a34a; }
+    .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
+    .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; }
+    .tab-active { background-color: #004831; color: white; }
+    .tab-inactive { background-color: #e5eeff; color: #3f4943; }
+    .tab-electronica-active { background-color: #1E3A8A; color: white; }
+    .animate-card { animation: fadeInUp 0.4s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .filter-section { background: white; border-radius: 12px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#004831",
+            "tertiary": "#752200",
+            "electronica-primary": "#1E3A8A",
+            "surface": "#f8f9ff",
+            "on-surface": "#0b1c30",
+            "surface-container-low": "#eff4ff",
+            "outline-variant": "#bfc9c1",
+            "primary-fixed": "#a6f2cc",
+            "on-primary-fixed": "#005138",
+            "secondary": "#455f88",
+            "on-surface-variant": "#3f4943",
+            "primary-container": "#0e6245",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff"
+          }
         }
-    </script>
+      }
+    }
+  </script>
 </head>
 <body class="bg-surface text-on-surface min-h-screen pb-24">
 
-    <!-- Toast -->
-    <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
-    <!-- Header -->
-    <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-4 h-12 w-full shadow-sm">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
-                <span class="material-symbols-outlined text-white" style="font-size:20px">person</span>
-            </div>
-            <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
-            <div id="connectionStatus" class="status-badge status-error" role="status">🔄 Verificando...</div>
-        </div>
-        <div class="flex gap-2">
-            <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">settings</a>
-            <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">refresh</button>
-        </div>
-    </header>
+  <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-4 h-12 w-full shadow-sm">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-white" style="font-size:20px">person</span>
+      </div>
+      <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
+      <div id="connectionStatus" class="status-badge status-error" role="status">🔄 Verificando...</div>
+    </div>
+    <div class="flex gap-2">
+      <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">settings</a>
+      <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">refresh</button>
+    </div>
+  </header>
 
-    <!-- Pestañas rubro -->
-    <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-4 py-2 flex gap-2 overflow-x-auto" role="tablist">
-        <button id="tabGeneral" class="tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="true" onclick="cambiarRubro('general')">📊 General</button>
-        <button id="tabTransporte" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
-        <button id="tabElectronica" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-4 py-2 flex gap-2 overflow-x-auto" role="tablist">
+    <button id="tabGeneral" class="tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="true" onclick="cambiarRubro('general')">📊 General</button>
+    <button id="tabTransporte" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
+    <button id="tabElectronica" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+  </div>
+
+  <main class="pt-28 px-4 space-y-4 max-w-4xl mx-auto">
+
+    <!-- Filtro de fechas -->
+    <section class="filter-section border border-outline-variant">
+      <div class="flex flex-wrap items-center gap-2">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
+        <input type="date" id="fechaInicio" class="border border-outline-variant rounded-lg px-2 py-1 text-sm" />
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
+        <input type="date" id="fechaFin" class="border border-outline-variant rounded-lg px-2 py-1 text-sm" />
+        <button id="applyDateFilter" class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold">Aplicar</button>
+        <button id="clearDateFilter" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-bold">Limpiar</button>
+        <span class="text-xs text-gray-500 ml-2" id="periodLabel">Últimos 30 días</span>
+      </div>
+    </section>
+
+    <!-- Resumen global -->
+    <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
+      <div>
+        <p class="font-label-caps text-[10px] uppercase">Ganancia Neta</p>
+        <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
+      </div>
+      <div class="flex gap-2">
+        <div class="text-right border-r border-outline-variant pr-3">
+          <p class="text-[10px]">Transporte</p>
+          <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px]">Electrónica</p>
+          <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tarjeta rubro -->
+    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
+      <div class="absolute top-0 right-0 p-3 opacity-10" aria-hidden="true">
+        <span class="material-symbols-outlined" style="font-size:48px">trending_up</span>
+      </div>
+      <p class="font-label-caps text-label-caps text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
+      <h2 class="font-display-earnings text-display-earnings text-primary" id="rubroValor">$0.00</h2>
+      <div class="flex items-center gap-2 mt-1">
+        <span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">
+          <span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer
+        </span>
+        <p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p>
+      </div>
+    </section>
+
+    <!-- Métricas rápidas -->
+    <div class="grid grid-cols-2 gap-3">
+      <div class="bg-white border rounded-xl p-3">
+        <p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p>
+        <p class="font-data-mono text-lg" id="distanciaTotal">0</p>
+      </div>
+      <div class="bg-white border rounded-xl p-3 relative">
+        <p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p>
+        <p class="font-data-mono text-lg" id="horasTrabajadas">0</p>
+        <button id="addTripBtn" class="absolute bottom-2 right-2 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido adicional">
+          <span class="material-symbols-outlined text-sm" style="font-size:16px">add_road</span>
+        </button>
+      </div>
     </div>
 
-    <main class="pt-28 px-4 space-y-4 max-w-4xl mx-auto">
-
-        <!-- Filtro de fechas global -->
-        <section class="filter-section border border-outline-variant">
-            <div class="flex flex-wrap items-center gap-2">
-                <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
-                <input type="date" id="fechaInicio" class="border border-outline-variant rounded-lg px-2 py-1 text-sm" />
-                <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
-                <input type="date" id="fechaFin" class="border border-outline-variant rounded-lg px-2 py-1 text-sm" />
-                <button id="applyDateFilter" class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold">Aplicar</button>
-                <button id="clearDateFilter" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-bold">Limpiar</button>
-                <span class="text-xs text-gray-500 ml-2" id="periodLabel">Últimos 30 días</span>
-            </div>
-        </section>
-
-        <!-- Resumen global -->
-        <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
-            <div>
-                <p class="font-label-caps text-[10px] uppercase">Ganancia Neta</p>
-                <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
-            </div>
-            <div class="flex gap-2">
-                <div class="text-right border-r border-outline-variant pr-3">
-                    <p class="text-[10px]">Transporte</p>
-                    <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-[10px]">Electrónica</p>
-                    <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- Tarjeta dinámica por rubro -->
-        <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
-            <div class="absolute top-0 right-0 p-3 opacity-10" aria-hidden="true">
-                <span class="material-symbols-outlined" style="font-size:48px">trending_up</span>
-            </div>
-            <p class="font-label-caps text-label-caps text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
-            <h2 class="font-display-earnings text-display-earnings text-primary" id="rubroValor">$0.00</h2>
-            <div class="flex items-center gap-2 mt-1">
-                <span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">
-                    <span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer
-                </span>
-                <p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p>
-            </div>
-        </section>
-
-        <!-- Métricas rápidas -->
-        <div class="grid grid-cols-2 gap-3">
-            <div class="bg-white border rounded-xl p-3">
-                <p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p>
-                <p class="font-data-mono text-lg" id="distanciaTotal">0</p>
-            </div>
-            <div class="bg-white border rounded-xl p-3 relative">
-                <p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p>
-                <p class="font-data-mono text-lg" id="horasTrabajadas">0</p>
-                <button id="addTripBtn" class="absolute bottom-2 right-2 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido adicional">
-                    <span class="material-symbols-outlined text-sm" style="font-size:16px">add_road</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- Rentabilidad -->
-        <div class="bg-surface-container-low rounded-xl p-4 border">
-            <h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
-            <div class="flex justify-between mt-2">
-                <div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div>
-                <p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p>
-            </div>
-            <div class="flex justify-between mt-2">
-                <div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div>
-                <p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p>
-            </div>
-        </div>
-
-        <!-- Gráfico evolución diaria -->
-        <div class="bg-white border rounded-xl p-3">
-            <h3 class="font-label-caps text-label-caps mb-2">📈 EVOLUCIÓN DIARIA (Ingresos vs Gastos)</h3>
-            <canvas id="chartCanvas" height="200" style="max-height:220px; width:100%"></canvas>
-        </div>
-
-        <!-- Botones acción -->
-        <div class="grid grid-cols-2 gap-3">
-            <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1">
-                <span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso
-            </button>
-            <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1">
-                <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto
-            </button>
-        </div>
-
-        <!-- Actividad reciente -->
-        <section>
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-md">Actividad Reciente</h3>
-                <button id="verTodoBtn" class="text-secondary text-xs uppercase">Ver Todo</button>
-            </div>
-            <div id="recentActivityContainer" class="space-y-2 mt-2">
-                <div class="flex justify-center py-4"><div class="spinner"></div></div>
-            </div>
-        </section>
-    </main>
-
-    <!-- Modal recorrido -->
-    <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
-        <div class="modal-content">
-            <h3 class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
-            <label class="text-sm">Fecha</label>
-            <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2" />
-            <label class="text-sm">Kilómetros recorridos</label>
-            <input type="number" id="tripKm" placeholder="Ej: 15.5" class="w-full border rounded-lg p-2 mb-2" step="0.1" min="0.1" />
-            <label class="text-sm">Notas (opcional)</label>
-            <input type="text" id="tripNotes" placeholder="Notas" class="w-full border rounded-lg p-2 mb-4" />
-            <div class="flex gap-2">
-                <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1 font-bold">Guardar</button>
-                <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1">Cancelar</button>
-            </div>
-        </div>
+    <!-- Rentabilidad -->
+    <div class="bg-surface-container-low rounded-xl p-4 border">
+      <h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
+      <div class="flex justify-between mt-2">
+        <div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div>
+        <p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p>
+      </div>
+      <div class="flex justify-between mt-2">
+        <div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div>
+        <p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p>
+      </div>
     </div>
 
-    <!-- Navegación inferior -->
-    <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50" aria-label="Navegación principal">
-        <div class="grid grid-cols-5 gap-1 text-center">
-            <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg" aria-current="page">
-                <span class="material-symbols-outlined" style="font-size:20px">dashboard</span>
-                <span class="text-[10px]">Panel</span>
-            </a>
-            <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant">
-                <span class="material-symbols-outlined" style="font-size:20px">payments</span>
-                <span class="text-[10px]">Ingresos</span>
-            </a>
-            <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant">
-                <span class="material-symbols-outlined" style="font-size:20px">receipt_long</span>
-                <span class="text-[10px]">Gastos</span>
-            </a>
-            <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant">
-                <span class="material-symbols-outlined" style="font-size:20px">directions_car</span>
-                <span class="text-[10px]">Vehículo</span>
-            </a>
-            <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant">
-                <span class="material-symbols-outlined" style="font-size:20px">analytics</span>
-                <span class="text-[10px]">Análisis</span>
-            </a>
-        </div>
-    </nav>
+    <!-- Gráfico -->
+    <div class="bg-white border rounded-xl p-3">
+      <h3 class="font-label-caps text-label-caps mb-2">📈 EVOLUCIÓN DIARIA</h3>
+      <canvas id="chartCanvas" height="200" style="max-height:220px; width:100%"></canvas>
+    </div>
 
-    <script>
-        // ============================================================
-        // CONFIGURACIÓN Y ESTADO
-        // ============================================================
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBrfsojKhX6fP2nXMnM3htmSRk7KX4cVXmSediA2l0UxDgPgrmhi25IjmLCESo06RZOA/exec';
-        const CACHE_KEY = 'dashboardCache';
-        let rubroActual = 'general';
-        let statsCompletos = null;
-        let allTransactions = [];
-        let chartInstance = null;
+    <!-- Botones -->
+    <div class="grid grid-cols-2 gap-3">
+      <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso
+      </button>
+      <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto
+      </button>
+    </div>
 
-        // ============================================================
-        // JSONP: evitar CORS usando script tags
-        // ============================================================
-        function jsonpRequest(url, timeout = 10000) {
-            return new Promise((resolve, reject) => {
-                const callbackName = 'jsonp_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-                const script = document.createElement('script');
-                const separator = url.includes('?') ? '&' : '?';
-                script.src = url + separator + 'callback=' + callbackName;
+    <!-- Actividad reciente -->
+    <section>
+      <div class="flex justify-between items-center">
+        <h3 class="font-bold text-md">Actividad Reciente</h3>
+        <button id="verTodoBtn" class="text-secondary text-xs uppercase">Ver Todo</button>
+      </div>
+      <div id="recentActivityContainer" class="space-y-2 mt-2">
+        <div class="flex justify-center py-4"><div class="spinner"></div></div>
+      </div>
+    </section>
+  </main>
 
-                const timeoutId = setTimeout(() => {
-                    cleanup();
-                    reject(new Error('Timeout: La petición tardó demasiado'));
-                }, timeout);
+  <!-- Modal recorrido -->
+  <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h3 class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
+      <label class="text-sm">Fecha</label>
+      <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2" />
+      <label class="text-sm">Kilómetros recorridos</label>
+      <input type="number" id="tripKm" placeholder="Ej: 15.5" class="w-full border rounded-lg p-2 mb-2" step="0.1" min="0.1" />
+      <label class="text-sm">Notas (opcional)</label>
+      <input type="text" id="tripNotes" placeholder="Notas" class="w-full border rounded-lg p-2 mb-4" />
+      <div class="flex gap-2">
+        <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1 font-bold">Guardar</button>
+        <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1">Cancelar</button>
+      </div>
+    </div>
+  </div>
 
-                function cleanup() {
-                    clearTimeout(timeoutId);
-                    delete window[callbackName];
-                    if (script.parentNode) script.parentNode.removeChild(script);
-                }
+  <!-- Navegación inferior -->
+  <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
+    <div class="grid grid-cols-5 gap-1 text-center">
+      <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span class="text-[10px]">Panel</span></a>
+      <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span class="text-[10px]">Ingresos</span></a>
+      <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">receipt_long</span><span class="text-[10px]">Gastos</span></a>
+      <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">directions_car</span><span class="text-[10px]">Vehículo</span></a>
+      <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">analytics</span><span class="text-[10px]">Análisis</span></a>
+    </div>
+  </nav>
 
-                window[callbackName] = function(data) {
-                    cleanup();
-                    resolve(data);
-                };
+  <script>
+    // ============================================================
+    // CONFIGURACIÓN - REEMPLAZA CON TU URL
+    // ============================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBrfsojKhX6fP2nXMnM3htmSRk7KX4cVXmSediA2l0UxDgPgrmhi25IjmLCESo06RZOA/exec';
+    const CACHE_KEY = 'dashboardCache';
 
-                script.onerror = function() {
-                    cleanup();
-                    reject(new Error('Error de red o script no disponible'));
-                };
+    let rubroActual = 'general';
+    let statsCompletos = null;
+    let allTransactions = [];
+    let chartInstance = null;
 
-                document.head.appendChild(script);
-            });
+    // ============================================================
+    // UTILIDADES
+    // ============================================================
+    function showToast(msg, type = 'info', duration = 3000) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = 'toast';
+      if (type === 'error') t.classList.add('error');
+      else if (type === 'success') t.classList.add('success');
+      t.classList.add('show');
+      clearTimeout(t._hide);
+      t._hide = setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    function formatCurrency(amount) { return '$' + (amount || 0).toFixed(2); }
+    function sanitizeText(t) { if (!t) return ''; const el = document.createElement('div'); el.textContent = t; return el.innerHTML; }
+
+    function getCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch(e) { return null; } }
+    function setCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {} }
+
+    // ============================================================
+    // FETCH (GET)
+    // ============================================================
+    async function fetchStats(fechaInicio, fechaFin) {
+      const params = new URLSearchParams();
+      params.append('action', 'getStats');
+      if (fechaInicio) params.append('fechaInicio', fechaInicio);
+      if (fechaFin) params.append('fechaFin', fechaFin);
+      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function fetchDailyEvolution(fechaInicio, fechaFin) {
+      const params = new URLSearchParams();
+      params.append('action', 'getDailyEvolution');
+      if (fechaInicio) params.append('fechaInicio', fechaInicio);
+      if (fechaFin) params.append('fechaFin', fechaFin);
+      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function fetchRecentActivity(fechaInicio, fechaFin) {
+      const params = new URLSearchParams();
+      params.append('action', 'getRecentActivity');
+      if (fechaInicio) params.append('fechaInicio', fechaInicio);
+      if (fechaFin) params.append('fechaFin', fechaFin);
+      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    // ============================================================
+    // CONEXIÓN
+    // ============================================================
+    async function verificarConexion() {
+      const status = document.getElementById('connectionStatus');
+      status.innerHTML = '🔄 Verificando...';
+      status.className = 'status-badge status-error';
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
+        if (res.ok) {
+          status.innerHTML = '✅ Conectado';
+          status.className = 'status-badge status-connected';
+          return true;
         }
+        throw new Error('No OK');
+      } catch(e) {
+        status.innerHTML = '❌ Sin conexión';
+        status.className = 'status-badge status-error';
+        showToast('Sin conexión al servidor. Datos en caché.', 'error', 4000);
+        return false;
+      }
+    }
 
-        // ============================================================
-        // UTILIDADES
-        // ============================================================
-        function showToast(msg, type = 'info', duration = 3000) {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast';
-            if (type === 'error') t.classList.add('error');
-            else if (type === 'success') t.classList.add('success');
-            t.classList.add('show');
-            clearTimeout(t._hide);
-            t._hide = setTimeout(() => t.classList.remove('show'), duration);
+    // ============================================================
+    // RENDERIZADO
+    // ============================================================
+    function renderDashboard(data) {
+      statsCompletos = data;
+      document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia);
+      document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte);
+      document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica);
+
+      const gananciaHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
+      const costoKm = data.totalKmTotal > 0 ? data.gastosCombustibleMantenimiento / data.totalKmTotal : 0;
+      document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaHora);
+      document.getElementById('costoPorKm').textContent = formatCurrency(costoKm);
+      document.getElementById('distanciaTotal').textContent = (data.totalKmTotal || 0).toFixed(1);
+      document.getElementById('horasTrabajadas').textContent = (data.totalHoras || 0).toFixed(1);
+
+      actualizarVistaRubro();
+    }
+
+    function actualizarVistaRubro() {
+      if (!statsCompletos) return;
+      let titulo, valor, bruto, gastos;
+      if (rubroActual === 'general') {
+        titulo = 'UTILIDAD NETA (GENERAL)';
+        valor = statsCompletos.ganancia;
+        bruto = statsCompletos.totalIngresos;
+        gastos = statsCompletos.totalGastos;
+      } else if (rubroActual === 'transporte') {
+        titulo = 'UTILIDAD NETA - TRANSPORTE';
+        valor = statsCompletos.gananciaTransporte;
+        bruto = statsCompletos.ingresosTransporte;
+        gastos = statsCompletos.gastosTransporte;
+      } else {
+        titulo = 'UTILIDAD NETA - ELECTRÓNICA';
+        valor = statsCompletos.gananciaElectronica;
+        bruto = statsCompletos.ingresosElectronica;
+        gastos = statsCompletos.gastosElectronica;
+      }
+      document.getElementById('tituloRubro').textContent = titulo;
+      document.getElementById('rubroValor').textContent = formatCurrency(valor);
+      document.getElementById('detalleRubro').innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
+    }
+
+    function renderChart(dailyData) {
+      const canvas = document.getElementById('chartCanvas');
+      if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+      const ctx = canvas.getContext('2d');
+      if (!dailyData || dailyData.length === 0) {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '14px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
+        return;
+      }
+      const labels = dailyData.map(d => d.fecha);
+      const ingresos = dailyData.map(d => d.ingresos);
+      const gastos = dailyData.map(d => d.gastos);
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: [
+            { label: 'Ingresos', data: ingresos, borderColor: '#004831', backgroundColor: 'rgba(0,72,49,0.1)', fill: true, tension: 0.2 },
+            { label: 'Gastos', data: gastos, borderColor: '#752200', backgroundColor: 'rgba(117,34,0,0.1)', fill: true, tension: 0.2 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
+          scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } }, x: { ticks: { maxTicksLimit: 15, font: { size: 9 } } } }
         }
+      });
+    }
 
-        function formatCurrency(amount) { return '$' + (amount || 0).toFixed(2); }
-        function sanitizeText(t) { if (!t) return ''; const el = document.createElement('div');
-            el.textContent = t; return el.innerHTML; }
+    function renderActivity(transactions, limit = 15) {
+      const container = document.getElementById('recentActivityContainer');
+      if (!transactions || transactions.length === 0) {
+        container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad</div>';
+        return;
+      }
+      const fragment = document.createDocumentFragment();
+      transactions.slice(0, limit).forEach(a => {
+        const div = document.createElement('div');
+        div.className = 'bg-white border p-3 rounded-xl flex justify-between items-center';
+        const left = document.createElement('div');
+        const title = document.createElement('p');
+        title.className = 'font-bold';
+        if (a.tipo === 'recorrido') title.textContent = '🚗 Recorrido adicional';
+        else title.textContent = sanitizeText(a.descripcion || 'Sin descripción');
+        left.appendChild(title);
+        const sub = document.createElement('p');
+        sub.className = 'text-xs text-gray-500';
+        sub.textContent = `${a.fecha || ''} ${a.rubro ? '• ' + sanitizeText(a.rubro) : ''}`;
+        left.appendChild(sub);
+        div.appendChild(left);
 
-        // ============================================================
-        // CACHÉ
-        // ============================================================
-        function getCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch (e) { return null; } }
-        function setCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch (e) {} }
-
-        // ============================================================
-        // FETCH DATOS (usando JSONP)
-        // ============================================================
-        async function fetchStats(fechaInicio, fechaFin) {
-            const params = new URLSearchParams();
-            params.append('action', 'getStats');
-            if (fechaInicio) params.append('fechaInicio', fechaInicio);
-            if (fechaFin) params.append('fechaFin', fechaFin);
-            const url = `${SCRIPT_URL}?${params.toString()}`;
-            return await jsonpRequest(url);
+        const right = document.createElement('div');
+        right.className = 'text-right';
+        const monto = document.createElement('p');
+        monto.className = 'font-bold ' + (a.tipo === 'ingreso' ? 'text-primary' : a.tipo === 'gasto' ? 'text-tertiary' : 'text-primary');
+        if (a.tipo === 'recorrido') {
+          monto.textContent = `+${(a.km || 0).toFixed(1)} km`;
+        } else {
+          const signo = a.tipo === 'ingreso' ? '+' : '-';
+          monto.textContent = `${signo}${formatCurrency(a.monto || 0)}`;
         }
+        right.appendChild(monto);
+        div.appendChild(right);
+        fragment.appendChild(div);
+      });
+      container.innerHTML = '';
+      container.appendChild(fragment);
+    }
 
-        async function fetchDailyEvolution(fechaInicio, fechaFin) {
-            const params = new URLSearchParams();
-            params.append('action', 'getDailyEvolution');
-            if (fechaInicio) params.append('fechaInicio', fechaInicio);
-            if (fechaFin) params.append('fechaFin', fechaFin);
-            const url = `${SCRIPT_URL}?${params.toString()}`;
-            return await jsonpRequest(url);
+    // ============================================================
+    // CARGA PRINCIPAL
+    // ============================================================
+    async function cargarDashboard(fechaInicio, fechaFin) {
+      document.getElementById('recentActivityContainer').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+      try {
+        const stats = await fetchStats(fechaInicio, fechaFin);
+        renderDashboard(stats);
+        setCache({ stats, fechaInicio, fechaFin });
+
+        const daily = await fetchDailyEvolution(fechaInicio, fechaFin);
+        renderChart(daily);
+
+        const activity = await fetchRecentActivity(fechaInicio, fechaFin);
+        allTransactions = activity;
+        renderActivity(activity);
+
+        await verificarConexion();
+      } catch (error) {
+        console.error('Error:', error);
+        showToast('Error al cargar. Usando caché.', 'error', 4000);
+        const cache = getCache();
+        if (cache && cache.stats) {
+          renderDashboard(cache.stats);
+          renderChart([]);
+          renderActivity([]);
+        } else {
+          document.getElementById('recentActivityContainer').innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-red-500">No se pudieron cargar los datos.</div>';
         }
+      }
+    }
 
-        async function fetchAllTransactions() {
-            const url = `${SCRIPT_URL}?action=getRecentActivity`;
-            return await jsonpRequest(url);
-        }
+    // ============================================================
+    // CAMBIAR RUBRO
+    // ============================================================
+    function cambiarRubro(rubro) {
+      rubroActual = rubro;
+      ['general', 'transporte', 'electronica'].forEach(r => {
+        const btn = document.getElementById('tab' + r.charAt(0).toUpperCase() + r.slice(1));
+        btn.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+        btn.setAttribute('aria-selected', 'false');
+      });
+      const active = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
+      if (rubro === 'electronica') active.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+      else active.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+      active.setAttribute('aria-selected', 'true');
+      actualizarVistaRubro();
+    }
 
-        // ============================================================
-        // VERIFICAR CONEXIÓN
-        // ============================================================
-        async function verificarConexion() {
-            const status = document.getElementById('connectionStatus');
-            status.innerHTML = '🔄 Verificando...';
-            status.className = 'status-badge status-error';
-            try {
-                const data = await jsonpRequest(`${SCRIPT_URL}?action=getStats`, 5000);
-                if (data && typeof data === 'object') {
-                    status.innerHTML = '✅ Conectado';
-                    status.className = 'status-badge status-connected';
-                    return true;
-                }
-                throw new Error('Respuesta inválida');
-            } catch (e) {
-                status.innerHTML = '❌ Sin conexión';
-                status.className = 'status-badge status-error';
-                showToast('Sin conexión al servidor. Datos en caché.', 'error', 4000);
-                return false;
-            }
-        }
+    // ============================================================
+    // REGISTRAR RECORRIDO (POST)
+    // ============================================================
+    async function registrarRecorrido(fecha, km, notas) {
+      try {
+        const payload = new URLSearchParams();
+        payload.append('action', 'addTrip');
+        payload.append('fecha', fecha);
+        payload.append('km', km);
+        payload.append('notas', notas);
+        await fetch(SCRIPT_URL, { method: 'POST', body: payload });
+        showToast('Recorrido registrado', 'success');
+        const inicio = document.getElementById('fechaInicio').value;
+        const fin = document.getElementById('fechaFin').value;
+        await cargarDashboard(inicio, fin);
+      } catch(e) {
+        showToast('Error al registrar: ' + e.message, 'error');
+      }
+    }
 
-        // ============================================================
-        // RENDERIZADO
-        // ============================================================
-        function renderDashboard(data) {
-            statsCompletos = data;
-            document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia);
-            document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte);
-            document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica);
+    // ============================================================
+    // EVENTOS
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fechas por defecto: últimos 30 días
+      const hoy = new Date();
+      const hace30 = new Date(hoy);
+      hace30.setDate(hace30.getDate() - 30);
+      document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
+      document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
+      document.getElementById('periodLabel').textContent = 'Últimos 30 días';
 
-            const gananciaHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
-            const costoKm = data.totalKmTotal > 0 ? data.gastosCombustibleMantenimiento / data.totalKmTotal : 0;
-            document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaHora);
-            document.getElementById('costoPorKm').textContent = formatCurrency(costoKm);
-            document.getElementById('distanciaTotal').textContent = (data.totalKmTotal || 0).toFixed(1);
-            document.getElementById('horasTrabajadas').textContent = (data.totalHoras || 0).toFixed(1);
+      document.getElementById('applyDateFilter').addEventListener('click', function() {
+        const inicio = document.getElementById('fechaInicio').value;
+        const fin = document.getElementById('fechaFin').value;
+        document.getElementById('periodLabel').textContent = inicio && fin ? `${inicio} → ${fin}` : 'Todo el período';
+        cargarDashboard(inicio, fin);
+      });
 
-            actualizarVistaRubro();
-        }
+      document.getElementById('clearDateFilter').addEventListener('click', function() {
+        document.getElementById('fechaInicio').value = '';
+        document.getElementById('fechaFin').value = '';
+        document.getElementById('periodLabel').textContent = 'Todo el período';
+        cargarDashboard('', '');
+      });
 
-        function actualizarVistaRubro() {
-            if (!statsCompletos) return;
-            let titulo, valor, bruto, gastos;
-            if (rubroActual === 'general') {
-                titulo = 'UTILIDAD NETA (GENERAL)';
-                valor = statsCompletos.ganancia;
-                bruto = statsCompletos.totalIngresos;
-                gastos = statsCompletos.totalGastos;
-            } else if (rubroActual === 'transporte') {
-                titulo = 'UTILIDAD NETA - TRANSPORTE';
-                valor = statsCompletos.gananciaTransporte;
-                bruto = statsCompletos.ingresosTransporte;
-                gastos = statsCompletos.gastosTransporte;
-            } else {
-                titulo = 'UTILIDAD NETA - ELECTRÓNICA';
-                valor = statsCompletos.gananciaElectronica;
-                bruto = statsCompletos.ingresosElectronica;
-                gastos = statsCompletos.gastosElectronica;
-            }
-            document.getElementById('tituloRubro').textContent = titulo;
-            document.getElementById('rubroValor').textContent = formatCurrency(valor);
-            document.getElementById('detalleRubro').innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
-        }
+      document.getElementById('refreshBtn').addEventListener('click', function() {
+        const inicio = document.getElementById('fechaInicio').value;
+        const fin = document.getElementById('fechaFin').value;
+        cargarDashboard(inicio, fin);
+      });
 
-        function renderChart(dailyData) {
-            const canvas = document.getElementById('chartCanvas');
-            if (chartInstance) { chartInstance.destroy();
-                chartInstance = null; }
-            const ctx = canvas.getContext('2d');
-            if (!dailyData || dailyData.length === 0) {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#999';
-                ctx.font = '14px Inter';
-                ctx.textAlign = 'center';
-                ctx.fillText('Sin datos para mostrar', canvas.width / 2, canvas.height / 2);
-                return;
-            }
-            const labels = dailyData.map(d => d.fecha);
-            const ingresos = dailyData.map(d => d.ingresos);
-            const gastos = dailyData.map(d => d.gastos);
-            chartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { label: 'Ingresos', data: ingresos, borderColor: '#004831', backgroundColor: 'rgba(0,72,49,0.1)', fill: true, tension: 0.2 },
-                        { label: 'Gastos', data: gastos, borderColor: '#752200', backgroundColor: 'rgba(117,34,0,0.1)', fill: true, tension: 0.2 }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
-                    scales: {
-                        y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0) } },
-                        x: { ticks: { maxTicksLimit: 15, font: { size: 9 } } }
-                    }
-                }
-            });
-        }
+      // Modal
+      const modal = document.getElementById('tripModal');
+      const addBtn = document.getElementById('addTripBtn');
+      const confirmBtn = document.getElementById('confirmTripBtn');
+      const cancelBtn = document.getElementById('cancelTripBtn');
+      const tripDate = document.getElementById('tripDate');
+      const tripKm = document.getElementById('tripKm');
+      const tripNotes = document.getElementById('tripNotes');
 
-        function renderActivity(transactions, limit = 15) {
-            const container = document.getElementById('recentActivityContainer');
-            if (!transactions || transactions.length === 0) {
-                container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad en este período</div>';
-                return;
-            }
-            const fragment = document.createDocumentFragment();
-            const slice = transactions.slice(0, limit);
-            slice.forEach(a => {
-                const div = document.createElement('div');
-                div.className = 'bg-white border p-3 rounded-xl flex justify-between items-center';
-                const left = document.createElement('div');
-                const title = document.createElement('p');
-                title.className = 'font-bold';
-                if (a.tipo === 'recorrido') title.textContent = '🚗 Recorrido adicional';
-                else title.textContent = sanitizeText(a.descripcion || 'Sin descripción');
-                left.appendChild(title);
-                const sub = document.createElement('p');
-                sub.className = 'text-xs text-gray-500';
-                sub.textContent = `${a.fecha || ''} ${a.rubro ? '• ' + sanitizeText(a.rubro) : ''}`;
-                left.appendChild(sub);
-                div.appendChild(left);
+      addBtn.addEventListener('click', () => {
+        tripDate.value = new Date().toISOString().slice(0,10);
+        tripKm.value = '';
+        tripNotes.value = '';
+        modal.style.display = 'flex';
+        setTimeout(() => tripDate.focus(), 100);
+      });
 
-                const right = document.createElement('div');
-                right.className = 'text-right';
-                const monto = document.createElement('p');
-                monto.className = 'font-bold ' + (a.tipo === 'ingreso' ? 'text-primary' : a.tipo === 'gasto' ? 'text-tertiary' :
-                    'text-primary');
-                if (a.tipo === 'recorrido') {
-                    monto.textContent = `+${(a.km || 0).toFixed(1)} km`;
-                } else {
-                    const signo = a.tipo === 'ingreso' ? '+' : '-';
-                    monto.textContent = `${signo}${formatCurrency(a.monto || 0)}`;
-                }
-                right.appendChild(monto);
-                div.appendChild(right);
-                fragment.appendChild(div);
-            });
-            container.innerHTML = '';
-            container.appendChild(fragment);
-        }
+      cancelBtn.addEventListener('click', () => modal.style.display = 'none');
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-        // ============================================================
-        // CARGA PRINCIPAL
-        // ============================================================
-        async function cargarDashboard(fechaInicio, fechaFin) {
-            document.getElementById('recentActivityContainer').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
-            try {
-                const stats = await fetchStats(fechaInicio, fechaFin);
-                renderDashboard(stats);
-                setCache({ stats, fechaInicio, fechaFin });
+      confirmBtn.addEventListener('click', async () => {
+        const fecha = tripDate.value;
+        const km = parseFloat(tripKm.value);
+        if (!fecha) { showToast('Selecciona fecha', 'error'); tripDate.focus(); return; }
+        if (isNaN(km) || km <= 0) { showToast('Ingresa km positivos', 'error'); tripKm.focus(); return; }
+        modal.style.display = 'none';
+        await registrarRecorrido(fecha, km, tripNotes.value.trim());
+      });
 
-                const daily = await fetchDailyEvolution(fechaInicio, fechaFin);
-                renderChart(daily);
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
+      });
 
-                const transactions = await fetchAllTransactions();
-                allTransactions = transactions;
-                let filtered = transactions;
-                if (fechaInicio) {
-                    const start = new Date(fechaInicio);
-                    filtered = filtered.filter(a => new Date(a.fecha) >= start);
-                }
-                if (fechaFin) {
-                    const end = new Date(fechaFin);
-                    end.setHours(23, 59, 59);
-                    filtered = filtered.filter(a => new Date(a.fecha) <= end);
-                }
-                renderActivity(filtered);
+      document.getElementById('verTodoBtn').addEventListener('click', () => {
+        showToast(`Total: ${allTransactions.length} actividades`, 'info', 3000);
+      });
 
-                await verificarConexion();
-            } catch (error) {
-                console.error('Error cargando dashboard:', error);
-                showToast('Error al cargar datos. Usando caché.', 'error', 4000);
-                const cache = getCache();
-                if (cache && cache.stats) {
-                    renderDashboard(cache.stats);
-                    renderChart([]);
-                    renderActivity([]);
-                } else {
-                    document.getElementById('recentActivityContainer').innerHTML =
-                        '<div class="bg-white p-4 rounded-xl text-center text-red-500">No se pudieron cargar los datos.</div>';
-                }
-            }
-        }
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registrado', reg))
+          .catch(err => console.error('Error SW', err));
+      }
 
-        // ============================================================
-        // CAMBIAR RUBRO
-        // ============================================================
-        function cambiarRubro(rubro) {
-            rubroActual = rubro;
-            const tabs = {
-                general: document.getElementById('tabGeneral'),
-                transporte: document.getElementById('tabTransporte'),
-                electronica: document.getElementById('tabElectronica')
-            };
-            Object.values(tabs).forEach(t => {
-                t.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
-                t.setAttribute('aria-selected', 'false');
-            });
-            const active = tabs[rubro];
-            if (rubro === 'electronica') active.className =
-                'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
-            else active.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
-            active.setAttribute('aria-selected', 'true');
-            actualizarVistaRubro();
-        }
-
-        // ============================================================
-        // REGISTRAR RECORRIDO
-        // ============================================================
-        async function registrarRecorrido(fecha, km, notas) {
-            try {
-                const payload = { action: 'addTrip', fecha, km, notas };
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                showToast('Recorrido registrado correctamente', 'success');
-                const inicio = document.getElementById('fechaInicio').value;
-                const fin = document.getElementById('fechaFin').value;
-                await cargarDashboard(inicio, fin);
-            } catch (e) {
-                showToast('Error al registrar: ' + e.message, 'error');
-            }
-        }
-
-        // ============================================================
-        // EVENTOS
-        // ============================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            const hoy = new Date();
-            const hace30 = new Date(hoy);
-            hace30.setDate(hace30.getDate() - 30);
-            document.getElementById('fechaInicio').value = hace30.toISOString().slice(0, 10);
-            document.getElementById('fechaFin').value = hoy.toISOString().slice(0, 10);
-            document.getElementById('periodLabel').textContent = 'Últimos 30 días';
-
-            document.getElementById('applyDateFilter').addEventListener('click', function() {
-                const inicio = document.getElementById('fechaInicio').value;
-                const fin = document.getElementById('fechaFin').value;
-                document.getElementById('periodLabel').textContent = inicio && fin ? `${inicio} → ${fin}` :
-                    'Todo el período';
-                cargarDashboard(inicio, fin);
-            });
-
-            document.getElementById('clearDateFilter').addEventListener('click', function() {
-                document.getElementById('fechaInicio').value = '';
-                document.getElementById('fechaFin').value = '';
-                document.getElementById('periodLabel').textContent = 'Todo el período';
-                cargarDashboard('', '');
-            });
-
-            document.getElementById('refreshBtn').addEventListener('click', function() {
-                const inicio = document.getElementById('fechaInicio').value;
-                const fin = document.getElementById('fechaFin').value;
-                cargarDashboard(inicio, fin);
-            });
-
-            const modal = document.getElementById('tripModal');
-            const addBtn = document.getElementById('addTripBtn');
-            const confirmBtn = document.getElementById('confirmTripBtn');
-            const cancelBtn = document.getElementById('cancelTripBtn');
-            const tripDate = document.getElementById('tripDate');
-            const tripKm = document.getElementById('tripKm');
-            const tripNotes = document.getElementById('tripNotes');
-
-            addBtn.addEventListener('click', () => {
-                tripDate.value = new Date().toISOString().slice(0, 10);
-                tripKm.value = '';
-                tripNotes.value = '';
-                modal.style.display = 'flex';
-                setTimeout(() => tripDate.focus(), 100);
-            });
-
-            cancelBtn.addEventListener('click', () => modal.style.display = 'none');
-            modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-
-            confirmBtn.addEventListener('click', async () => {
-                const fecha = tripDate.value;
-                const km = parseFloat(tripKm.value);
-                if (!fecha) { showToast('Selecciona fecha', 'error');
-                    tripDate.focus(); return; }
-                if (isNaN(km) || km <= 0) { showToast('Ingresa kilómetros positivos', 'error');
-                    tripKm.focus(); return; }
-                modal.style.display = 'none';
-                await registrarRecorrido(fecha, km, tripNotes.value.trim());
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
-            });
-
-            document.getElementById('verTodoBtn').addEventListener('click', () => {
-                const total = allTransactions.length;
-                showToast(`Hay ${total} actividades registradas.`, 'info', 3000);
-            });
-
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('SW registrado', reg))
-                    .catch(err => console.error('Error SW', err));
-            }
-
-            cargarDashboard(
-                document.getElementById('fechaInicio').value,
-                document.getElementById('fechaFin').value
-            );
-        });
-    </script>
+      cargarDashboard(
+        document.getElementById('fechaInicio').value,
+        document.getElementById('fechaFin').value
+      );
+    });
+  </script>
 </body>
 </html>
