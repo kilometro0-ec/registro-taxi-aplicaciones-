@@ -2,7 +2,7 @@
 <html class="light" lang="es">
 <head>
   <meta charset="utf-8"/>
-  <meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
   <title>Driver Insights - Panel Unificado</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#004831" />
@@ -14,15 +14,18 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
   <style>
-    body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
+    * { box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9ff; margin: 0; padding: 0; }
     .material-symbols-outlined { font-size: 24px; }
     .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
-    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; }
+    .status-warning { background: #fef9c3; color: #854d0e; }
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
     .toast.show { opacity: 1; }
     .toast.error { background: #dc2626; }
     .toast.success { background: #16a34a; }
+    .toast.warning { background: #d97706; }
     .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
@@ -33,6 +36,17 @@
     .animate-card { animation: fadeInUp 0.4s ease-out; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .filter-section { background: white; border-radius: 12px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .btn-date { background: #e5eeff; padding: 4px 12px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; color: #1f2937; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-date.active { background: #004831; color: white; }
+    .btn-date:hover { background: #d1dbf5; }
+    .btn-date.active:hover { background: #003a28; }
+    .grid-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    @media (max-width: 640px) {
+      .grid-cols-2 { grid-template-columns: 1fr; }
+      .filter-section .flex-wrap { flex-direction: column; align-items: stretch; }
+      .filter-section .flex-wrap .gap-2 { gap: 8px; }
+      .filter-section input, .filter-section select, .filter-section button { width: 100%; }
+    }
   </style>
   <script id="tailwind-config">
     tailwind.config = {
@@ -64,67 +78,77 @@
 
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
-  <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-4 h-12 w-full shadow-sm">
-    <div class="flex items-center gap-3">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+  <!-- HEADER -->
+  <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-3 h-12 w-full shadow-sm">
+    <div class="flex items-center gap-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center flex-shrink-0">
         <span class="material-symbols-outlined text-white" style="font-size:20px">person</span>
       </div>
-      <h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
-      <div id="connectionStatus" class="status-badge status-error" role="status">🔄 Verificando...</div>
+      <h1 class="text-lg font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent whitespace-nowrap">Driver Insights</h1>
+      <div id="connectionStatus" class="status-badge status-error text-[10px] px-2 py-0.5" role="status">🔄</div>
     </div>
-    <div class="flex gap-2">
-      <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">settings</a>
-      <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full" style="font-size:24px">refresh</button>
+    <div class="flex gap-1">
+      <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full text-[22px]">settings</a>
+      <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full text-[22px]">refresh</button>
     </div>
   </header>
 
-  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-4 py-2 flex gap-2 overflow-x-auto" role="tablist">
-    <button id="tabGeneral" class="tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="true" onclick="cambiarRubro('general')">📊 General</button>
-    <button id="tabTransporte" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
-    <button id="tabElectronica" class="tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all" role="tab" aria-selected="false" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+  <!-- TABS -->
+  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-3 py-1.5 flex gap-1.5 overflow-x-auto">
+    <button id="tabGeneral" class="tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all whitespace-nowrap" onclick="cambiarRubro('general')">📊 General</button>
+    <button id="tabTransporte" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all whitespace-nowrap" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
+    <button id="tabElectronica" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all whitespace-nowrap" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
   </div>
 
-  <main class="pt-28 px-4 space-y-4 max-w-4xl mx-auto">
+  <!-- MAIN -->
+  <main class="pt-28 px-3 space-y-3 max-w-4xl mx-auto">
 
-    <!-- Filtro de fechas -->
+    <!-- FILTRO DE FECHAS -->
     <section class="filter-section border border-outline-variant">
       <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs font-bold uppercase text-on-surface-variant mr-1">Período:</span>
+        <button class="btn-date active" data-period="today">Hoy</button>
+        <button class="btn-date" data-period="7d">7 días</button>
+        <button class="btn-date" data-period="30d">30 días</button>
+        <button class="btn-date" data-period="90d">90 días</button>
+        <button class="btn-date" data-period="custom">Personalizado</button>
+      </div>
+      <div id="customDateRange" class="hidden mt-2 flex flex-wrap items-center gap-2">
         <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
-        <input type="date" id="fechaInicio" class="border border-outline-variant rounded-lg px-2 py-1 text-sm" />
+        <input type="date" id="fechaInicio" class="border border-outline-variant rounded-lg px-2 py-1 text-sm flex-1 min-w-[120px]" />
         <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
-        <input type="date" id="fechaFin" class="border border-outline-variant rounded-lg px-2 py-1 text-sm" />
+        <input type="date" id="fechaFin" class="border border-outline-variant rounded-lg px-2 py-1 text-sm flex-1 min-w-[120px]" />
         <button id="applyDateFilter" class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold">Aplicar</button>
         <button id="clearDateFilter" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-bold">Limpiar</button>
-        <span class="text-xs text-gray-500 ml-2" id="periodLabel">Últimos 30 días</span>
       </div>
     </section>
 
-    <!-- Resumen global -->
+    <!-- RESUMEN GLOBAL -->
     <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
       <div>
         <p class="font-label-caps text-[10px] uppercase">Ganancia Neta</p>
         <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
       </div>
-      <div class="flex gap-2">
-        <div class="text-right border-r border-outline-variant pr-3">
-          <p class="text-[10px]">Transporte</p>
+      <div class="flex gap-2 text-center">
+        <div class="border-r border-outline-variant pr-3">
+          <p class="text-[9px] uppercase text-on-surface-variant">Transporte</p>
           <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
         </div>
-        <div class="text-right">
-          <p class="text-[10px]">Electrónica</p>
+        <div>
+          <p class="text-[9px] uppercase text-on-surface-variant">Electrónica</p>
           <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
         </div>
       </div>
     </section>
 
-    <!-- Tarjeta rubro -->
+    <!-- TARJETA RUBRO -->
     <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
       <div class="absolute top-0 right-0 p-3 opacity-10" aria-hidden="true">
         <span class="material-symbols-outlined" style="font-size:48px">trending_up</span>
       </div>
-      <p class="font-label-caps text-label-caps text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
-      <h2 class="font-display-earnings text-display-earnings text-primary" id="rubroValor">$0.00</h2>
-      <div class="flex items-center gap-2 mt-1">
+      <p class="font-label-caps text-[10px] text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
+      <h2 class="text-2xl font-bold text-primary" id="rubroValor">$0.00</h2>
+      <div class="flex flex-wrap items-center gap-2 mt-1">
         <span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">
           <span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer
         </span>
@@ -132,7 +156,7 @@
       </div>
     </section>
 
-    <!-- Métricas rápidas -->
+    <!-- MÉTRICAS RÁPIDAS -->
     <div class="grid grid-cols-2 gap-3">
       <div class="bg-white border rounded-xl p-3">
         <p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p>
@@ -147,9 +171,9 @@
       </div>
     </div>
 
-    <!-- Rentabilidad -->
+    <!-- RENTABILIDAD -->
     <div class="bg-surface-container-low rounded-xl p-4 border">
-      <h3 class="font-label-caps text-label-caps">RENTABILIDAD REAL</h3>
+      <h3 class="font-label-caps text-[10px]">RENTABILIDAD REAL</h3>
       <div class="flex justify-between mt-2">
         <div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div>
         <p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p>
@@ -160,23 +184,23 @@
       </div>
     </div>
 
-    <!-- Gráfico -->
+    <!-- GRÁFICO -->
     <div class="bg-white border rounded-xl p-3">
-      <h3 class="font-label-caps text-label-caps mb-2">📈 EVOLUCIÓN DIARIA</h3>
-      <canvas id="chartCanvas" height="200" style="max-height:220px; width:100%"></canvas>
+      <h3 class="font-label-caps text-[10px] mb-2">📈 EVOLUCIÓN DIARIA</h3>
+      <canvas id="chartCanvas" height="180" style="max-height:200px; width:100%"></canvas>
     </div>
 
-    <!-- Botones -->
+    <!-- BOTONES -->
     <div class="grid grid-cols-2 gap-3">
-      <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1">
+      <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 text-sm">
         <span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso
       </button>
-      <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1">
+      <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 text-sm">
         <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto
       </button>
     </div>
 
-    <!-- Actividad reciente -->
+    <!-- ACTIVIDAD RECIENTE -->
     <section>
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-md">Actividad Reciente</h3>
@@ -188,7 +212,7 @@
     </section>
   </main>
 
-  <!-- Modal recorrido -->
+  <!-- MODAL -->
   <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h3 class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
@@ -205,38 +229,41 @@
     </div>
   </div>
 
-  <!-- Navegación inferior -->
+  <!-- NAVEGACIÓN INFERIOR -->
   <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
-    <div class="grid grid-cols-5 gap-1 text-center">
-      <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:20px">dashboard</span><span class="text-[10px]">Panel</span></a>
-      <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">payments</span><span class="text-[10px]">Ingresos</span></a>
-      <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">receipt_long</span><span class="text-[10px]">Gastos</span></a>
-      <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">directions_car</span><span class="text-[10px]">Vehículo</span></a>
-      <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:20px">analytics</span><span class="text-[10px]">Análisis</span></a>
+    <div class="grid grid-cols-5 gap-0 text-center">
+      <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="text-[9px]">Panel</span></a>
+      <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">payments</span><span class="text-[9px]">Ingresos</span></a>
+      <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="text-[9px]">Gastos</span></a>
+      <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">directions_car</span><span class="text-[9px]">Vehículo</span></a>
+      <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">analytics</span><span class="text-[9px]">Análisis</span></a>
     </div>
   </nav>
 
   <script>
     // ============================================================
-    // CONFIGURACIÓN - REEMPLAZA CON TU NUEVA URL
+    // CONFIGURACIÓN - REEMPLAZA CON TU URL
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvF92rIjHAKr8qS2Y4Qzjqa7EM8oF1sxY71jufLDlHDTfxXr5RQbF0tPfncvtf37ccZA/exec'; // <-- CAMBIA AQUÍ
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvF92rIjHAKr8qS2Y4Qzjqa7EM8oF1sxY71jufLDlHDTfxXr5RQbF0tPfncvtf37ccZA/exec';
     const CACHE_KEY = 'dashboardCache';
 
     let rubroActual = 'general';
     let statsCompletos = null;
     let allTransactions = [];
     let chartInstance = null;
+    let connectionAttempts = 0;
+    const MAX_RETRIES = 3;
 
     // ============================================================
     // UTILIDADES
     // ============================================================
-    function showToast(msg, type = 'info', duration = 3000) {
+    function showToast(msg, type = 'info', duration = 3500) {
       const t = document.getElementById('toast');
       t.textContent = msg;
       t.className = 'toast';
       if (type === 'error') t.classList.add('error');
       else if (type === 'success') t.classList.add('success');
+      else if (type === 'warning') t.classList.add('warning');
       t.classList.add('show');
       clearTimeout(t._hide);
       t._hide = setTimeout(() => t.classList.remove('show'), duration);
@@ -248,17 +275,42 @@
     function getCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch(e) { return null; } }
     function setCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {} }
 
+    function getDateRange(period) {
+      const hoy = new Date();
+      const fin = hoy.toISOString().slice(0,10);
+      let inicio = fin;
+      switch(period) {
+        case 'today': inicio = fin; break;
+        case '7d': { const d = new Date(hoy); d.setDate(d.getDate() - 7); inicio = d.toISOString().slice(0,10); break; }
+        case '30d': { const d = new Date(hoy); d.setDate(d.getDate() - 30); inicio = d.toISOString().slice(0,10); break; }
+        case '90d': { const d = new Date(hoy); d.setDate(d.getDate() - 90); inicio = d.toISOString().slice(0,10); break; }
+        default: break;
+      }
+      return { inicio, fin };
+    }
+
     // ============================================================
-    // FETCH (GET)
+    // FETCH CON REINTENTOS
     // ============================================================
+    async function fetchWithRetry(url, options = {}, retries = MAX_RETRIES) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const res = await fetch(url, { ...options, signal: AbortSignal.timeout(10000) });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return await res.json();
+        } catch (e) {
+          if (i === retries - 1) throw e;
+          await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+        }
+      }
+    }
+
     async function fetchStats(fechaInicio, fechaFin) {
       const params = new URLSearchParams();
       params.append('action', 'getStats');
       if (fechaInicio) params.append('fechaInicio', fechaInicio);
       if (fechaFin) params.append('fechaFin', fechaFin);
-      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+      return await fetchWithRetry(`${SCRIPT_URL}?${params.toString()}`);
     }
 
     async function fetchDailyEvolution(fechaInicio, fechaFin) {
@@ -266,9 +318,7 @@
       params.append('action', 'getDailyEvolution');
       if (fechaInicio) params.append('fechaInicio', fechaInicio);
       if (fechaFin) params.append('fechaFin', fechaFin);
-      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+      return await fetchWithRetry(`${SCRIPT_URL}?${params.toString()}`);
     }
 
     async function fetchRecentActivity(fechaInicio, fechaFin) {
@@ -276,30 +326,27 @@
       params.append('action', 'getRecentActivity');
       if (fechaInicio) params.append('fechaInicio', fechaInicio);
       if (fechaFin) params.append('fechaFin', fechaFin);
-      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+      return await fetchWithRetry(`${SCRIPT_URL}?${params.toString()}`);
     }
 
     // ============================================================
-    // CONEXIÓN
+    // CONEXIÓN (con reintentos)
     // ============================================================
     async function verificarConexion() {
       const status = document.getElementById('connectionStatus');
-      status.innerHTML = '🔄 Verificando...';
+      status.innerHTML = '🔄';
       status.className = 'status-badge status-error';
       try {
-        const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
-        if (res.ok) {
-          status.innerHTML = '✅ Conectado';
-          status.className = 'status-badge status-connected';
-          return true;
-        }
-        throw new Error('No OK');
+        await fetchWithRetry(`${SCRIPT_URL}?action=getStats`, {}, 2);
+        status.innerHTML = '✅';
+        status.className = 'status-badge status-connected';
+        connectionAttempts = 0;
+        return true;
       } catch(e) {
-        status.innerHTML = '❌ Sin conexión';
-        status.className = 'status-badge status-error';
-        showToast('Sin conexión al servidor. Datos en caché.', 'error', 4000);
+        connectionAttempts++;
+        status.innerHTML = connectionAttempts > 2 ? '❌' : '⚠️';
+        status.className = connectionAttempts > 2 ? 'status-badge status-error' : 'status-badge status-warning';
+        if (connectionAttempts > 2) showToast('Sin conexión al servidor. Datos en caché.', 'error', 4000);
         return false;
       }
     }
@@ -374,12 +421,12 @@
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
-          scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } }, x: { ticks: { maxTicksLimit: 15, font: { size: 9 } } } }
+          scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } }, x: { ticks: { maxTicksLimit: 10, font: { size: 9 } } } }
         }
       });
     }
 
-    function renderActivity(transactions, limit = 15) {
+    function renderActivity(transactions, limit = 10) {
       const container = document.getElementById('recentActivityContainer');
       if (!transactions || transactions.length === 0) {
         container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad</div>';
@@ -391,7 +438,7 @@
         div.className = 'bg-white border p-3 rounded-xl flex justify-between items-center';
         const left = document.createElement('div');
         const title = document.createElement('p');
-        title.className = 'font-bold';
+        title.className = 'font-bold text-sm';
         if (a.tipo === 'recorrido') title.textContent = '🚗 Recorrido adicional';
         else title.textContent = sanitizeText(a.descripcion || 'Sin descripción');
         left.appendChild(title);
@@ -404,7 +451,7 @@
         const right = document.createElement('div');
         right.className = 'text-right';
         const monto = document.createElement('p');
-        monto.className = 'font-bold ' + (a.tipo === 'ingreso' ? 'text-primary' : a.tipo === 'gasto' ? 'text-tertiary' : 'text-primary');
+        monto.className = 'font-bold text-sm ' + (a.tipo === 'ingreso' ? 'text-primary' : a.tipo === 'gasto' ? 'text-tertiary' : 'text-primary');
         if (a.tipo === 'recorrido') {
           monto.textContent = `+${(a.km || 0).toFixed(1)} km`;
         } else {
@@ -458,12 +505,12 @@
       rubroActual = rubro;
       ['general', 'transporte', 'electronica'].forEach(r => {
         const btn = document.getElementById('tab' + r.charAt(0).toUpperCase() + r.slice(1));
-        btn.className = 'tab-inactive px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+        btn.className = 'tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
         btn.setAttribute('aria-selected', 'false');
       });
       const active = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
-      if (rubro === 'electronica') active.className = 'tab-electronica-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
-      else active.className = 'tab-active px-4 py-1.5 rounded-full text-sm font-bold shadow-sm transition-all';
+      if (rubro === 'electronica') active.className = 'tab-electronica-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
+      else active.className = 'tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
       active.setAttribute('aria-selected', 'true');
       actualizarVistaRubro();
     }
@@ -493,24 +540,46 @@
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
       // Fechas por defecto: últimos 30 días
-      const hoy = new Date();
-      const hace30 = new Date(hoy);
-      hace30.setDate(hace30.getDate() - 30);
-      document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
-      document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
+      const range = getDateRange('30d');
+      document.getElementById('fechaInicio').value = range.inicio;
+      document.getElementById('fechaFin').value = range.fin;
       document.getElementById('periodLabel').textContent = 'Últimos 30 días';
 
+      // Botones de período rápido
+      document.querySelectorAll('.btn-date').forEach(btn => {
+        btn.addEventListener('click', function() {
+          document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          const period = this.dataset.period;
+          if (period === 'custom') {
+            document.getElementById('customDateRange').classList.remove('hidden');
+            return;
+          }
+          document.getElementById('customDateRange').classList.add('hidden');
+          const range = getDateRange(period);
+          document.getElementById('fechaInicio').value = range.inicio;
+          document.getElementById('fechaFin').value = range.fin;
+          cargarDashboard(range.inicio, range.fin);
+        });
+      });
+
+      // Aplicar filtro personalizado
       document.getElementById('applyDateFilter').addEventListener('click', function() {
         const inicio = document.getElementById('fechaInicio').value;
         const fin = document.getElementById('fechaFin').value;
-        document.getElementById('periodLabel').textContent = inicio && fin ? `${inicio} → ${fin}` : 'Todo el período';
-        cargarDashboard(inicio, fin);
+        if (inicio && fin) {
+          document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
+          cargarDashboard(inicio, fin);
+        } else {
+          showToast('Selecciona ambas fechas', 'warning');
+        }
       });
 
       document.getElementById('clearDateFilter').addEventListener('click', function() {
         document.getElementById('fechaInicio').value = '';
         document.getElementById('fechaFin').value = '';
-        document.getElementById('periodLabel').textContent = 'Todo el período';
+        document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
+        document.getElementById('customDateRange').classList.add('hidden');
         cargarDashboard('', '');
       });
 
