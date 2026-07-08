@@ -48,6 +48,10 @@
     .activity-sub { font-size: 0.7rem; color: #6b7280; }
     .amount-positive { color: #004831; font-weight: 700; }
     .amount-negative { color: #752200; font-weight: 700; }
+    /* Animación de carga persistente */
+    .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
+    .loading-text { margin-top: 10px; font-size: 0.9rem; color: #6b7280; animation: pulse-text 1.5s ease-in-out infinite; }
+    @keyframes pulse-text { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
     @media (max-width: 640px) {
       .header-title { font-size: 0.9rem; }
       .stat-value { font-size: 1.3rem; }
@@ -232,7 +236,13 @@
         <h3 class="font-bold text-sm">Actividad Reciente</h3>
         <button id="verTodoBtn" class="text-secondary text-[10px] uppercase">Ver Todo</button>
       </div>
-      <div id="recentActivityContainer" class="space-y-2 mt-2"></div>
+      <div id="recentActivityContainer" class="space-y-2 mt-2">
+        <!-- Loading inicial -->
+        <div class="loading-container">
+          <div class="spinner"></div>
+          <div class="loading-text">Cargando datos...</div>
+        </div>
+      </div>
     </section>
   </main>
 
@@ -266,9 +276,9 @@
 
   <script>
     // ============================================================
-    // CONFIGURACIÓN - REEMPLAZA CON TU URL
+    // CONFIGURACIÓN
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHT9N_VarfJhHSg-NASNCERuMPWZ358XcYLzjNp8YdXys6MmOyVqV0jBM-SWvvg_565g/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwuvkj_6Tsq76ZV2GMLgZVkvcBmQHck6npbtrOlKMRb67HFdPDUowpj4oVJv0ZCHf1uw/exec';
     const CACHE_KEY = 'dashboardCache';
 
     let rubroActual = 'general';
@@ -537,6 +547,7 @@
         const div = document.createElement('div');
         div.className = 'activity-item';
 
+        // Cabecera: fecha y descripción
         const header = document.createElement('div');
         header.className = 'flex justify-between items-center mb-1';
         const title = document.createElement('span');
@@ -550,13 +561,15 @@
         header.appendChild(fechaSpan);
         div.appendChild(header);
 
+        // Grid de dos columnas: INGRESOS (izquierda) | GASTOS (derecha)
         const grid = document.createElement('div');
         grid.className = 'activity-grid';
 
+        // Columna Ingresos
         const colIng = document.createElement('div');
         colIng.className = 'col-ingreso';
         const ingLabel = document.createElement('div');
-        ingLabel.className = 'text-xs text-gray-500'; ingLabel.textContent = 'Ingresos';
+        ingLabel.className = 'text-xs text-gray-500'; ingLabel.textContent = 'INGRESOS';
         colIng.appendChild(ingLabel);
         const ingVal = document.createElement('div');
         if (a.tipo === 'ingreso') {
@@ -572,10 +585,11 @@
         colIng.appendChild(ingVal);
         grid.appendChild(colIng);
 
+        // Columna Gastos
         const colGas = document.createElement('div');
         colGas.className = 'col-gasto';
         const gasLabel = document.createElement('div');
-        gasLabel.className = 'text-xs text-gray-500'; gasLabel.textContent = 'Gastos';
+        gasLabel.className = 'text-xs text-gray-500'; gasLabel.textContent = 'GASTOS';
         colGas.appendChild(gasLabel);
         const gasVal = document.createElement('div');
         if (a.tipo === 'gasto') {
@@ -593,6 +607,7 @@
 
         div.appendChild(grid);
 
+        // Rubro (opcional)
         if (a.rubro) {
           const rubroSpan = document.createElement('div');
           rubroSpan.className = 'text-[10px] text-gray-400 mt-1';
@@ -612,6 +627,7 @@
       const elComb = document.getElementById('prediccionCombustible');
       const detComb = document.getElementById('detalleCombustible');
 
+      // Si no hay datos o hay error
       if (!data || data.error) {
         elAceite.textContent = '⚠️ Sin datos';
         elAceite.className = 'text-sm font-bold text-gray-500';
@@ -622,22 +638,27 @@
         return;
       }
 
+      // Asegurar que existan las propiedades
+      const aceite = data.aceite || {};
+      const comb = data.combustible || {};
+
       // Aceite
-      const aceite = data.aceite;
-      elAceite.textContent = aceite.kmRestantes > 0 ? `${aceite.kmRestantes.toFixed(0)} km restantes` : '¡Ya!';
+      const kmRestantesAceite = aceite.kmRestantes !== undefined ? aceite.kmRestantes : 0;
+      elAceite.textContent = kmRestantesAceite > 0 ? `${Math.round(kmRestantesAceite)} km restantes` : '¡Ya!';
       elAceite.className = 'text-sm font-bold ' + 
-        (aceite.kmRestantes === 0 ? 'text-red-600' : 
-         aceite.kmRestantes < 500 ? 'text-orange-500' : 'text-primary');
-      detAceite.textContent = `Último cambio: ${aceite.ultimoAceite || 'N/A'} km • ${aceite.estado}`;
+        (kmRestantesAceite === 0 ? 'text-red-600' : 
+         kmRestantesAceite < 500 ? 'text-orange-500' : 'text-primary');
+      detAceite.textContent = `Último cambio: ${aceite.ultimoAceite || 'N/A'} km • ${aceite.estado || 'Sin datos'}`;
 
       // Combustible
-      const comb = data.combustible;
-      if (comb.rendimiento > 0) {
-        elComb.textContent = comb.kmRestantes > 0 ? `${comb.kmRestantes.toFixed(0)} km estimados` : '¡Necesita combustible!';
+      const rendimiento = comb.rendimiento || 0;
+      const kmRestantesComb = comb.kmRestantes !== undefined ? comb.kmRestantes : 0;
+      if (rendimiento > 0) {
+        elComb.textContent = kmRestantesComb > 0 ? `${Math.round(kmRestantesComb)} km estimados` : '¡Necesita combustible!';
         elComb.className = 'text-sm font-bold ' + 
-          (comb.kmRestantes < 50 ? 'text-red-600' : 
-           comb.kmRestantes < 150 ? 'text-orange-500' : 'text-primary');
-        detComb.textContent = `Rendimiento: ${comb.rendimiento.toFixed(1)} km/l • Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
+          (kmRestantesComb < 50 ? 'text-red-600' : 
+           kmRestantesComb < 150 ? 'text-orange-500' : 'text-primary');
+        detComb.textContent = `Rendimiento: ${rendimiento.toFixed(1)} km/l • Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
       } else {
         elComb.textContent = '⚠️ Sin datos';
         elComb.className = 'text-sm font-bold text-gray-500';
@@ -646,11 +667,20 @@
     }
 
     // ============================================================
-    // CARGA PRINCIPAL
+    // CARGA PRINCIPAL CON ANIMACIÓN DE CARGA
     // ============================================================
     async function cargarDashboard(fInicio, fFin) {
       const container = document.getElementById('recentActivityContainer');
-      if (container) container.innerHTML = '<div class="flex justify-center py-3"><div class="spinner"></div></div>';
+      // Mostrar animación de carga mientras se obtienen los datos
+      if (container) {
+        container.innerHTML = `
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <div class="loading-text">Cargando datos...</div>
+          </div>
+        `;
+      }
+
       try {
         const stats = await fetchStats(fInicio, fFin);
         renderDashboard(stats);
@@ -678,7 +708,9 @@
           document.getElementById('prediccionAceite').textContent = '⚠️ Sin conexión';
           document.getElementById('prediccionCombustible').textContent = '⚠️ Sin conexión';
         } else {
-          if (container) container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-red-500 text-sm">No se pudieron cargar los datos.</div>';
+          if (container) {
+            container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-red-500 text-sm">No se pudieron cargar los datos.</div>';
+          }
         }
       }
     }
