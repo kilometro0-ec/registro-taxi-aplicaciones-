@@ -30,18 +30,15 @@
     .rubro-btn { padding: 12px 8px; border: 2px solid #e5e7eb; border-radius: 12px; background: white; cursor: pointer; transition: all 0.2s; }
     .rubro-btn.active-transporte { background: #004831; color: white; border-color: #004831; box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
     .rubro-btn.active-electronica { background: #1E3A8A; color: white; border-color: #1E3A8A; box-shadow: 0 4px 12px rgba(30,58,138,0.2); }
-    .rubro-btn.active-otro { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 4px 12px rgba(249,115,22,0.2); }
+    .rubro-btn.active-km0 { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 4px 12px rgba(249,115,22,0.2); }
     .rubro-btn:active { transform: scale(0.96); }
-    .platform-btn { padding: 8px 4px; border: 2px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; }
-    .platform-btn.active { border-color: #004831; background: #f0fdf4; box-shadow: 0 2px 8px rgba(0,72,49,0.15); }
-    .platform-btn:active { transform: scale(0.95); }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.15); }
     .btn-guardar { background: #004831; color: white; border-radius: 1rem; font-weight: bold; padding: 14px; width: 100%; border: none; transition: all 0.2s; }
     .btn-guardar:hover:not(:disabled) { background: #006b48; transform: scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     .btn-guardar:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+    .campo-orden { background: #f0fdf4; border-radius: 0.5rem; padding: 0.5rem; border: 1px solid #bfc9c1; }
     @media (max-width: 640px) {
       .rubro-btn { padding: 10px 6px; font-size: 0.9rem; }
-      .platform-btn { padding: 6px 4px; font-size: 0.8rem; }
     }
   </style>
   <script id="tailwind-config">
@@ -110,8 +107,8 @@
           <span class="material-symbols-outlined" style="font-size:28px">devices</span>
           <span class="text-sm font-semibold">Electrónica</span>
         </button>
-        <button id="rubroOtro" class="rubro-btn flex flex-col items-center gap-0.5" onclick="seleccionarRubro('Otro')">
-          <span class="material-symbols-outlined" style="font-size:28px">more_horiz</span>
+        <button id="rubroKm0" class="rubro-btn flex flex-col items-center gap-0.5" onclick="seleccionarRubro('KM0')">
+          <span class="material-symbols-outlined" style="font-size:28px">delivery_dining</span>
           <span class="text-sm font-semibold">KM0</span>
         </button>
       </div>
@@ -121,38 +118,27 @@
     <div id="camposTransporte" class="space-y-4">
       <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
         <label class="text-xs font-bold uppercase text-on-surface-variant">Plataforma</label>
-        <div class="grid grid-cols-3 gap-2 mt-2">
-          <button class="platform-btn active flex flex-col items-center" data-platform="Uber" onclick="selectPlatform('Uber')">
-            <span class="material-symbols-outlined" style="font-size:22px">directions_car</span>
-            <span class="text-xs">Uber</span>
-          </button>
-          <button class="platform-btn flex flex-col items-center" data-platform="DiDi" onclick="selectPlatform('DiDi')">
-            <span class="material-symbols-outlined" style="font-size:22px">bolt</span>
-            <span class="text-xs">DiDi</span>
-          </button>
-          <button class="platform-btn flex flex-col items-center" data-platform="Indriver" onclick="selectPlatform('Indriver')">
-            <span class="material-symbols-outlined" style="font-size:22px">handshake</span>
-            <span class="text-xs">InDrive</span>
-          </button>
-          <button class="platform-btn flex flex-col items-center" data-platform="Cabify" onclick="selectPlatform('Cabify')">
-            <span class="material-symbols-outlined" style="font-size:22px">near_me</span>
-            <span class="text-xs">Cabify</span>
-          </button>
-          <button class="platform-btn flex flex-col items-center col-span-2" data-platform="Otro" onclick="selectPlatform('Otro')">
-            <span class="material-symbols-outlined" style="font-size:22px">more_horiz</span>
-            <span class="text-xs">Otro</span>
-          </button>
+        <!-- Solo Indriver (fijo) -->
+        <div class="mt-2 p-3 bg-surface-container-low rounded-lg flex items-center gap-3">
+          <span class="material-symbols-outlined" style="font-size:28px">handshake</span>
+          <span class="font-bold text-base">Indriver</span>
+          <span class="text-xs text-gray-500 ml-auto">(única plataforma)</span>
         </div>
         <div class="mt-3 p-3 bg-surface-container-low rounded-lg">
           <div class="flex justify-between items-center">
             <label class="text-xs font-bold">Comisión de la plataforma</label>
             <div class="flex items-center gap-1">
-              <input type="number" id="comisionInput" class="w-16 p-1 border rounded text-right text-sm" step="0.5" value="25">
+              <input type="number" id="comisionInput" class="w-16 p-1 border rounded text-right text-sm" step="0.5" value="13.79" />
               <span class="text-sm">%</span>
               <button id="guardarComisionBtn" class="text-xs bg-primary text-white px-2 py-1 rounded font-bold">Guardar</button>
             </div>
           </div>
-          <p class="text-[10px] mt-1 text-gray-500">Se recordará para esta plataforma</p>
+          <p class="text-[10px] mt-1 text-gray-500">Comisión fija para Indriver</p>
+        </div>
+        <!-- Número de orden -->
+        <div class="campo-orden mt-3">
+          <label class="text-xs font-bold uppercase">Número de orden / viaje</label>
+          <input type="text" id="ordenTransporte" class="w-full p-2 bg-white border rounded-lg text-sm mt-1" placeholder="Ej: #12345" />
         </div>
       </section>
 
@@ -201,11 +187,22 @@
       </section>
     </div>
 
-    <!-- ====== CAMPOS OTRO (KM0) ====== -->
-    <div id="camposOtro" class="hidden space-y-4">
+    <!-- ====== CAMPOS KM0 ====== -->
+    <div id="camposKm0" class="hidden space-y-4">
       <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
-        <label class="text-xs font-bold uppercase text-on-surface-variant">Concepto</label>
-        <input type="text" id="conceptoOtro" class="w-full p-2 border rounded-lg text-sm" placeholder="Ej: Venta de producto, servicio, etc.">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Tipo de entrega</label>
+        <div class="grid grid-cols-2 gap-2 mt-1">
+          <button id="km0Entregado" class="py-2 border rounded-lg bg-primary text-white font-bold" onclick="setKm0Estado('entregado')">✅ Entregado</button>
+          <button id="km0NoEntregado" class="py-2 border rounded-lg bg-gray-200 text-gray-700 font-bold" onclick="setKm0Estado('no_entregado')">❌ No entregado</button>
+        </div>
+        <div class="mt-3 p-3 bg-surface-container-low rounded-lg">
+          <p class="text-sm font-bold">Valor por entrega: <span class="text-primary">$4.00</span></p>
+          <p class="text-xs text-gray-500">Monto fijo por cada entrega (entregada o no).</p>
+        </div>
+        <div class="campo-orden mt-3">
+          <label class="text-xs font-bold uppercase">Número de orden / pedido</label>
+          <input type="text" id="ordenKm0" class="w-full p-2 bg-white border rounded-lg text-sm mt-1" placeholder="Ej: #ORD-1234" />
+        </div>
       </section>
     </div>
 
@@ -263,10 +260,10 @@
     // ============================================================
     // CONFIGURACIÓN
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCm593TJWZAwdTof9dEuVHUHThbnrqRqSXApvEnn2ewQjcMq4xkOyxQel-3t70ln420w/exec'; // <-- CAMBIA POR TU URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4jgLJSSkX23cVnH_sws4COTv2mTN1ElZbaOLRzm7DBgzCBdOa-kX2XzPBTm6qyg-I-A/exec'; // <-- CAMBIA POR TU URL
     let rubroActual = 'Transporte';
-    let currentPlatform = 'Uber';
-    let commissionPercent = 25;
+    let commissionPercent = 13.79; // Comisión fija Indriver
+    let km0Estado = 'entregado'; // 'entregado' o 'no_entregado'
 
     // ============================================================
     // CONEXIÓN
@@ -318,55 +315,58 @@
       const btnMap = {
         'Transporte': document.getElementById('rubroTransporte'),
         'Electrónica': document.getElementById('rubroElectronica'),
-        'Otro': document.getElementById('rubroOtro')
+        'KM0': document.getElementById('rubroKm0')
       };
       const active = btnMap[rubro];
       if (rubro === 'Transporte') active.classList.add('active-transporte');
       else if (rubro === 'Electrónica') active.classList.add('active-electronica');
-      else if (rubro === 'Otro') active.classList.add('active-otro');
+      else if (rubro === 'KM0') active.classList.add('active-km0');
 
       // Mostrar/ocultar campos
       document.getElementById('camposTransporte').classList.toggle('hidden', rubro !== 'Transporte');
       document.getElementById('camposElectronica').classList.toggle('hidden', rubro !== 'Electrónica');
-      document.getElementById('camposOtro').classList.toggle('hidden', rubro !== 'Otro');
+      document.getElementById('camposKm0').classList.toggle('hidden', rubro !== 'KM0');
 
-      calcularPreview();
-    }
-
-    // ============================================================
-    // PLATAFORMA (Transporte)
-    // ============================================================
-    function selectPlatform(platform) {
-      currentPlatform = platform;
-      document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
-      const selected = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
-      if (selected) selected.classList.add('active');
-      loadCommissionForPlatform(platform);
-      calcularPreview();
-    }
-
-    function loadCommissionForPlatform(platform) {
-      let saved = localStorage.getItem(`comision_${platform}`);
-      if (saved !== null && !isNaN(parseFloat(saved))) {
-        commissionPercent = parseFloat(saved);
+      // Si es KM0, establecer monto fijo de $4
+      if (rubro === 'KM0') {
+        document.getElementById('monto').value = 4.00;
+        document.getElementById('monto').readOnly = true;
       } else {
-        const defaults = { Uber: 25, DiDi: 20, Indriver: 15, Cabify: 18, Otro: 10 };
-        commissionPercent = defaults[platform] || 25;
+        document.getElementById('monto').readOnly = false;
+        document.getElementById('monto').value = '';
       }
-      document.getElementById('comisionInput').value = commissionPercent;
-      document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
+
       calcularPreview();
     }
 
+    // ============================================================
+    // KM0 ESTADO
+    // ============================================================
+    function setKm0Estado(estado) {
+      km0Estado = estado;
+      const btnEntregado = document.getElementById('km0Entregado');
+      const btnNoEntregado = document.getElementById('km0NoEntregado');
+      if (estado === 'entregado') {
+        btnEntregado.className = 'py-2 border rounded-lg bg-primary text-white font-bold';
+        btnNoEntregado.className = 'py-2 border rounded-lg bg-gray-200 text-gray-700 font-bold';
+      } else {
+        btnEntregado.className = 'py-2 border rounded-lg bg-gray-200 text-gray-700 font-bold';
+        btnNoEntregado.className = 'py-2 border rounded-lg bg-red-500 text-white font-bold';
+      }
+    }
+
+    // ============================================================
+    // COMISIÓN (solo transporte)
+    // ============================================================
     function guardarComision() {
       let val = parseFloat(document.getElementById('comisionInput').value);
       if (isNaN(val)) val = 0;
       val = Math.min(50, Math.max(0, val));
       commissionPercent = val;
-      localStorage.setItem(`comision_${currentPlatform}`, commissionPercent);
+      localStorage.setItem('comision_Indriver', commissionPercent);
       document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
       calcularPreview();
-      showToast(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`, 'success');
+      showToast(`✅ Comisión para Indriver guardada: ${commissionPercent}%`, 'success');
     }
 
     // ============================================================
@@ -423,25 +423,29 @@
       let plataforma = '';
       let rubro = rubroActual;
       let distanciaApp = 0, distanciaTotal = 0, horas = 0;
+      let orden = '';
 
       if (!monto || monto <= 0) { showToast('❌ Ingresa un monto válido', 'error'); return; }
       if (!fecha) { showToast('❌ Selecciona una fecha', 'error'); return; }
 
       if (rubroActual === 'Transporte') {
-        plataforma = currentPlatform;
+        plataforma = 'Indriver';
         distanciaApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
         distanciaTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
         horas = calcularDuracion();
-        notas = `Comisión: ${commissionPercent}% | ${notas}`;
+        orden = document.getElementById('ordenTransporte').value || '';
+        notas = `Orden: ${orden} | Comisión: ${commissionPercent}% | ${notas}`;
       } else if (rubroActual === 'Electrónica') {
         const tipo = document.getElementById('tipoServicio').value;
         const detalle = document.getElementById('detalleServicio').value || '';
         plataforma = 'Electrónica';
         notas = `Tipo: ${tipo} | Detalle: ${detalle} | ${notas}`;
-      } else { // Otro / KM0
-        const concepto = document.getElementById('conceptoOtro').value || '';
-        plataforma = 'Otro';
-        notas = `Concepto: ${concepto} | ${notas}`;
+      } else { // KM0
+        plataforma = 'KM0';
+        orden = document.getElementById('ordenKm0').value || '';
+        const estadoTexto = km0Estado === 'entregado' ? 'Entregado' : 'No entregado';
+        notas = `Orden: ${orden} | Estado: ${estadoTexto} | ${notas}`;
+        // Monto fijo 4.00 (ya está)
       }
 
       const params = new URLSearchParams();
@@ -489,6 +493,14 @@
       // Fecha por defecto
       document.getElementById('fecha').valueAsDate = new Date();
 
+      // Cargar comisión guardada para Indriver
+      const saved = localStorage.getItem('comision_Indriver');
+      if (saved !== null && !isNaN(parseFloat(saved))) {
+        commissionPercent = parseFloat(saved);
+        document.getElementById('comisionInput').value = commissionPercent;
+        document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
+      }
+
       // Comisión guardar
       document.getElementById('guardarComisionBtn').addEventListener('click', guardarComision);
 
@@ -502,7 +514,6 @@
 
       // Seleccionar rubro inicial
       seleccionarRubro('Transporte');
-      selectPlatform('Uber');
       verificarConexion();
     });
   </script>
