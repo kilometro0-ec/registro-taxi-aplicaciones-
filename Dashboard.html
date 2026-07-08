@@ -17,11 +17,20 @@
     * { box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: #f8f9ff; touch-action: manipulation; }
     .material-symbols-outlined { font-size: 24px; }
-    /* Badge de conexión */
-    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 4px; white-space: nowrap; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.6rem; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; margin-left: 4px; white-space: nowrap; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
     .status-warning { background: #fef3c7; color: #92400e; }
+    /* Animación cara feliz */
+    .happy-face {
+      display: inline-block;
+      animation: bounce 1.2s infinite;
+      font-size: 1.2rem;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.3) rotate(5deg); }
+    }
     /* Toast */
     .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
     .toast.show { opacity: 1; }
@@ -33,27 +42,36 @@
     /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
     .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; }
-    /* Pestañas */
-    .tab-active { background-color: #004831; color: white; }
-    .tab-inactive { background-color: #e5eeff; color: #3f4943; }
-    .tab-electronica-active { background-color: #1E3A8A; color: white; }
-    /* Animación */
-    .animate-card { animation: fadeInUp 0.3s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    /* Filtros rápidos */
-    .filter-btn { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
+    /* Pestañas centradas */
+    .tab-container { display: flex; justify-content: center; gap: 6px; }
+    .tab-btn { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; border: none; background: #e5eeff; color: #3f4943; }
+    .tab-btn.active-general { background: #004831; color: white; }
+    .tab-btn.active-transporte { background: #004831; color: white; }
+    .tab-btn.active-electronica { background: #1E3A8A; color: white; }
+    .tab-btn:active { transform: scale(0.95); }
+    /* Filtros centrados */
+    .filter-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+    .filter-btn { padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
     .filter-btn.active { background: #004831; color: white; }
     .filter-btn:active { transform: scale(0.95); }
-    /* Tarjetas responsive */
-    .stat-card { background: white; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    /* Ajustes para móvil */
+    /* Tarjetas de actividad con dos columnas */
+    .activity-item { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+    .activity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .col-ingreso { border-right: 1px solid #e5e7eb; padding-right: 8px; }
+    .col-gasto { padding-left: 8px; }
+    .activity-title { font-weight: 700; font-size: 0.9rem; }
+    .activity-sub { font-size: 0.7rem; color: #6b7280; }
+    .amount-positive { color: #004831; font-weight: 700; }
+    .amount-negative { color: #752200; font-weight: 700; }
+    /* Ajustes móviles */
     @media (max-width: 640px) {
-      .header-title { font-size: 1rem; }
-      .stat-value { font-size: 1.5rem; }
-      .filter-section { flex-wrap: wrap; }
-      .filter-btn { font-size: 0.6rem; padding: 3px 10px; }
-      .grid-cols-2 { grid-template-columns: 1fr 1fr; gap: 8px; }
-      .grid-cols-5 { grid-template-columns: repeat(5, 1fr); gap: 2px; }
+      .header-title { font-size: 0.9rem; }
+      .stat-value { font-size: 1.3rem; }
+      .filter-btn { font-size: 0.6rem; padding: 2px 10px; }
+      .tab-btn { font-size: 0.65rem; padding: 3px 10px; }
+      .activity-grid { grid-template-columns: 1fr; gap: 4px; }
+      .col-ingreso { border-right: none; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+      .col-gasto { padding-left: 0; padding-top: 4px; }
     }
   </style>
   <script id="tailwind-config">
@@ -93,7 +111,9 @@
         <span class="material-symbols-outlined text-white" style="font-size:18px">person</span>
       </div>
       <h1 class="text-base font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
-      <div id="connectionStatus" class="status-badge status-error" role="status">🔄</div>
+      <div id="connectionStatus" class="status-badge status-error" role="status">
+        <span>🔄</span>
+      </div>
     </div>
     <div class="flex gap-1">
       <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">settings</a>
@@ -101,26 +121,28 @@
     </div>
   </header>
 
-  <!-- PESTAÑAS RUBRO -->
-  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-2 py-1.5 flex gap-1 overflow-x-auto">
-    <button id="tabGeneral" class="tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all" onclick="cambiarRubro('general')">📊 General</button>
-    <button id="tabTransporte" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
-    <button id="tabElectronica" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+  <!-- PESTAÑAS RUBRO (CENTRADAS) -->
+  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-2 py-1.5">
+    <div class="tab-container">
+      <button id="tabGeneral" class="tab-btn active-general" onclick="cambiarRubro('general')">📊 General</button>
+      <button id="tabTransporte" class="tab-btn" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
+      <button id="tabElectronica" class="tab-btn" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+    </div>
   </div>
 
   <!-- MAIN -->
   <main class="pt-24 px-3 space-y-3 max-w-4xl mx-auto">
 
-    <!-- FILTRO DE FECHAS (rápido + personalizado) -->
-    <section class="filter-section bg-white rounded-xl p-3 border border-outline-variant shadow-sm">
-      <div class="flex flex-wrap items-center gap-1.5">
+    <!-- FILTRO DE FECHAS (CENTRADO) -->
+    <section class="bg-white rounded-xl p-3 border border-outline-variant shadow-sm">
+      <div class="filter-container">
         <button class="filter-btn active" data-period="today">Hoy</button>
         <button class="filter-btn" data-period="week">Semana</button>
         <button class="filter-btn" data-period="month">Mes</button>
         <button class="filter-btn" data-period="30days">30 días</button>
         <button class="filter-btn" data-period="custom">📅 Personal</button>
       </div>
-      <div id="customDateRange" class="hidden mt-2 flex flex-wrap items-center gap-2">
+      <div id="customDateRange" class="hidden mt-2 flex flex-wrap items-center justify-center gap-2">
         <label class="text-xs font-bold">Desde</label>
         <input type="date" id="fechaInicio" class="border border-outline-variant rounded px-2 py-1 text-sm" />
         <label class="text-xs font-bold">Hasta</label>
@@ -128,7 +150,7 @@
         <button id="applyCustomDate" class="bg-primary text-white px-3 py-1 rounded text-xs font-bold">Aplicar</button>
         <button id="clearCustomDate" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-bold">Limpiar</button>
       </div>
-      <div class="text-xs text-gray-500 mt-1" id="periodLabel">Hoy</div>
+      <div class="text-xs text-gray-500 text-center mt-1" id="periodLabel">Hoy</div>
     </section>
 
     <!-- RESUMEN GLOBAL -->
@@ -206,7 +228,7 @@
       </button>
     </div>
 
-    <!-- ACTIVIDAD RECIENTE -->
+    <!-- ACTIVIDAD RECIENTE (DOS COLUMNAS: INGRESOS VS GASTOS) -->
     <section>
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm">Actividad Reciente</h3>
@@ -347,7 +369,7 @@
     }
 
     // ============================================================
-    // CONEXIÓN (con reconexión automática)
+    // CONEXIÓN CON CARA FELIZ
     // ============================================================
     let reconnectAttempts = 0;
     let reconnectTimer = null;
@@ -355,12 +377,13 @@
     async function verificarConexion() {
       const status = document.getElementById('connectionStatus');
       if (!status) return;
-      status.textContent = '🔄';
+      status.innerHTML = '<span>🔄</span>';
       status.className = 'status-badge status-error';
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
         if (res.ok) {
-          status.textContent = '✅';
+          // Conexión exitosa → mostrar cara feliz animada
+          status.innerHTML = '<span class="happy-face">😊</span><span>Conectado</span>';
           status.className = 'status-badge status-connected';
           reconnectAttempts = 0;
           if (reconnectTimer) clearTimeout(reconnectTimer);
@@ -368,9 +391,8 @@
         }
         throw new Error('No OK');
       } catch(e) {
-        status.textContent = '❌';
+        status.innerHTML = '<span>❌</span><span>Sin conexión</span>';
         status.className = 'status-badge status-error';
-        // Reintentar automáticamente cada 30 segundos
         if (!reconnectTimer) {
           reconnectTimer = setTimeout(() => {
             reconnectTimer = null;
@@ -421,12 +443,10 @@
     function renderDashboard(data) {
       if (!data) return;
       statsCompletos = data;
-      // Ganancia global
       document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia || 0);
       document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte || 0);
       document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica || 0);
 
-      // Rentabilidad
       const gananciaHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
       const costoKm = data.totalKmTotal > 0 ? (data.gastosCombustibleMantenimiento || 0) / data.totalKmTotal : 0;
       document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaHora);
@@ -511,33 +531,80 @@
         return;
       }
       const fragment = document.createDocumentFragment();
-      transactions.slice(0, limit).forEach(a => {
+      // Tomar los primeros 'limit' elementos
+      const list = transactions.slice(0, limit);
+      list.forEach(a => {
         const div = document.createElement('div');
-        div.className = 'bg-white border p-2.5 rounded-xl flex justify-between items-center';
-        const left = document.createElement('div');
-        const title = document.createElement('p');
-        title.className = 'font-bold text-sm';
+        div.className = 'activity-item';
+
+        // Cabecera: fecha y descripción común
+        const header = document.createElement('div');
+        header.className = 'flex justify-between items-center mb-1';
+        const title = document.createElement('span');
+        title.className = 'activity-title';
         if (a.tipo === 'recorrido') title.textContent = '🚗 Recorrido adicional';
         else title.textContent = sanitizeText(a.descripcion || 'Sin descripción');
-        left.appendChild(title);
-        const sub = document.createElement('p');
-        sub.className = 'text-xs text-gray-500';
-        sub.textContent = `${a.fecha || ''} ${a.rubro ? '• ' + sanitizeText(a.rubro) : ''}`;
-        left.appendChild(sub);
-        div.appendChild(left);
+        header.appendChild(title);
+        const fechaSpan = document.createElement('span');
+        fechaSpan.className = 'activity-sub';
+        fechaSpan.textContent = a.fecha || '';
+        header.appendChild(fechaSpan);
+        div.appendChild(header);
 
-        const right = document.createElement('div');
-        right.className = 'text-right';
-        const monto = document.createElement('p');
-        monto.className = 'font-bold text-sm ' + (a.tipo === 'ingreso' ? 'text-primary' : a.tipo === 'gasto' ? 'text-tertiary' : 'text-primary');
-        if (a.tipo === 'recorrido') {
-          monto.textContent = `+${(a.km || 0).toFixed(1)} km`;
+        // Grid de dos columnas: Ingresos vs Gastos (si es recorrido, se muestra km en ambas o solo una)
+        const grid = document.createElement('div');
+        grid.className = 'activity-grid';
+
+        // Columna Ingresos
+        const colIng = document.createElement('div');
+        colIng.className = 'col-ingreso';
+        const ingLabel = document.createElement('div');
+        ingLabel.className = 'text-xs text-gray-500'; ingLabel.textContent = 'Ingresos';
+        colIng.appendChild(ingLabel);
+        const ingVal = document.createElement('div');
+        if (a.tipo === 'ingreso') {
+          ingVal.className = 'amount-positive';
+          ingVal.textContent = `+${formatCurrency(a.monto || 0)}`;
+        } else if (a.tipo === 'recorrido') {
+          ingVal.className = 'text-gray-500';
+          ingVal.textContent = `+${(a.km || 0).toFixed(1)} km`;
         } else {
-          const signo = a.tipo === 'ingreso' ? '+' : '-';
-          monto.textContent = `${signo}${formatCurrency(a.monto || 0)}`;
+          ingVal.className = 'text-gray-400';
+          ingVal.textContent = '—';
         }
-        right.appendChild(monto);
-        div.appendChild(right);
+        colIng.appendChild(ingVal);
+        grid.appendChild(colIng);
+
+        // Columna Gastos
+        const colGas = document.createElement('div');
+        colGas.className = 'col-gasto';
+        const gasLabel = document.createElement('div');
+        gasLabel.className = 'text-xs text-gray-500'; gasLabel.textContent = 'Gastos';
+        colGas.appendChild(gasLabel);
+        const gasVal = document.createElement('div');
+        if (a.tipo === 'gasto') {
+          gasVal.className = 'amount-negative';
+          gasVal.textContent = `-${formatCurrency(a.monto || 0)}`;
+        } else if (a.tipo === 'recorrido') {
+          gasVal.className = 'text-gray-500';
+          gasVal.textContent = `—`;
+        } else {
+          gasVal.className = 'text-gray-400';
+          gasVal.textContent = '—';
+        }
+        colGas.appendChild(gasVal);
+        grid.appendChild(colGas);
+
+        div.appendChild(grid);
+
+        // Rubro (opcional)
+        if (a.rubro) {
+          const rubroSpan = document.createElement('div');
+          rubroSpan.className = 'text-[10px] text-gray-400 mt-1';
+          rubroSpan.textContent = `Rubro: ${sanitizeText(a.rubro)}`;
+          div.appendChild(rubroSpan);
+        }
+
         fragment.appendChild(div);
       });
       container.innerHTML = '';
@@ -582,18 +649,17 @@
     // ============================================================
     function cambiarRubro(rubro) {
       rubroActual = rubro;
-      ['general', 'transporte', 'electronica'].forEach(r => {
-        const btn = document.getElementById('tab' + r.charAt(0).toUpperCase() + r.slice(1));
-        if (btn) {
-          btn.className = 'tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
-          btn.setAttribute('aria-selected', 'false');
-        }
+      // Resetear todas las pestañas
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.className = 'tab-btn';
       });
-      const active = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
-      if (active) {
-        if (rubro === 'electronica') active.className = 'tab-electronica-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
-        else active.className = 'tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
-        active.setAttribute('aria-selected', 'true');
+      // Activar la correcta
+      const activeBtn = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
+      if (activeBtn) {
+        if (rubro === 'electronica') activeBtn.classList.add('active-electronica');
+        else activeBtn.classList.add('active-general'); // transporte y general usan mismo color
+        // Para transporte también usamos active-general (verde)
+        if (rubro === 'transporte') activeBtn.classList.add('active-general');
       }
       actualizarVistaRubro();
     }
@@ -617,10 +683,10 @@
     }
 
     // ============================================================
-    // EVENTOS Y DOMContentLoaded
+    // EVENTOS
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Filtros rápidos
+      // Filtros
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
           const period = this.dataset.period;
@@ -628,7 +694,6 @@
         });
       });
 
-      // Filtro personalizado
       document.getElementById('applyCustomDate').addEventListener('click', function() {
         const inicio = document.getElementById('fechaInicio').value;
         const fin = document.getElementById('fechaFin').value;
@@ -649,13 +714,12 @@
         actualizarFiltros('today');
       });
 
-      // Refrescar
       document.getElementById('refreshBtn').addEventListener('click', function() {
         verificarConexion();
         cargarDashboard(fechaInicio, fechaFin);
       });
 
-      // Modal recorrido
+      // Modal
       const modal = document.getElementById('tripModal');
       const addBtn = document.getElementById('addTripBtn');
       const confirmBtn = document.getElementById('confirmTripBtn');
@@ -703,19 +767,17 @@
         }
       });
 
-      // Ver todo
       document.getElementById('verTodoBtn').addEventListener('click', function() {
         showToast(`Total: ${allTransactions.length} actividades`, 'info', 3000);
       });
 
-      // Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('SW registrado', reg))
           .catch(err => console.error('Error SW', err));
       }
 
-      // Inicializar: hoy
+      // Inicializar
       actualizarFiltros('today');
     });
   </script>
