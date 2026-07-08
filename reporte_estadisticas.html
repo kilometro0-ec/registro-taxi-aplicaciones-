@@ -3,19 +3,19 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
-  <title>Driver Insights - Estadísticas Avanzadas</title>
+  <title>Driver Insights - Estadísticas</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#004831" />
   <meta name="mobile-web-app-capable" content="yes" />
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f8f9ff; touch-action: manipulation; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9ff; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     .material-symbols-outlined { font-size: 24px; }
     .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.6rem; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; white-space: nowrap; }
     .status-connected { background: #dcfce7; color: #166534; }
@@ -32,9 +32,13 @@
     .stat-card { transition: transform 0.2s; }
     .stat-card:hover { transform: translateY(-2px); }
     input:focus, select:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.15); }
+    /* Mejora rendimiento gráficos en móvil */
+    .chart-container { position: relative; width: 100%; height: auto; min-height: 180px; max-height: 220px; }
+    .chart-container canvas { display: block; width: 100% !important; height: auto !important; }
     @media (max-width: 640px) {
       .filter-card .flex { flex-direction: column; align-items: stretch; }
       .filter-card .flex>* { width: 100%; }
+      .chart-container { min-height: 150px; max-height: 180px; }
     }
   </style>
   <script id="tailwind-config">
@@ -138,12 +142,16 @@
     <!-- GRÁFICOS PRINCIPALES -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">📈 Evolución diaria (Ingresos vs Gastos)</h3>
-        <canvas id="ingresosGastosChart" height="200"></canvas>
+        <h3 class="font-bold text-sm mb-2">📈 Evolución diaria</h3>
+        <div class="chart-container">
+          <canvas id="ingresosGastosChart"></canvas>
+        </div>
       </div>
       <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">🧩 Distribución de Gastos por Categoría</h3>
-        <canvas id="gastosPieChart" height="200"></canvas>
+        <h3 class="font-bold text-sm mb-2">🧩 Gastos por categoría</h3>
+        <div class="chart-container">
+          <canvas id="gastosPieChart"></canvas>
+        </div>
       </div>
     </div>
 
@@ -151,10 +159,12 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white border border-outline-variant rounded-xl p-4">
         <h3 class="font-bold text-sm mb-2">🚖 Ingresos por Plataforma</h3>
-        <canvas id="platformChart" height="180"></canvas>
+        <div class="chart-container">
+          <canvas id="platformChart"></canvas>
+        </div>
       </div>
       <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos por Categoría</h3>
+        <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos</h3>
         <div id="categoriaGastosList" class="space-y-2 max-h-[200px] overflow-y-auto"></div>
       </div>
     </div>
@@ -276,70 +286,120 @@
     }
 
     // ============================================================
-    // CARGAR DATOS
+    // CARGAR DATOS (usando getDailyEvolution del backend)
     // ============================================================
-    async function cargarDatos() {
+    async function cargarDatos(fechaInicio, fechaFin) {
       try {
-        const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
+        // 1. Estadísticas resumidas
+        const paramsStats = new URLSearchParams();
+        paramsStats.append('action', 'getStats');
+        if (fechaInicio) paramsStats.append('fechaInicio', fechaInicio);
+        if (fechaFin) paramsStats.append('fechaFin', fechaFin);
+        const resStats = await fetch(`${SCRIPT_URL}?${paramsStats.toString()}`);
         if (!resStats.ok) throw new Error('Error en getStats');
         const stats = await resStats.json();
 
-        const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
-        if (!resAct.ok) throw new Error('Error en getRecentActivity');
-        const actividad = await resAct.json();
+        // 2. Evolución diaria (para el gráfico)
+        const paramsEvo = new URLSearchParams();
+        paramsEvo.append('action', 'getDailyEvolution');
+        if (fechaInicio) paramsEvo.append('fechaInicio', fechaInicio);
+        if (fechaFin) paramsEvo.append('fechaFin', fechaFin);
+        const resEvo = await fetch(`${SCRIPT_URL}?${paramsEvo.toString()}`);
+        let dailyData = [];
+        if (resEvo.ok) {
+          dailyData = await resEvo.json();
+        }
+
+        // 3. Actividad reciente
+        const paramsAct = new URLSearchParams();
+        paramsAct.append('action', 'getRecentActivity');
+        if (fechaInicio) paramsAct.append('fechaInicio', fechaInicio);
+        if (fechaFin) paramsAct.append('fechaFin', fechaFin);
+        const resAct = await fetch(`${SCRIPT_URL}?${paramsAct.toString()}`);
+        let actividad = [];
+        if (resAct.ok) {
+          actividad = await resAct.json();
+        }
 
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
         const recorridos = actividad.filter(a => a.tipo === 'recorrido');
 
-        if (ingresos.length === 0 && stats.totalIngresos) {
-          const hoy = new Date().toISOString().slice(0,10);
-          ingresos.push({ fecha: hoy, rubro: 'transporte', plataforma: 'Uber', monto: stats.totalIngresos, descripcion: 'Total del día', tipo: 'ingreso' });
-        }
-        if (gastos.length === 0 && stats.totalGastos) {
-          const hoy = new Date().toISOString().slice(0,10);
-          gastos.push({ fecha: hoy, rubro: 'general', categoria: 'otros', monto: stats.totalGastos, descripcion: 'Total del día', tipo: 'gasto' });
-        }
-
-        datosCompletos = { ingresos, gastos, recorridos };
+        datosCompletos = { 
+          stats: stats,
+          daily: dailyData,
+          ingresos, 
+          gastos, 
+          recorridos 
+        };
+        return datosCompletos;
       } catch (e) {
-        console.warn('Usando datos de ejemplo porque el backend no responde:', e);
-        datosCompletos = generarDatosEjemplo();
+        console.warn('Error cargando datos, usando ejemplo:', e);
+        const ejemplo = generarDatosEjemplo();
+        datosCompletos = ejemplo;
         showToast('Usando datos de ejemplo (sin conexión)', 'error', 3000);
+        return ejemplo;
       }
     }
 
     // ============================================================
-    // DATOS DE EJEMPLO
+    // DATOS DE EJEMPLO (ahora incluye daily)
     // ============================================================
     function generarDatosEjemplo() {
       const hoy = new Date();
       const ingresos = [], gastos = [], recorridos = [];
       const categorias = ['combustible', 'mantenimiento', 'seguro', 'reparaciones', 'otros'];
       const plataformas = ['Uber', 'DiDi', 'InDriver'];
+      const dailyMap = {};
 
       for (let i = 0; i < 40; i++) {
         const fecha = new Date(hoy);
         fecha.setDate(fecha.getDate() - i);
         const f = fecha.toISOString().slice(0,10);
+        const montoIng = 15 + Math.random()*35;
+        const montoGas = 2 + Math.random()*12;
 
         if (i % 2 === 0) {
-          ingresos.push({ fecha: f, rubro: 'transporte', plataforma: plataformas[i%3], monto: 15 + Math.random()*35, descripcion: 'Viaje '+(i+1), tipo: 'ingreso' });
+          ingresos.push({ fecha: f, rubro: 'transporte', plataforma: plataformas[i%3], monto: montoIng, descripcion: 'Viaje '+(i+1), tipo: 'ingreso' });
         } else {
-          ingresos.push({ fecha: f, rubro: (i%3===0)?'electronica':'otro', plataforma: (i%3===0)?'Venta':'KM0', monto: 5 + Math.random()*25, descripcion: 'Venta/Entrega '+(i+1), tipo: 'ingreso' });
+          ingresos.push({ fecha: f, rubro: (i%3===0)?'electronica':'otro', plataforma: (i%3===0)?'Venta':'KM0', monto: montoIng, descripcion: 'Venta/Entrega '+(i+1), tipo: 'ingreso' });
         }
-        gastos.push({ fecha: f, rubro: (i%4===0)?'general':(i%3===0)?'transporte':'electronica', categoria: categorias[i%categorias.length], monto: 2 + Math.random()*12, descripcion: 'Gasto '+(i+1), tipo: 'gasto' });
+        gastos.push({ fecha: f, rubro: (i%4===0)?'general':(i%3===0)?'transporte':'electronica', categoria: categorias[i%categorias.length], monto: montoGas, descripcion: 'Gasto '+(i+1), tipo: 'gasto' });
         if (i%2===0) recorridos.push({ fecha: f, km: 10 + Math.random()*30, notas: 'Recorrido '+(i+1) });
+
+        if (!dailyMap[f]) dailyMap[f] = { fecha: f, ingresos: 0, gastos: 0 };
+        dailyMap[f].ingresos += montoIng;
+        dailyMap[f].gastos += montoGas;
       }
-      return { ingresos, gastos, recorridos };
+      const daily = Object.values(dailyMap).sort((a,b) => a.fecha.localeCompare(b.fecha));
+
+      // Stats simuladas
+      const totalIngresos = ingresos.reduce((s,i) => s + i.monto, 0);
+      const totalGastos = gastos.reduce((s,g) => s + g.monto, 0);
+      const stats = {
+        totalIngresos,
+        totalGastos,
+        ganancia: totalIngresos - totalGastos,
+        ingresosTransporte: ingresos.filter(i=>i.rubro==='transporte').reduce((s,i)=>s+i.monto,0),
+        ingresosElectronica: ingresos.filter(i=>i.rubro==='electronica').reduce((s,i)=>s+i.monto,0),
+        ingresosOtro: ingresos.filter(i=>i.rubro==='otro').reduce((s,i)=>s+i.monto,0),
+        gastosTransporte: gastos.filter(g=>g.rubro==='transporte').reduce((s,g)=>s+g.monto,0),
+        gastosElectronica: gastos.filter(g=>g.rubro==='electronica').reduce((s,g)=>s+g.monto,0),
+        gastosOtro: gastos.filter(g=>g.rubro==='otro').reduce((s,g)=>s+g.monto,0),
+        totalKmTotal: recorridos.reduce((s,r)=>s+(r.km||0),0),
+        totalHoras: recorridos.length * 0.5,
+        gastosCombustibleMantenimiento: gastos.filter(g=>g.categoria==='combustible'||g.categoria==='mantenimiento').reduce((s,g)=>s+g.monto,0)
+      };
+
+      return { stats, daily, ingresos, gastos, recorridos };
     }
 
     // ============================================================
-    // FILTRADO
+    // FILTRADO (ahora aplica solo a ingresos/gastos/recorridos para la tabla y KPIs)
     // ============================================================
     function filtrarDatos(fechaInicio, fechaFin, rubro) {
       if (!datosCompletos) return null;
-      const { ingresos, gastos, recorridos } = datosCompletos;
+      const { ingresos, gastos, recorridos, daily, stats } = datosCompletos;
       const inicio = fechaInicio ? new Date(fechaInicio) : null;
       const fin = fechaFin ? new Date(fechaFin) : null;
       if (fin) fin.setHours(23,59,59);
@@ -364,7 +424,17 @@
       const iF = ingresos.filter(i => filtrarFecha(i) && filtrarRubro(i));
       const gF = gastos.filter(g => filtrarFecha(g) && filtrarRubro(g));
       const rF = recorridos.filter(r => filtrarFecha(r));
-      return { ingresos: iF, gastos: gF, recorridos: rF };
+      // Filtrar daily según fechas (el backend ya lo hace, pero por si acaso)
+      let dailyF = daily;
+      if (inicio) dailyF = dailyF.filter(d => new Date(d.fecha) >= inicio);
+      if (fin) dailyF = dailyF.filter(d => new Date(d.fecha) <= fin);
+      return { 
+        ingresos: iF, 
+        gastos: gF, 
+        recorridos: rF,
+        daily: dailyF,
+        stats: stats // stats ya vienen filtradas por el backend
+      };
     }
 
     // ============================================================
@@ -372,10 +442,11 @@
     // ============================================================
     function renderizar(datos) {
       if (!datos) return;
-      const { ingresos, gastos, recorridos } = datos;
+      const { ingresos, gastos, recorridos, daily, stats } = datos;
 
-      const totalIngresos = ingresos.reduce((s,i) => s + i.monto, 0);
-      const totalGastos = gastos.reduce((s,g) => s + g.monto, 0);
+      // Usar stats del backend si existen, sino calcular
+      const totalIngresos = stats?.totalIngresos || ingresos.reduce((s,i) => s + i.monto, 0);
+      const totalGastos = stats?.totalGastos || gastos.reduce((s,g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
       const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
 
@@ -394,7 +465,8 @@
       document.getElementById('totalViajes').textContent = totalViajes;
       document.getElementById('totalKm').textContent = totalKm.toFixed(1);
 
-      renderGraficoIngresosGastos(ingresos, gastos);
+      // Renderizar gráficos con los datos filtrados
+      renderGraficoIngresosGastos(daily);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
       renderListaCategorias(gastos);
@@ -402,43 +474,45 @@
     }
 
     // ============================================================
-    // GRÁFICOS (CORREGIDO)
+    // GRÁFICOS OPTIMIZADOS (sin parpadeos)
     // ============================================================
-    function renderGraficoIngresosGastos(ingresos, gastos) {
-      const ctx = document.getElementById('ingresosGastosChart').getContext('2d');
+    function renderGraficoIngresosGastos(dailyData) {
+      const canvas = document.getElementById('ingresosGastosChart');
+      const ctx = canvas.getContext('2d');
+      if (charts.ig) { 
+        // Actualizar datos en lugar de destruir
+        if (dailyData && dailyData.length > 0) {
+          const labels = dailyData.map(d => d.fecha);
+          const dataIng = dailyData.map(d => d.ingresos || 0);
+          const dataGas = dailyData.map(d => d.gastos || 0);
+          charts.ig.data.labels = labels;
+          charts.ig.data.datasets[0].data = dataIng;
+          charts.ig.data.datasets[1].data = dataGas;
+          charts.ig.update('none'); // sin animación
+          return;
+        }
+      }
+
+      // Si no existe, crear nuevo
       if (charts.ig) { charts.ig.destroy(); charts.ig = null; }
 
-      // Agrupar por fecha
-      const fechasMap = {};
-      ingresos.forEach(i => {
-        const f = i.fecha || '';
-        if (!f) return;
-        if (!fechasMap[f]) fechasMap[f] = { ingresos: 0, gastos: 0 };
-        fechasMap[f].ingresos += i.monto || 0;
-      });
-      gastos.forEach(g => {
-        const f = g.fecha || '';
-        if (!f) return;
-        if (!fechasMap[f]) fechasMap[f] = { ingresos: 0, gastos: 0 };
-        fechasMap[f].gastos += g.monto || 0;
-      });
-
-      const fechas = Object.keys(fechasMap).sort();
-      const dataIng = fechas.map(f => fechasMap[f].ingresos);
-      const dataGas = fechas.map(f => fechasMap[f].gastos);
-
-      if (fechas.length === 0) {
+      if (!dailyData || dailyData.length === 0) {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = '#999';
         ctx.font = '14px Inter';
         ctx.textAlign = 'center';
-        ctx.fillText('Sin datos', ctx.canvas.width/2, ctx.canvas.height/2);
+        ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
         return;
       }
+
+      const labels = dailyData.map(d => d.fecha);
+      const dataIng = dailyData.map(d => d.ingresos || 0);
+      const dataGas = dailyData.map(d => d.gastos || 0);
 
       charts.ig = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: fechas,
+          labels: labels,
           datasets: [
             {
               label: 'Ingresos',
@@ -465,6 +539,7 @@
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          animation: false, // Desactivar animaciones para rendimiento
           plugins: {
             legend: {
               position: 'top',
@@ -481,7 +556,7 @@
             },
             x: {
               ticks: {
-                maxTicksLimit: 15,
+                maxTicksLimit: 12,
                 font: { size: 9 }
               }
             }
@@ -491,7 +566,8 @@
     }
 
     function renderGraficoGastosPie(gastos) {
-      const ctx = document.getElementById('gastosPieChart').getContext('2d');
+      const canvas = document.getElementById('gastosPieChart');
+      const ctx = canvas.getContext('2d');
       if (charts.gp) { charts.gp.destroy(); charts.gp = null; }
       const cats = {};
       gastos.forEach(g => { const c = g.categoria || 'otros'; cats[c] = (cats[c]||0) + g.monto; });
@@ -499,21 +575,30 @@
       const data = Object.values(cats);
       const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280','#f97316'];
       if (labels.length === 0) {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = '#999';
         ctx.font = '14px Inter';
         ctx.textAlign = 'center';
-        ctx.fillText('Sin datos', ctx.canvas.width/2, ctx.canvas.height/2);
+        ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
         return;
       }
       charts.gp = new Chart(ctx, {
         type: 'pie',
         data: { labels, datasets: [{ data, backgroundColor: colores.slice(0, labels.length), borderColor: '#fff', borderWidth: 2 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { 
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } 
+          }
+        }
       });
     }
 
     function renderGraficoPlataformas(ingresos) {
-      const ctx = document.getElementById('platformChart').getContext('2d');
+      const canvas = document.getElementById('platformChart');
+      const ctx = canvas.getContext('2d');
       if (charts.pl) { charts.pl.destroy(); charts.pl = null; }
       const plat = {};
       ingresos.forEach(i => { const p = i.plataforma || 'Otros'; plat[p] = (plat[p]||0) + i.monto; });
@@ -521,16 +606,24 @@
       const data = Object.values(plat);
       const colores = ['#004831','#1E3A8A','#D97706','#6B7280','#f97316'];
       if (labels.length === 0) {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = '#999';
         ctx.font = '14px Inter';
         ctx.textAlign = 'center';
-        ctx.fillText('Sin datos', ctx.canvas.width/2, ctx.canvas.height/2);
+        ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
         return;
       }
       charts.pl = new Chart(ctx, {
         type: 'doughnut',
         data: { labels, datasets: [{ data, backgroundColor: colores.slice(0, labels.length), borderColor: '#fff', borderWidth: 2 }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } } }
+        options: { 
+          responsive: true, 
+          maintainAspectRatio: false,
+          animation: false,
+          plugins: { 
+            legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } 
+          }
+        }
       });
     }
 
@@ -597,10 +690,12 @@
     // ============================================================
     // APLICAR FILTROS Y EVENTOS
     // ============================================================
-    function aplicarFiltros() {
+    async function aplicarFiltros() {
       const inicio = document.getElementById('fechaInicio').value;
       const fin = document.getElementById('fechaFin').value;
       const rubro = document.getElementById('rubroFilter').value;
+      // Recargar datos con filtros (usando el backend)
+      await cargarDatos(inicio, fin);
       datosFiltrados = filtrarDatos(inicio, fin, rubro);
       renderizar(datosFiltrados);
     }
@@ -615,8 +710,11 @@
       document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
       document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
 
-      await cargarDatos();
       await verificarConexion();
+      await cargarDatos(
+        document.getElementById('fechaInicio').value,
+        document.getElementById('fechaFin').value
+      );
       aplicarFiltros();
 
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
@@ -627,8 +725,11 @@
         aplicarFiltros();
       });
       document.getElementById('refreshBtn').addEventListener('click', async () => {
-        await cargarDatos();
         await verificarConexion();
+        await cargarDatos(
+          document.getElementById('fechaInicio').value,
+          document.getElementById('fechaFin').value
+        );
         aplicarFiltros();
       });
       document.getElementById('exportCsvBtn').addEventListener('click', () => {
