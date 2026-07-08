@@ -31,6 +31,7 @@
     .rubro-btn.active-transporte { background: #004831; color: white; border-color: #004831; box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
     .rubro-btn.active-electronica { background: #1E3A8A; color: white; border-color: #1E3A8A; box-shadow: 0 4px 12px rgba(30,58,138,0.2); }
     .rubro-btn.active-otro { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 4px 12px rgba(249,115,22,0.2); }
+    .rubro-btn.active-general { background: #6B7280; color: white; border-color: #6B7280; box-shadow: 0 4px 12px rgba(107,114,128,0.2); }
     .rubro-btn:active { transform: scale(0.96); }
     input:focus, select:focus, textarea:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.15); }
     .btn-guardar { background: #752200; color: white; border-radius: 1rem; font-weight: bold; padding: 14px; width: 100%; border: none; transition: all 0.2s; }
@@ -96,7 +97,7 @@
     <!-- RUBRO -->
     <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
       <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro / Negocio</label>
-      <div class="grid grid-cols-3 gap-2 mt-2">
+      <div class="grid grid-cols-2 gap-2 mt-2">
         <button id="rubroTransporte" class="rubro-btn active-transporte flex flex-col items-center gap-0.5" onclick="seleccionarRubro('Transporte')">
           <span class="material-symbols-outlined" style="font-size:28px">directions_car</span>
           <span class="text-sm font-semibold">Transporte</span>
@@ -108,6 +109,10 @@
         <button id="rubroOtro" class="rubro-btn flex flex-col items-center gap-0.5" onclick="seleccionarRubro('Otro')">
           <span class="material-symbols-outlined" style="font-size:28px">more_horiz</span>
           <span class="text-sm font-semibold">KM0</span>
+        </button>
+        <button id="rubroGeneral" class="rubro-btn flex flex-col items-center gap-0.5" onclick="seleccionarRubro('General')">
+          <span class="material-symbols-outlined" style="font-size:28px">home</span>
+          <span class="text-sm font-semibold">General</span>
         </button>
       </div>
     </section>
@@ -167,6 +172,23 @@
         <input type="number" id="kilometrajeOtro" step="0.1" class="w-full mt-1 p-2 border rounded-lg text-sm" placeholder="Ej: 12500.5" />
         <p class="text-[10px] text-gray-500 mt-1">Obligatorio para Combustible y Mantenimiento</p>
       </div>
+    </div>
+
+    <!-- ====== CAMPOS GENERAL (sin categorías especiales) ====== -->
+    <div id="camposGeneral" class="hidden space-y-4">
+      <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría</label>
+        <select id="categoriaGeneral" class="w-full mt-1 p-2 border rounded-lg text-sm bg-surface-container-low">
+          <option value="Alimentación">🍽️ Alimentación</option>
+          <option value="Servicios">💡 Servicios (luz, agua, internet)</option>
+          <option value="Salud">🏥 Salud</option>
+          <option value="Educación">📚 Educación</option>
+          <option value="Transporte público">🚌 Transporte público</option>
+          <option value="Otros">📦 Otros</option>
+        </select>
+        <label class="text-xs font-bold uppercase mt-3 block">Detalle</label>
+        <input type="text" id="detalleGeneral" class="w-full p-2 border rounded-lg text-sm" placeholder="Ej: Comida, pago de luz, etc." />
+      </section>
     </div>
 
     <!-- ====== CAMPOS COMUNES ====== -->
@@ -268,27 +290,26 @@
     // ============================================================
     function seleccionarRubro(rubro) {
       rubroActual = rubro;
-      // Resetear estilos
       document.querySelectorAll('.rubro-btn').forEach(b => {
         b.className = 'rubro-btn flex flex-col items-center gap-0.5';
       });
-      // Activar según rubro
       const btnMap = {
         'Transporte': document.getElementById('rubroTransporte'),
         'Electrónica': document.getElementById('rubroElectronica'),
-        'Otro': document.getElementById('rubroOtro')
+        'Otro': document.getElementById('rubroOtro'),
+        'General': document.getElementById('rubroGeneral')
       };
       const active = btnMap[rubro];
       if (rubro === 'Transporte') active.classList.add('active-transporte');
       else if (rubro === 'Electrónica') active.classList.add('active-electronica');
       else if (rubro === 'Otro') active.classList.add('active-otro');
+      else if (rubro === 'General') active.classList.add('active-general');
 
-      // Mostrar/ocultar campos
       document.getElementById('camposTransporte').classList.toggle('hidden', rubro !== 'Transporte');
       document.getElementById('camposElectronica').classList.toggle('hidden', rubro !== 'Electrónica');
       document.getElementById('camposOtro').classList.toggle('hidden', rubro !== 'Otro');
+      document.getElementById('camposGeneral').classList.toggle('hidden', rubro !== 'General');
 
-      // Inicializar visibilidad de kilometraje según categoría
       if (rubro === 'Transporte') toggleKmField();
       else if (rubro === 'Otro') toggleKmFieldOtro();
     }
@@ -334,7 +355,6 @@
       if (!monto || monto <= 0) { showToast('❌ Ingresa un monto válido', 'error'); return; }
       if (!fecha) { showToast('❌ Selecciona una fecha', 'error'); return; }
 
-      // Obtener datos según rubro
       if (rubroActual === 'Transporte') {
         categoria = document.getElementById('categoriaTransporte').value;
         if (categoria === 'Combustible' || categoria === 'Mantenimiento') {
@@ -350,7 +370,7 @@
         categoria = document.getElementById('categoriaElectronica').value;
         const detalle = document.getElementById('detalleGasto').value || '';
         desc = `Detalle: ${detalle} | ${desc}`;
-      } else { // KM0
+      } else if (rubroActual === 'Otro') {
         categoria = document.getElementById('categoriaOtro').value;
         if (categoria === 'Combustible' || categoria === 'Mantenimiento') {
           const kmInput = document.getElementById('kilometrajeOtro');
@@ -361,6 +381,10 @@
             return;
           }
         }
+      } else { // General
+        categoria = document.getElementById('categoriaGeneral').value;
+        const detalle = document.getElementById('detalleGeneral').value || '';
+        desc = `Detalle: ${detalle} | ${desc}`;
       }
 
       const params = new URLSearchParams();
@@ -404,17 +428,13 @@
     // INICIALIZACIÓN
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Fecha por defecto
       document.getElementById('fecha').valueAsDate = new Date();
 
-      // Eventos para toggle de kilometraje
       document.getElementById('categoriaTransporte').addEventListener('change', toggleKmField);
       document.getElementById('categoriaOtro')?.addEventListener('change', toggleKmFieldOtro);
 
-      // Guardar
       document.getElementById('guardarBtn').addEventListener('click', guardarGasto);
 
-      // Seleccionar rubro inicial
       seleccionarRubro('Transporte');
       verificarConexion();
     });
