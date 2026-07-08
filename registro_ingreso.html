@@ -1,337 +1,510 @@
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Driver Insights - Registrar Ingreso</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-<style>
-    * { transition: all 0.2s ease; }
-    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%); }
-    .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-    @keyframes fadeSlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-card { animation: fadeSlideUp 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards; }
-    .rubro-btn.active-transporte { background-color: #004831; color: white; box-shadow: 0 4px 12px rgba(0,72,49,0.2); border-color: #004831; }
-    .rubro-btn.active-electronica { background-color: #1E3A8A; color: white; box-shadow: 0 4px 12px rgba(30,58,138,0.2); border-color: #1E3A8A; }
-    .platform-btn.active { border-color: #004831; background: linear-gradient(145deg, #a6f2cc40, #ffffff); box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
-    .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    input:focus, select:focus, textarea:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 2px #00483120; }
-    .btn-guardar { background-color: #004831; color: white; border-radius: 1rem; font-weight: bold; transition: all 0.2s; }
-    .btn-guardar:hover { transform: scale(1.01); background-color: #006b48; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-    .btn-guardar:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
-    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; }
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
+  <title>Driver Insights - Registrar Ingreso</title>
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#004831" />
+  <meta name="mobile-web-app-capable" content="yes" />
+
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+  <style>
+    * { box-sizing: border-box; transition: all 0.2s ease; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9ff; touch-action: manipulation; }
+    .material-symbols-outlined { font-size: 24px; }
+    .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.6rem; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; white-space: nowrap; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
-</style>
+    .happy-face { display: inline-block; animation: bounce 1.2s infinite; font-size: 1.2rem; }
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(5deg); } }
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
+    .toast.show { opacity: 1; }
+    .toast.error { background: #dc2626; }
+    .toast.success { background: #16a34a; }
+    .spinner { border: 3px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 3px solid #004831; width: 24px; height: 24px; animation: spin 0.8s linear infinite; display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .rubro-btn { padding: 12px 8px; border: 2px solid #e5e7eb; border-radius: 12px; background: white; cursor: pointer; transition: all 0.2s; }
+    .rubro-btn.active-transporte { background: #004831; color: white; border-color: #004831; box-shadow: 0 4px 12px rgba(0,72,49,0.2); }
+    .rubro-btn.active-electronica { background: #1E3A8A; color: white; border-color: #1E3A8A; box-shadow: 0 4px 12px rgba(30,58,138,0.2); }
+    .rubro-btn.active-otro { background: #f97316; color: white; border-color: #f97316; box-shadow: 0 4px 12px rgba(249,115,22,0.2); }
+    .rubro-btn:active { transform: scale(0.96); }
+    .platform-btn { padding: 8px 4px; border: 2px solid #e5e7eb; border-radius: 10px; background: white; cursor: pointer; transition: all 0.2s; }
+    .platform-btn.active { border-color: #004831; background: #f0fdf4; box-shadow: 0 2px 8px rgba(0,72,49,0.15); }
+    .platform-btn:active { transform: scale(0.95); }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.15); }
+    .btn-guardar { background: #004831; color: white; border-radius: 1rem; font-weight: bold; padding: 14px; width: 100%; border: none; transition: all 0.2s; }
+    .btn-guardar:hover:not(:disabled) { background: #006b48; transform: scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    .btn-guardar:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
+    @media (max-width: 640px) {
+      .rubro-btn { padding: 10px 6px; font-size: 0.9rem; }
+      .platform-btn { padding: 6px 4px; font-size: 0.8rem; }
+    }
+  </style>
+  <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#004831",
+            "tertiary": "#752200",
+            "electronica-primary": "#1E3A8A",
+            "surface": "#f8f9ff",
+            "on-surface": "#0b1c30",
+            "surface-container-low": "#eff4ff",
+            "outline-variant": "#bfc9c1",
+            "primary-fixed": "#a6f2cc",
+            "on-primary-fixed": "#005138",
+            "secondary": "#455f88",
+            "on-surface-variant": "#3f4943",
+            "primary-container": "#0e6245",
+            "on-primary": "#ffffff",
+            "on-tertiary": "#ffffff"
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body class="bg-background text-on-background min-h-screen pb-32">
-<header class="bg-surface/80 backdrop-blur-md sticky top-0 z-40 border-b flex justify-between items-center px-4 h-12 shadow-md">
-<div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center shadow-md"><span class="material-symbols-outlined text-white text-sm">person</span></div><h1 class="text-xl font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1></div>
-<button onclick="history.back()" class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-high"><span class="material-symbols-outlined">arrow_back</span></button>
-</header>
+<body class="bg-surface text-on-surface min-h-screen pb-24">
 
-<main class="px-4 py-4 space-y-5 max-w-lg mx-auto">
-    <div class="text-center animate-card">
-        <h2 class="text-xl font-bold">Registrar Ingreso</h2>
-        <p class="text-sm text-on-surface-variant">Selecciona el rubro y completa los datos</p>
-        <div id="conexionStatus" class="status-badge mt-2 justify-center mx-auto w-fit">🔄 Verificando conexión...</div>
-        <p class="text-xs text-gray-400 mt-1">Los datos se guardarán en Google Sheets (hoja: Ingresos)</p>
-        <p class="text-xs text-gray-400">La comisión se registrará automáticamente como gasto en la hoja Gastos</p>
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <!-- HEADER -->
+  <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-3 h-12 w-full shadow-sm">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-white" style="font-size:18px">person</span>
+      </div>
+      <h1 class="text-base font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
+      <div id="connectionStatus" class="status-badge status-error" role="status">
+        <span>🔄</span>
+      </div>
+    </div>
+    <button onclick="history.back()" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">arrow_back</button>
+  </header>
+
+  <!-- MAIN -->
+  <main class="pt-16 px-3 py-4 space-y-4 max-w-lg mx-auto">
+
+    <!-- TÍTULO -->
+    <div class="text-center animate-fade">
+      <h2 class="text-xl font-bold">Registrar Ingreso</h2>
+      <p class="text-sm text-on-surface-variant">Selecciona el rubro y completa los datos</p>
+      <p class="text-xs text-gray-400 mt-1">Los datos se guardarán en Google Sheets (hoja: Ingresos)</p>
     </div>
 
-    <!-- ========== RUBRO ========== -->
-    <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg animate-card">
-        <label class="text-xs font-bold uppercase">Rubro / Negocio</label>
-        <div class="grid grid-cols-2 gap-3 mt-2">
-            <button id="rubroTransporte" class="rubro-btn active-transporte py-3 px-2 border rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Transporte')">
-                <span class="material-symbols-outlined">directions_car</span><span class="text-sm font-semibold">🚖 Transporte</span>
-            </button>
-            <button id="rubroElectronica" class="rubro-btn py-3 px-2 border border-outline-variant rounded-xl flex flex-col items-center gap-1 transition-all hover:scale-105" onclick="seleccionarRubro('Electrónica')">
-                <span class="material-symbols-outlined">devices</span><span class="text-sm font-semibold">🤖 Electrónica</span>
-            </button>
-        </div>
-    </section>
-
-    <!-- ========== CAMPOS PARA TRANSPORTE ========== -->
-    <div id="camposTransporte" class="space-y-4">
-        <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg">
-            <label class="text-xs font-bold uppercase">Plataforma</label>
-            <div class="grid grid-cols-3 gap-2 mt-2">
-                <button class="platform-btn py-2 border rounded-xl flex flex-col items-center" data-platform="Uber" onclick="selectPlatform('Uber')"><span class="material-symbols-outlined">directions_car</span><span class="text-xs">Uber</span></button>
-                <button class="platform-btn py-2 border rounded-xl flex flex-col items-center" data-platform="DiDi" onclick="selectPlatform('DiDi')"><span class="material-symbols-outlined">bolt</span><span class="text-xs">DiDi</span></button>
-                <button class="platform-btn py-2 border rounded-xl flex flex-col items-center" data-platform="Indriver" onclick="selectPlatform('Indriver')"><span class="material-symbols-outlined">handshake</span><span class="text-xs">InDrive</span></button>
-                <button class="platform-btn py-2 border rounded-xl flex flex-col items-center" data-platform="Cabify" onclick="selectPlatform('Cabify')"><span class="material-symbols-outlined">near_me</span><span class="text-xs">Cabify</span></button>
-                <button class="platform-btn py-2 border rounded-xl flex flex-col items-center col-span-2" data-platform="Otro" onclick="selectPlatform('Otro')"><span class="material-symbols-outlined">more_horiz</span><span class="text-xs">Otro</span></button>
-            </div>
-            <div class="mt-4 p-3 bg-gray-50 rounded-lg">
-                <div class="flex justify-between items-center">
-                    <label class="text-xs font-bold">Comisión de la plataforma</label>
-                    <div class="flex gap-2">
-                        <input type="number" id="comisionInput" class="w-20 p-1 border rounded text-right" step="0.5" value="25">
-                        <span>%</span>
-                        <button id="guardarComisionBtn" class="text-xs bg-primary text-white px-2 py-1 rounded">Guardar</button>
-                    </div>
-                </div>
-                <p class="text-xs mt-1 text-gray-500">Se recordará para esta plataforma</p>
-            </div>
-        </section>
-        <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg space-y-3">
-            <div class="grid grid-cols-2 gap-3">
-                <div><label class="text-xs">Hora inicio</label><input type="time" id="horaInicio" class="w-full p-2 border rounded"></div>
-                <div><label class="text-xs">Hora fin</label><input type="time" id="horaFin" class="w-full p-2 border rounded"></div>
-                <div><label class="text-xs">Distancia app (km)</label><input type="number" step="0.1" id="distanciaApp" class="w-full p-2 border rounded" value="0"></div>
-                <div><label class="text-xs">Distancia total (km)</label><input type="number" step="0.1" id="distanciaTotal" class="w-full p-2 border rounded" value="0"></div>
-            </div>
-            <div class="bg-gray-50 p-3 rounded-lg">
-                <div class="flex justify-between text-sm"><span>Bruto</span><span id="brutoPreview">$0.00</span></div>
-                <div class="flex justify-between text-sm"><span>Comisión</span><span id="comisionPreview">0%</span></div>
-                <div class="flex justify-between font-bold mt-1"><span>Neto estimado</span><span id="netoPreview" class="text-primary">$0.00</span></div>
-                <div class="flex justify-between text-xs mt-1"><span>Duración</span><span id="duracionPreview">0h 0min</span></div>
-            </div>
-        </section>
-    </div>
-
-    <!-- ========== CAMPOS PARA ELECTRÓNICA ========== -->
-    <div id="camposElectronica" class="hidden space-y-4">
-        <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg">
-            <label class="text-xs font-bold uppercase">Tipo de servicio</label>
-            <select id="tipoServicio" class="w-full mt-1 p-2.5 border rounded-xl bg-surface-container-low">
-                <option value="Reparación">🔧 Reparación</option>
-                <option value="Venta de repuesto">🛒 Venta de repuesto</option>
-                <option value="Mantenimiento">⚙️ Mantenimiento</option>
-                <option value="Instalación">🤖 Instalación</option>
-                <option value="Consultoría">💡 Consultoría</option>
-                <option value="Otro">📦 Otro</option>
-            </select>
-            <label class="text-xs font-bold uppercase mt-3 block">Detalle / Producto</label>
-            <input type="text" id="detalleServicio" class="w-full p-2.5 border rounded-xl" placeholder="Ej: Pantalla iPhone X, Batería, reparación de PC">
-        </section>
-    </div>
-
-    <!-- ========== CAMPOS COMUNES ========== -->
-    <section class="bg-white/80 backdrop-blur-sm border rounded-xl p-5 shadow-lg space-y-4">
-        <div><label class="text-xs font-bold uppercase">Monto (USD)</label><input type="number" step="0.01" id="monto" class="w-full p-2.5 border rounded-xl" placeholder="0.00"></div>
-        <div><label class="text-xs font-bold uppercase">Fecha</label><input type="date" id="fecha" class="w-full p-2.5 border rounded-xl"></div>
-        <div><label class="text-xs font-bold uppercase">Notas (opcional)</label><textarea id="notas" rows="2" class="w-full p-2.5 border rounded-xl" placeholder="Comentarios adicionales..."></textarea></div>
-    </section>
-
-    <div class="fixed bottom-20 left-0 w-full px-4 z-40">
-        <button id="guardarBtn" class="btn-guardar w-full h-14 rounded-2xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined">save</span> Guardar Ingreso
+    <!-- RUBRO -->
+    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+      <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro / Negocio</label>
+      <div class="grid grid-cols-3 gap-2 mt-2">
+        <button id="rubroTransporte" class="rubro-btn active-transporte flex flex-col items-center gap-0.5" onclick="seleccionarRubro('Transporte')">
+          <span class="material-symbols-outlined" style="font-size:28px">directions_car</span>
+          <span class="text-sm font-semibold">Transporte</span>
         </button>
-    </div>
-</main>
+        <button id="rubroElectronica" class="rubro-btn flex flex-col items-center gap-0.5" onclick="seleccionarRubro('Electrónica')">
+          <span class="material-symbols-outlined" style="font-size:28px">devices</span>
+          <span class="text-sm font-semibold">Electrónica</span>
+        </button>
+        <button id="rubroOtro" class="rubro-btn flex flex-col items-center gap-0.5" onclick="seleccionarRubro('Otro')">
+          <span class="material-symbols-outlined" style="font-size:28px">more_horiz</span>
+          <span class="text-sm font-semibold">KM0</span>
+        </button>
+      </div>
+    </section>
 
-<nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
-    <div class="grid grid-cols-5 gap-1 text-center">
-        <a href="Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">dashboard</span><span class="text-[10px]">Panel</span></a>
-        <a href="registro_ingreso.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined">payments</span><span class="text-[10px]">Ingresos</span></a>
-        <a href="registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">receipt_long</span><span class="text-[10px]">Gastos</span></a>
-        <a href="vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">directions_car</span><span class="text-[10px]">Vehículo</span></a>
-        <a href="reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined">analytics</span><span class="text-[10px]">Análisis</span></a>
-    </div>
-</nav>
+    <!-- ====== CAMPOS TRANSPORTE ====== -->
+    <div id="camposTransporte" class="space-y-4">
+      <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Plataforma</label>
+        <div class="grid grid-cols-3 gap-2 mt-2">
+          <button class="platform-btn active flex flex-col items-center" data-platform="Uber" onclick="selectPlatform('Uber')">
+            <span class="material-symbols-outlined" style="font-size:22px">directions_car</span>
+            <span class="text-xs">Uber</span>
+          </button>
+          <button class="platform-btn flex flex-col items-center" data-platform="DiDi" onclick="selectPlatform('DiDi')">
+            <span class="material-symbols-outlined" style="font-size:22px">bolt</span>
+            <span class="text-xs">DiDi</span>
+          </button>
+          <button class="platform-btn flex flex-col items-center" data-platform="Indriver" onclick="selectPlatform('Indriver')">
+            <span class="material-symbols-outlined" style="font-size:22px">handshake</span>
+            <span class="text-xs">InDrive</span>
+          </button>
+          <button class="platform-btn flex flex-col items-center" data-platform="Cabify" onclick="selectPlatform('Cabify')">
+            <span class="material-symbols-outlined" style="font-size:22px">near_me</span>
+            <span class="text-xs">Cabify</span>
+          </button>
+          <button class="platform-btn flex flex-col items-center col-span-2" data-platform="Otro" onclick="selectPlatform('Otro')">
+            <span class="material-symbols-outlined" style="font-size:22px">more_horiz</span>
+            <span class="text-xs">Otro</span>
+          </button>
+        </div>
+        <div class="mt-3 p-3 bg-surface-container-low rounded-lg">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-bold">Comisión de la plataforma</label>
+            <div class="flex items-center gap-1">
+              <input type="number" id="comisionInput" class="w-16 p-1 border rounded text-right text-sm" step="0.5" value="25">
+              <span class="text-sm">%</span>
+              <button id="guardarComisionBtn" class="text-xs bg-primary text-white px-2 py-1 rounded font-bold">Guardar</button>
+            </div>
+          </div>
+          <p class="text-[10px] mt-1 text-gray-500">Se recordará para esta plataforma</p>
+        </div>
+      </section>
 
-<script>
-    // ========== CONFIGURACIÓN ==========
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxHDhafJENioFrfpS5sd8JPvEX4St543IDO6W-4FmadhTG_Yr9GeZ5mzIP_CgubL30DiA/exec'; // REEMPLAZAR
+      <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm space-y-3">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs font-bold">Hora inicio</label>
+            <input type="time" id="horaInicio" class="w-full p-2 border rounded-lg text-sm" />
+          </div>
+          <div>
+            <label class="text-xs font-bold">Hora fin</label>
+            <input type="time" id="horaFin" class="w-full p-2 border rounded-lg text-sm" />
+          </div>
+          <div>
+            <label class="text-xs font-bold">Distancia app (km)</label>
+            <input type="number" step="0.1" id="distanciaApp" class="w-full p-2 border rounded-lg text-sm" value="0" />
+          </div>
+          <div>
+            <label class="text-xs font-bold">Distancia total (km)</label>
+            <input type="number" step="0.1" id="distanciaTotal" class="w-full p-2 border rounded-lg text-sm" value="0" />
+          </div>
+        </div>
+        <div class="bg-surface-container-low p-3 rounded-lg space-y-1">
+          <div class="flex justify-between text-sm"><span>Bruto</span><span id="brutoPreview">$0.00</span></div>
+          <div class="flex justify-between text-sm"><span>Comisión</span><span id="comisionPreview">0%</span></div>
+          <div class="flex justify-between font-bold text-sm"><span>Neto estimado</span><span id="netoPreview" class="text-primary">$0.00</span></div>
+          <div class="flex justify-between text-xs text-gray-500"><span>Duración</span><span id="duracionPreview">0h 0min</span></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ====== CAMPOS ELECTRÓNICA ====== -->
+    <div id="camposElectronica" class="hidden space-y-4">
+      <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Tipo de servicio</label>
+        <select id="tipoServicio" class="w-full mt-1 p-2 border rounded-lg bg-surface-container-low text-sm">
+          <option value="Reparación">🔧 Reparación</option>
+          <option value="Venta de repuesto">🛒 Venta de repuesto</option>
+          <option value="Mantenimiento">⚙️ Mantenimiento</option>
+          <option value="Instalación">🤖 Instalación</option>
+          <option value="Consultoría">💡 Consultoría</option>
+          <option value="Otro">📦 Otro</option>
+        </select>
+        <label class="text-xs font-bold uppercase mt-3 block">Detalle / Producto</label>
+        <input type="text" id="detalleServicio" class="w-full p-2 border rounded-lg text-sm" placeholder="Ej: Pantalla iPhone X, Batería, reparación de PC">
+      </section>
+    </div>
+
+    <!-- ====== CAMPOS OTRO (KM0) ====== -->
+    <div id="camposOtro" class="hidden space-y-4">
+      <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Concepto</label>
+        <input type="text" id="conceptoOtro" class="w-full p-2 border rounded-lg text-sm" placeholder="Ej: Venta de producto, servicio, etc.">
+      </section>
+    </div>
+
+    <!-- ====== CAMPOS COMUNES ====== -->
+    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm space-y-4">
+      <div>
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Monto (USD)</label>
+        <input type="number" step="0.01" id="monto" class="w-full p-2 border rounded-lg text-sm" placeholder="0.00" />
+      </div>
+      <div>
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Fecha</label>
+        <input type="date" id="fecha" class="w-full p-2 border rounded-lg text-sm" />
+      </div>
+      <div>
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Notas (opcional)</label>
+        <textarea id="notas" rows="2" class="w-full p-2 border rounded-lg text-sm" placeholder="Comentarios adicionales..."></textarea>
+      </div>
+    </section>
+
+    <!-- BOTÓN GUARDAR -->
+    <div class="fixed bottom-20 left-0 w-full px-3 z-40">
+      <button id="guardarBtn" class="btn-guardar flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined" style="font-size:20px">save</span> Guardar Ingreso
+      </button>
+    </div>
+  </main>
+
+  <!-- NAVEGACIÓN INFERIOR -->
+  <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
+    <div class="grid grid-cols-5 gap-0.5 text-center">
+      <a href="./Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+        <span class="material-symbols-outlined" style="font-size:18px">dashboard</span>
+        <span class="text-[9px]">Panel</span>
+      </a>
+      <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg">
+        <span class="material-symbols-outlined" style="font-size:18px">payments</span>
+        <span class="text-[9px]">Ingresos</span>
+      </a>
+      <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+        <span class="material-symbols-outlined" style="font-size:18px">receipt_long</span>
+        <span class="text-[9px]">Gastos</span>
+      </a>
+      <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+        <span class="material-symbols-outlined" style="font-size:18px">directions_car</span>
+        <span class="text-[9px]">Vehículo</span>
+      </a>
+      <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant">
+        <span class="material-symbols-outlined" style="font-size:18px">analytics</span>
+        <span class="text-[9px]">Análisis</span>
+      </a>
+    </div>
+  </nav>
+
+  <script>
+    // ============================================================
+    // CONFIGURACIÓN
+    // ============================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCm593TJWZAwdTof9dEuVHUHThbnrqRqSXApvEnn2ewQjcMq4xkOyxQel-3t70ln420w/exec'; // <-- CAMBIA POR TU URL
     let rubroActual = 'Transporte';
     let currentPlatform = 'Uber';
     let commissionPercent = 25;
 
-    // Verificar conexión
+    // ============================================================
+    // CONEXIÓN
+    // ============================================================
     async function verificarConexion() {
-        const statusDiv = document.getElementById('conexionStatus');
-        try {
-            const response = await fetch(`${SCRIPT_URL}?action=getStats`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data && typeof data === 'object') {
-                    statusDiv.innerHTML = '✅ Conectado a Google Sheets';
-                    statusDiv.classList.add('status-connected');
-                    statusDiv.classList.remove('status-error');
-                } else throw new Error('Respuesta inválida');
-            } else throw new Error(`HTTP ${response.status}`);
-        } catch (error) {
-            statusDiv.innerHTML = '❌ Error de conexión – revisa URL o publicación del script';
-            statusDiv.classList.add('status-error');
-            statusDiv.classList.remove('status-connected');
+      const status = document.getElementById('connectionStatus');
+      status.innerHTML = '<span>🔄</span>';
+      status.className = 'status-badge status-error';
+      try {
+        const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
+        if (res.ok) {
+          status.innerHTML = '<span class="happy-face">😊</span><span>Conectado</span>';
+          status.className = 'status-badge status-connected';
+          return true;
         }
+        throw new Error('No OK');
+      } catch(e) {
+        status.innerHTML = '<span>❌</span><span>Sin conexión</span>';
+        status.className = 'status-badge status-error';
+        return false;
+      }
     }
 
+    // ============================================================
+    // TOAST
+    // ============================================================
+    function showToast(msg, type = 'info', duration = 3000) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.className = 'toast';
+      if (type === 'error') t.classList.add('error');
+      else if (type === 'success') t.classList.add('success');
+      t.classList.add('show');
+      clearTimeout(t._hide);
+      t._hide = setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    // ============================================================
+    // RUBRO
+    // ============================================================
     function seleccionarRubro(rubro) {
-        rubroActual = rubro;
-        const btnTransporte = document.getElementById('rubroTransporte');
-        const btnElectronica = document.getElementById('rubroElectronica');
-        if (rubro === 'Transporte') {
-            btnTransporte.classList.add('active-transporte');
-            btnTransporte.classList.remove('border-outline-variant');
-            btnElectronica.classList.remove('active-electronica', 'active-transporte');
-            btnElectronica.classList.add('border-outline-variant');
-            document.getElementById('camposTransporte').classList.remove('hidden');
-            document.getElementById('camposElectronica').classList.add('hidden');
-        } else {
-            btnElectronica.classList.add('active-electronica');
-            btnElectronica.classList.remove('border-outline-variant');
-            btnTransporte.classList.remove('active-transporte', 'active-electronica');
-            btnTransporte.classList.add('border-outline-variant');
-            document.getElementById('camposTransporte').classList.add('hidden');
-            document.getElementById('camposElectronica').classList.remove('hidden');
-        }
-        calcularPreview();
+      rubroActual = rubro;
+      // Resetear estilos
+      document.querySelectorAll('.rubro-btn').forEach(b => {
+        b.className = 'rubro-btn flex flex-col items-center gap-0.5';
+      });
+      // Activar según rubro
+      const btnMap = {
+        'Transporte': document.getElementById('rubroTransporte'),
+        'Electrónica': document.getElementById('rubroElectronica'),
+        'Otro': document.getElementById('rubroOtro')
+      };
+      const active = btnMap[rubro];
+      if (rubro === 'Transporte') active.classList.add('active-transporte');
+      else if (rubro === 'Electrónica') active.classList.add('active-electronica');
+      else if (rubro === 'Otro') active.classList.add('active-otro');
+
+      // Mostrar/ocultar campos
+      document.getElementById('camposTransporte').classList.toggle('hidden', rubro !== 'Transporte');
+      document.getElementById('camposElectronica').classList.toggle('hidden', rubro !== 'Electrónica');
+      document.getElementById('camposOtro').classList.toggle('hidden', rubro !== 'Otro');
+
+      calcularPreview();
     }
 
+    // ============================================================
+    // PLATAFORMA (Transporte)
+    // ============================================================
     function selectPlatform(platform) {
-        currentPlatform = platform;
-        document.querySelectorAll('.platform-btn').forEach(btn => btn.classList.remove('active', 'ring-2', 'ring-primary'));
-        const selected = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
-        if (selected) selected.classList.add('active', 'ring-2', 'ring-primary');
-        loadCommissionForPlatform(platform);
-        calcularPreview();
+      currentPlatform = platform;
+      document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+      const selected = document.querySelector(`.platform-btn[data-platform="${platform}"]`);
+      if (selected) selected.classList.add('active');
+      loadCommissionForPlatform(platform);
+      calcularPreview();
     }
 
     function loadCommissionForPlatform(platform) {
-        let saved = localStorage.getItem(`comision_${platform}`);
-        if (saved !== null && !isNaN(parseFloat(saved))) {
-            commissionPercent = parseFloat(saved);
-        } else {
-            const defaults = { Uber: 25, DiDi: 20, Indriver: 15, Cabify: 18, Otro: 10 };
-            commissionPercent = defaults[platform] || 25;
-        }
-        const comisionInput = document.getElementById('comisionInput');
-        if (comisionInput) comisionInput.value = commissionPercent;
-        document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
-        calcularPreview();
+      let saved = localStorage.getItem(`comision_${platform}`);
+      if (saved !== null && !isNaN(parseFloat(saved))) {
+        commissionPercent = parseFloat(saved);
+      } else {
+        const defaults = { Uber: 25, DiDi: 20, Indriver: 15, Cabify: 18, Otro: 10 };
+        commissionPercent = defaults[platform] || 25;
+      }
+      document.getElementById('comisionInput').value = commissionPercent;
+      document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
+      calcularPreview();
     }
 
     function guardarComision() {
-        let newComm = parseFloat(document.getElementById('comisionInput').value);
-        if (isNaN(newComm)) newComm = 0;
-        newComm = Math.min(50, Math.max(0, newComm));
-        commissionPercent = newComm;
-        localStorage.setItem(`comision_${currentPlatform}`, commissionPercent);
-        document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
-        calcularPreview();
-        alert(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`);
+      let val = parseFloat(document.getElementById('comisionInput').value);
+      if (isNaN(val)) val = 0;
+      val = Math.min(50, Math.max(0, val));
+      commissionPercent = val;
+      localStorage.setItem(`comision_${currentPlatform}`, commissionPercent);
+      document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
+      calcularPreview();
+      showToast(`✅ Comisión para ${currentPlatform} guardada: ${commissionPercent}%`, 'success');
     }
 
+    // ============================================================
+    // PREVIEW
+    // ============================================================
     function calcularPreview() {
-        const monto = parseFloat(document.getElementById('monto').value) || 0;
-        if (rubroActual === 'Transporte') {
-            const neto = monto * (1 - commissionPercent / 100);
-            document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
-            document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
-            document.getElementById('netoPreview').innerText = `$${isNaN(neto) ? '0.00' : neto.toFixed(2)}`;
-        } else {
-            document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
-            document.getElementById('comisionPreview').innerText = `0%`;
-            document.getElementById('netoPreview').innerText = `$${monto.toFixed(2)}`;
-        }
-        // Duración preview
-        const inicio = document.getElementById('horaInicio')?.value;
-        const fin = document.getElementById('horaFin')?.value;
-        if (inicio && fin) {
-            let start = new Date(`2000-01-01T${inicio}:00`);
-            let end = new Date(`2000-01-01T${fin}:00`);
-            let diff = (end - start) / 1000 / 3600;
-            if (diff < 0) diff += 24;
-            let horasInt = Math.floor(diff);
-            let minutos = Math.floor((diff - horasInt) * 60);
-            document.getElementById('duracionPreview').innerText = `${horasInt}h ${minutos}min`;
-        } else {
-            document.getElementById('duracionPreview').innerText = '0h 0min';
-        }
+      const monto = parseFloat(document.getElementById('monto').value) || 0;
+      if (rubroActual === 'Transporte') {
+        const neto = monto * (1 - commissionPercent / 100);
+        document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
+        document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
+        document.getElementById('netoPreview').innerText = `$${isNaN(neto) ? '0.00' : neto.toFixed(2)}`;
+      } else {
+        document.getElementById('brutoPreview').innerText = `$${monto.toFixed(2)}`;
+        document.getElementById('comisionPreview').innerText = `0%`;
+        document.getElementById('netoPreview').innerText = `$${monto.toFixed(2)}`;
+      }
+      // Duración
+      const inicio = document.getElementById('horaInicio')?.value;
+      const fin = document.getElementById('horaFin')?.value;
+      if (inicio && fin) {
+        let start = new Date(`2000-01-01T${inicio}:00`);
+        let end = new Date(`2000-01-01T${fin}:00`);
+        let diff = (end - start) / 1000 / 3600;
+        if (diff < 0) diff += 24;
+        let h = Math.floor(diff);
+        let m = Math.floor((diff - h) * 60);
+        document.getElementById('duracionPreview').innerText = `${h}h ${m}min`;
+      } else {
+        document.getElementById('duracionPreview').innerText = '0h 0min';
+      }
     }
 
     function calcularDuracion() {
-        let inicio = document.getElementById('horaInicio').value;
-        let fin = document.getElementById('horaFin').value;
-        if (inicio && fin) {
-            let start = new Date(`2000-01-01T${inicio}:00`);
-            let end = new Date(`2000-01-01T${fin}:00`);
-            let diff = (end - start) / 1000 / 3600;
-            if (diff < 0) diff += 24;
-            return diff;
-        }
-        return 0;
+      const inicio = document.getElementById('horaInicio')?.value;
+      const fin = document.getElementById('horaFin')?.value;
+      if (inicio && fin) {
+        let start = new Date(`2000-01-01T${inicio}:00`);
+        let end = new Date(`2000-01-01T${fin}:00`);
+        let diff = (end - start) / 1000 / 3600;
+        if (diff < 0) diff += 24;
+        return diff;
+      }
+      return 0;
     }
 
-    document.getElementById('monto').addEventListener('input', calcularPreview);
-    document.getElementById('horaInicio')?.addEventListener('change', calcularPreview);
-    document.getElementById('horaFin')?.addEventListener('change', calcularPreview);
-    const guardarComisionBtn = document.getElementById('guardarComisionBtn');
-    if (guardarComisionBtn) guardarComisionBtn.addEventListener('click', guardarComision);
-    document.getElementById('fecha').valueAsDate = new Date();
+    // ============================================================
+    // GUARDAR
+    // ============================================================
+    async function guardarIngreso() {
+      const monto = parseFloat(document.getElementById('monto').value);
+      const fecha = document.getElementById('fecha').value;
+      let notas = document.getElementById('notas').value || '';
+      let plataforma = '';
+      let rubro = rubroActual;
+      let distanciaApp = 0, distanciaTotal = 0, horas = 0;
 
-    seleccionarRubro('Transporte');
-    selectPlatform('Uber');
-    verificarConexion();
+      if (!monto || monto <= 0) { showToast('❌ Ingresa un monto válido', 'error'); return; }
+      if (!fecha) { showToast('❌ Selecciona una fecha', 'error'); return; }
 
-    const guardarBtn = document.getElementById('guardarBtn');
-    guardarBtn.addEventListener('click', async () => {
-        const monto = parseFloat(document.getElementById('monto').value);
-        const fecha = document.getElementById('fecha').value;
-        let notas = document.getElementById('notas').value;
-        let plataforma = '';
-        let rubro = rubroActual;
-        let distanciaApp = 0, distanciaTotal = 0, horas = 0;
+      if (rubroActual === 'Transporte') {
+        plataforma = currentPlatform;
+        distanciaApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
+        distanciaTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
+        horas = calcularDuracion();
+        notas = `Comisión: ${commissionPercent}% | ${notas}`;
+      } else if (rubroActual === 'Electrónica') {
+        const tipo = document.getElementById('tipoServicio').value;
+        const detalle = document.getElementById('detalleServicio').value || '';
+        plataforma = 'Electrónica';
+        notas = `Tipo: ${tipo} | Detalle: ${detalle} | ${notas}`;
+      } else { // Otro / KM0
+        const concepto = document.getElementById('conceptoOtro').value || '';
+        plataforma = 'Otro';
+        notas = `Concepto: ${concepto} | ${notas}`;
+      }
 
-        if (!monto || monto <= 0) { alert('❌ Ingresa un monto válido'); return; }
-        if (!fecha) { alert('❌ Selecciona una fecha'); return; }
+      const params = new URLSearchParams();
+      params.append('action', 'addIncome');
+      params.append('plataforma', plataforma);
+      params.append('rubro', rubro);
+      params.append('monto', monto);
+      params.append('fecha', fecha);
+      params.append('kmApp', distanciaApp);
+      params.append('kmTotal', distanciaTotal);
+      params.append('horas', horas);
+      params.append('notas', notas);
+      params.append('comisionPorcentaje', rubroActual === 'Transporte' ? commissionPercent : 0);
 
-        if (rubroActual === 'Transporte') {
-            plataforma = currentPlatform;
-            distanciaApp = parseFloat(document.getElementById('distanciaApp').value) || 0;
-            distanciaTotal = parseFloat(document.getElementById('distanciaTotal').value) || 0;
-            horas = calcularDuracion();
-            notas = `Comisión: ${commissionPercent}% | ${notas}`;
+      const btn = document.getElementById('guardarBtn');
+      const originalHtml = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div> Guardando...';
+      btn.disabled = true;
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params
+        });
+        const text = await response.text();
+        if (response.ok && (text.includes('OK') || text.includes('Ingreso registrado'))) {
+          showToast(`✅ Ingreso registrado correctamente\nRubro: ${rubro}\nMonto: $${monto}`, 'success');
+          setTimeout(() => window.location.href = './Dashboard.html', 1500);
         } else {
-            const tipo = document.getElementById('tipoServicio').value;
-            const detalle = document.getElementById('detalleServicio').value;
-            plataforma = 'Electrónica';
-            notas = `Tipo: ${tipo} | Detalle: ${detalle} | ${notas}`;
+          showToast('❌ Error del servidor: ' + text, 'error');
         }
+      } catch(e) {
+        showToast('❌ Error de conexión: ' + e.message, 'error');
+      } finally {
+        btn.innerHTML = originalHtml;
+        btn.disabled = false;
+      }
+    }
 
-        const params = new URLSearchParams();
-        params.append('action', 'addIncome');
-        params.append('plataforma', plataforma);
-        params.append('rubro', rubro);
-        params.append('monto', monto);
-        params.append('fecha', fecha);
-        params.append('kmApp', distanciaApp);
-        params.append('kmTotal', distanciaTotal);
-        params.append('horas', horas);
-        params.append('notas', notas);
-        // Enviar el porcentaje de comisión (solo para transporte)
-        params.append('comisionPorcentaje', rubroActual === 'Transporte' ? commissionPercent : 0);
+    // ============================================================
+    // INICIALIZACIÓN
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Fecha por defecto
+      document.getElementById('fecha').valueAsDate = new Date();
 
-        const originalHtml = guardarBtn.innerHTML;
-        guardarBtn.innerHTML = '<div class="loading-spinner"></div> Guardando...';
-        guardarBtn.disabled = true;
+      // Comisión guardar
+      document.getElementById('guardarComisionBtn').addEventListener('click', guardarComision);
 
-        try {
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
-            });
-            const text = await response.text();
-            if (response.ok && (text.includes('OK') || text.includes('Ingreso registrado'))) {
-                alert(`✅ Ingreso registrado correctamente en Google Sheets\nRubro: ${rubro}\nMonto: $${monto}\nKm app: ${distanciaApp} | Km total: ${distanciaTotal} | Horas: ${horas.toFixed(1)}\n${rubroActual === 'Transporte' ? `Comisión ${commissionPercent}% registrada como gasto automático.` : ''}`);
-                window.location.href = 'Dashboard.html';
-            } else {
-                alert('❌ Error del servidor: ' + text);
-            }
-        } catch(e) {
-            alert('❌ Error de conexión: ' + e.message);
-        } finally {
-            guardarBtn.innerHTML = originalHtml;
-            guardarBtn.disabled = false;
-        }
+      // Eventos para preview
+      document.getElementById('monto').addEventListener('input', calcularPreview);
+      document.getElementById('horaInicio')?.addEventListener('change', calcularPreview);
+      document.getElementById('horaFin')?.addEventListener('change', calcularPreview);
+
+      // Guardar
+      document.getElementById('guardarBtn').addEventListener('click', guardarIngreso);
+
+      // Seleccionar rubro inicial
+      seleccionarRubro('Transporte');
+      selectPlatform('Uber');
+      verificarConexion();
     });
-</script>
+  </script>
 </body>
 </html>
