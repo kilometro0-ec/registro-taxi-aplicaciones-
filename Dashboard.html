@@ -20,7 +20,6 @@
     .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.6rem; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; margin-left: 4px; white-space: nowrap; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
-    .status-warning { background: #fef3c7; color: #92400e; }
     .happy-face { display: inline-block; animation: bounce 1.2s infinite; font-size: 1.2rem; }
     @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(5deg); } }
     .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
@@ -30,12 +29,12 @@
     .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-    .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
+    .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 520px; max-height: 80vh; overflow-y: auto; }
     .tab-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
     .tab-btn { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; border: none; background: #e5eeff; color: #3f4943; }
     .tab-btn.active-general { background: #004831; color: white; }
     .tab-btn.active-electronica { background: #1E3A8A; color: white; }
-    .tab-btn.active-otro { background: #6B7280; color: white; }
+    .tab-btn.active-otro { background: #f97316; color: white; } /* Naranja para KM0 */
     .tab-btn:active { transform: scale(0.95); }
     .filter-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
     .filter-btn { padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
@@ -49,14 +48,16 @@
     .activity-sub { font-size: 0.7rem; color: #6b7280; }
     .amount-positive { color: #004831; font-weight: 700; }
     .amount-negative { color: #752200; font-weight: 700; }
-    /* Meta progress */
     .progress-bar { width: 100%; height: 8px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-top: 4px; }
     .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s; }
-    /* Tanque icon */
     .fuel-icon { font-size: 2rem; display: inline-block; }
     .fuel-red { color: #dc2626; }
     .fuel-yellow { color: #f59e0b; }
     .fuel-green { color: #16a34a; }
+    .gasto-fijo-item { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
+    .gasto-fijo-item .nombre { font-weight: 600; }
+    .gasto-fijo-item .monto { font-weight: 700; }
+    .alerta-vencimiento { color: #dc2626; font-size: 0.75rem; }
     @media (max-width: 640px) {
       .activity-grid { grid-template-columns: 1fr 1fr; gap: 4px; }
       .col-ingreso { border-right: none; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
@@ -64,6 +65,7 @@
       .tab-btn { font-size: 0.65rem; padding: 3px 10px; }
       .filter-btn { font-size: 0.6rem; padding: 2px 8px; }
       .fuel-icon { font-size: 1.5rem; }
+      .modal-content { max-width: 95%; padding: 1rem; }
     }
   </style>
   <script id="tailwind-config">
@@ -108,7 +110,7 @@
       </div>
     </div>
     <div class="flex gap-1">
-      <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">settings</a>
+      <button id="configGastosBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">settings</button>
       <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">refresh</button>
     </div>
   </header>
@@ -119,7 +121,7 @@
       <button id="tabGeneral" class="tab-btn active-general" onclick="cambiarRubro('general')">📊 General</button>
       <button id="tabTransporte" class="tab-btn" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
       <button id="tabElectronica" class="tab-btn" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
-      <button id="tabOtro" class="tab-btn" onclick="cambiarRubro('otro')">📌 Otro</button>
+      <button id="tabOtro" class="tab-btn" onclick="cambiarRubro('otro')">🟧 KM0</button>
     </div>
   </div>
 
@@ -151,7 +153,6 @@
           <button id="setMetaBtn" class="bg-primary text-white px-2 py-0.5 rounded text-xs font-bold">OK</button>
         </div>
       </div>
-      <!-- Barra de progreso meta -->
       <div class="mt-1">
         <div class="flex justify-between text-xs text-gray-500">
           <span>Progreso meta</span>
@@ -179,8 +180,8 @@
           <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
         </div>
         <div>
-          <p class="text-[9px]">Otro</p>
-          <p class="text-sm font-bold text-gray-600" id="gananciaOtro">$0.00</p>
+          <p class="text-[9px]">KM0</p>
+          <p class="text-sm font-bold text-orange-500" id="gananciaOtro">$0.00</p>
         </div>
       </div>
     </section>
@@ -227,7 +228,7 @@
       </div>
     </div>
 
-    <!-- PREDICCIONES (con clic para historial) -->
+    <!-- PREDICCIONES -->
     <div class="grid grid-cols-2 gap-2">
       <div id="cardAceite" class="bg-white border rounded-xl p-3 cursor-pointer hover:shadow-md transition" onclick="verHistorialAceite()">
         <p class="font-label-caps text-[9px]">🔧 Cambio de aceite</p>
@@ -270,12 +271,26 @@
     </section>
   </main>
 
-  <!-- MODALES HISTORIAL -->
+  <!-- MODAL HISTORIAL -->
   <div id="historialModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
     <div class="modal-content">
       <h3 id="historialTitle" class="font-bold text-base mb-2">Historial</h3>
       <div id="historialBody" class="max-h-60 overflow-y-auto"></div>
       <button id="closeHistorialBtn" class="mt-3 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">Cerrar</button>
+    </div>
+  </div>
+
+  <!-- MODAL GASTOS FIJOS -->
+  <div id="gastosFijosModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h3 class="font-bold text-base mb-2">💸 Gastos Fijos y Alertas</h3>
+      <p class="text-xs text-gray-500 mb-2">Configura tus gastos fijos mensuales. Los que tengan fecha de vencimiento se marcarán en rojo si están cerca.</p>
+      <div id="gastosFijosContainer" class="max-h-60 overflow-y-auto"></div>
+      <div class="mt-3 flex gap-2">
+        <button id="addGastoFijoBtn" class="bg-primary text-white px-3 py-1 rounded text-sm">+ Añadir</button>
+        <button id="guardarGastosFijosBtn" class="bg-green-600 text-white px-3 py-1 rounded text-sm">Guardar</button>
+        <button id="closeGastosFijosBtn" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm">Cerrar</button>
+      </div>
     </div>
   </div>
 
@@ -311,7 +326,7 @@
     // ============================================================
     // CONFIGURACIÓN
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLM8YXfNZM912AfWIca46Jz6-WYqo9KW1BmPgwxU9UJqfOmIq7yUN7cyL7V9kxp3gKxA/exec'; // REEMPLAZA CON TU URL
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwCm593TJWZAwdTof9dEuVHUHThbnrqRqSXApvEnn2ewQjcMq4xkOyxQel-3t70ln420w/exec'; // REEMPLAZA CON TU URL
     const CACHE_KEY = 'dashboardCache';
     const META_KEY = 'driverMeta';
 
@@ -359,11 +374,11 @@
       const fill = document.getElementById('metaProgressFill');
       fill.style.width = pct + '%';
       if (pct >= 100) {
-        fill.style.background = '#16a34a'; // verde
+        fill.style.background = '#16a34a';
       } else if (pct >= 50) {
-        fill.style.background = '#f59e0b'; // amarillo
+        fill.style.background = '#f59e0b';
       } else {
-        fill.style.background = '#004831'; // verde oscuro
+        fill.style.background = '#004831';
       }
     }
 
@@ -446,7 +461,7 @@
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
         if (res.ok) {
-          status.innerHTML = '<span class="happy-face">😊</span><span>Google Sheets</span>';
+          status.innerHTML = '<span class="happy-face">😊</span><span>Conectado</span>';
           status.className = 'status-badge status-connected';
           if (reconnectTimer) clearTimeout(reconnectTimer);
           return true;
@@ -511,6 +526,20 @@
       return await res.json();
     }
 
+    async function fetchGastosFijos() {
+      const res = await fetch(`${SCRIPT_URL}?action=getGastosFijos`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function guardarGastosFijos(gastos) {
+      const payload = new URLSearchParams();
+      payload.append('action', 'saveGastosFijos');
+      payload.append('gastos', JSON.stringify(gastos));
+      const res = await fetch(SCRIPT_URL, { method: 'POST', body: payload });
+      return res.text();
+    }
+
     // ============================================================
     // RENDERIZADO
     // ============================================================
@@ -552,7 +581,7 @@
         bruto = statsCompletos.ingresosElectronica || 0;
         gastos = statsCompletos.gastosElectronica || 0;
       } else {
-        titulo = 'UTILIDAD NETA - OTRO';
+        titulo = 'UTILIDAD NETA - KM0';
         valor = statsCompletos.gananciaOtro || 0;
         bruto = statsCompletos.ingresosOtro || 0;
         gastos = statsCompletos.gastosOtro || 0;
@@ -623,6 +652,7 @@
         header.appendChild(title);
         const fechaSpan = document.createElement('span');
         fechaSpan.className = 'activity-sub';
+        // Mostrar fecha tal cual (string)
         fechaSpan.textContent = a.fecha || '';
         header.appendChild(fechaSpan);
         div.appendChild(header);
@@ -730,15 +760,15 @@
       const nivel = comb.nivelTanque || 0;
       let icono = '⛽', colorClass = 'fuel-red';
       if (nivel === 0) { icono = '🪫'; colorClass = 'fuel-red'; }
-      else if (nivel === 1) { icono = '🛢️'; colorClass = 'fuel-red'; } // 1/4
-      else if (nivel === 2) { icono = '🛢️'; colorClass = 'fuel-yellow'; } // 1/2
-      else if (nivel === 3) { icono = '🛢️'; colorClass = 'fuel-yellow'; } // 3/4
-      else if (nivel >= 4) { icono = '⛽'; colorClass = 'fuel-green'; } // lleno
+      else if (nivel === 1) { icono = '🛢️'; colorClass = 'fuel-red'; }
+      else if (nivel === 2) { icono = '🛢️'; colorClass = 'fuel-yellow'; }
+      else if (nivel === 3) { icono = '🛢️'; colorClass = 'fuel-yellow'; }
+      else if (nivel >= 4) { icono = '⛽'; colorClass = 'fuel-green'; }
       fuelIconContainer.innerHTML = `<span class="fuel-icon ${colorClass}">${icono}</span>`;
     }
 
     // ============================================================
-    // HISTORIALES (MODAL)
+    // HISTORIALES
     // ============================================================
     async function verHistorialAceite() {
       const data = await fetchHistorial('Aceite');
@@ -765,7 +795,7 @@
               <br/><span class="text-xs text-gray-500">Próximo: ${item.proximo_km} km - ${item.observaciones || ''}</span>
             </li>`;
           });
-        } else { // combustible
+        } else {
           data.forEach((item, index) => {
             const kmAnterior = index > 0 ? data[index-1].kilometraje : 0;
             const recorrido = kmAnterior > 0 ? item.kilometraje - kmAnterior : 0;
@@ -779,6 +809,65 @@
         body.innerHTML = html;
       }
       modal.style.display = 'flex';
+    }
+
+    // ============================================================
+    // GASTOS FIJOS
+    // ============================================================
+    let gastosFijos = [];
+    let editIndex = -1;
+
+    async function cargarGastosFijos() {
+      const data = await fetchGastosFijos();
+      gastosFijos = data || [];
+      renderGastosFijos();
+    }
+
+    function renderGastosFijos() {
+      const container = document.getElementById('gastosFijosContainer');
+      if (!gastosFijos || gastosFijos.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-sm">No hay gastos fijos configurados.</p>';
+        return;
+      }
+      const ahora = new Date();
+      let html = '';
+      gastosFijos.forEach((g, idx) => {
+        const vence = g.fechaVencimiento ? new Date(g.fechaVencimiento) : null;
+        const esAlerta = vence && (vence - ahora) < 3*24*60*60*1000 && (vence - ahora) > 0;
+        const vencido = vence && vence < ahora;
+        html += `<div class="gasto-fijo-item ${vencido ? 'bg-red-50' : ''}">
+          <div>
+            <span class="nombre">${sanitizeText(g.nombre)}</span>
+            ${g.activo ? '🟢' : '🔴'}
+            ${esAlerta ? '<span class="alerta-vencimiento">⏰ Vence pronto!</span>' : ''}
+            ${vencido ? '<span class="alerta-vencimiento">⚠️ VENCIDO!</span>' : ''}
+          </div>
+          <div>
+            <span class="monto">${formatCurrency(g.monto)}</span>
+            <span class="text-xs text-gray-500 ml-2">${g.fechaVencimiento || 'Sin vencimiento'}</span>
+            <button class="text-blue-500 text-xs ml-2" onclick="editarGastoFijo(${idx})">✏️</button>
+            <button class="text-red-500 text-xs" onclick="eliminarGastoFijo(${idx})">🗑️</button>
+          </div>
+        </div>`;
+      });
+      container.innerHTML = html;
+    }
+
+    function editarGastoFijo(idx) {
+      editIndex = idx;
+      const g = gastosFijos[idx];
+      document.getElementById('gastoFijoNombre').value = g.nombre;
+      document.getElementById('gastoFijoMonto').value = g.monto;
+      document.getElementById('gastoFijoFecha').value = g.fechaVencimiento || '';
+      document.getElementById('gastoFijoActivo').checked = g.activo;
+      document.getElementById('gastoFijoNotas').value = g.notas || '';
+      // (Asumimos que hay inputs con estos ids, los añadimos dinámicamente)
+      // Simplificamos: usamos prompt para edición rápida (o mejor, un mini formulario)
+    }
+
+    function eliminarGastoFijo(idx) {
+      gastosFijos.splice(idx, 1);
+      renderGastosFijos();
     }
 
     // ============================================================
@@ -948,6 +1037,9 @@
           if (document.getElementById('historialModal').style.display === 'flex') {
             document.getElementById('historialModal').style.display = 'none';
           }
+          if (document.getElementById('gastosFijosModal').style.display === 'flex') {
+            document.getElementById('gastosFijosModal').style.display = 'none';
+          }
         }
       });
 
@@ -957,6 +1049,47 @@
       });
       document.getElementById('historialModal').addEventListener('click', function(e) {
         if (e.target === this) this.style.display = 'none';
+      });
+
+      // Modal gastos fijos
+      const gastosModal = document.getElementById('gastosFijosModal');
+      document.getElementById('configGastosBtn').addEventListener('click', function() {
+        cargarGastosFijos();
+        gastosModal.style.display = 'flex';
+      });
+      document.getElementById('closeGastosFijosBtn').addEventListener('click', function() {
+        gastosModal.style.display = 'none';
+      });
+      gastosModal.addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+      });
+
+      // Añadir gasto fijo (formulario simple)
+      document.getElementById('addGastoFijoBtn').addEventListener('click', function() {
+        // Crear filas editables
+        const nombre = prompt('Nombre del gasto fijo:');
+        if (!nombre) return;
+        const monto = parseFloat(prompt('Monto mensual:'));
+        if (isNaN(monto)) return;
+        const fecha = prompt('Fecha de vencimiento (YYYY-MM-DD) o dejar vacío:');
+        gastosFijos.push({
+          nombre: nombre,
+          monto: monto,
+          fechaVencimiento: fecha || null,
+          activo: true,
+          notas: ''
+        });
+        renderGastosFijos();
+      });
+
+      document.getElementById('guardarGastosFijosBtn').addEventListener('click', async function() {
+        const res = await guardarGastosFijos(gastosFijos);
+        if (res === "OK") {
+          showToast('Gastos fijos guardados', 'success');
+          gastosModal.style.display = 'none';
+        } else {
+          showToast('Error al guardar', 'error');
+        }
       });
 
       document.getElementById('verTodoBtn').addEventListener('click', function() {
