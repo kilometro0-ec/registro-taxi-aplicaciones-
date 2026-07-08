@@ -30,12 +30,12 @@
     .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
-    .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; }
+    .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto; }
     .tab-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
     .tab-btn { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; border: none; background: #e5eeff; color: #3f4943; }
     .tab-btn.active-general { background: #004831; color: white; }
     .tab-btn.active-electronica { background: #1E3A8A; color: white; }
-    .tab-btn.active-km0 { background: #D97706; color: white; }
+    .tab-btn.active-otro { background: #6B7280; color: white; }
     .tab-btn:active { transform: scale(0.95); }
     .filter-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
     .filter-btn { padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
@@ -49,22 +49,21 @@
     .activity-sub { font-size: 0.7rem; color: #6b7280; }
     .amount-positive { color: #004831; font-weight: 700; }
     .amount-negative { color: #752200; font-weight: 700; }
-    .fuel-icon { display: inline-block; font-size: 1.8rem; transition: all 0.3s; }
-    .fuel-empty { color: #dc2626; }
-    .fuel-quarter { color: #f97316; }
-    .fuel-half { color: #eab308; }
-    .fuel-three-quarter { color: #84cc16; }
-    .fuel-full { color: #22c55e; }
-    .meta-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; margin-top: 4px; }
-    .meta-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+    /* Meta progress */
+    .progress-bar { width: 100%; height: 8px; background: #e5e7eb; border-radius: 10px; overflow: hidden; margin-top: 4px; }
+    .progress-fill { height: 100%; border-radius: 10px; transition: width 0.5s; }
+    /* Tanque icon */
+    .fuel-icon { font-size: 2rem; display: inline-block; }
+    .fuel-red { color: #dc2626; }
+    .fuel-yellow { color: #f59e0b; }
+    .fuel-green { color: #16a34a; }
     @media (max-width: 640px) {
-      .header-title { font-size: 0.9rem; }
-      .stat-value { font-size: 1.3rem; }
-      .filter-btn { font-size: 0.6rem; padding: 2px 10px; }
-      .tab-btn { font-size: 0.65rem; padding: 3px 10px; }
-      .activity-grid { grid-template-columns: 1fr; gap: 4px; }
-      .col-ingreso { border-right: none; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+      .activity-grid { grid-template-columns: 1fr 1fr; gap: 4px; }
+      .col-ingreso { border-right: none; border-bottom: 1px solid #e5e7eb; padding-bottom: 4px; }
       .col-gasto { padding-left: 0; padding-top: 4px; }
+      .tab-btn { font-size: 0.65rem; padding: 3px 10px; }
+      .filter-btn { font-size: 0.6rem; padding: 2px 8px; }
+      .fuel-icon { font-size: 1.5rem; }
     }
   </style>
   <script id="tailwind-config">
@@ -76,7 +75,6 @@
             "primary": "#004831",
             "tertiary": "#752200",
             "electronica-primary": "#1E3A8A",
-            "km0-primary": "#D97706",
             "surface": "#f8f9ff",
             "on-surface": "#0b1c30",
             "surface-container-low": "#eff4ff",
@@ -115,20 +113,20 @@
     </div>
   </header>
 
-  <!-- PESTAÑAS RUBRO (incluye KM0) -->
+  <!-- PESTAÑAS RUBRO -->
   <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-2 py-1.5">
     <div class="tab-container">
       <button id="tabGeneral" class="tab-btn active-general" onclick="cambiarRubro('general')">📊 General</button>
       <button id="tabTransporte" class="tab-btn" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
       <button id="tabElectronica" class="tab-btn" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
-      <button id="tabKM0" class="tab-btn" onclick="cambiarRubro('km0')">🛣️ KM0</button>
+      <button id="tabOtro" class="tab-btn" onclick="cambiarRubro('otro')">📌 Otro</button>
     </div>
   </div>
 
   <!-- MAIN -->
   <main class="pt-24 px-3 space-y-3 max-w-4xl mx-auto">
 
-    <!-- FILTRO DE FECHAS -->
+    <!-- FILTRO DE FECHAS + META -->
     <section class="bg-white rounded-xl p-3 border border-outline-variant shadow-sm">
       <div class="filter-container">
         <button class="filter-btn active" data-period="today">Hoy</button>
@@ -145,24 +143,33 @@
         <button id="applyCustomDate" class="bg-primary text-white px-3 py-1 rounded text-xs font-bold">Aplicar</button>
         <button id="clearCustomDate" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-bold">Limpiar</button>
       </div>
-      <div class="text-xs text-gray-500 text-center mt-1" id="periodLabel">Hoy</div>
-    </section>
-
-    <!-- RESUMEN GLOBAL CON META -->
-    <section class="bg-surface-container-low rounded-xl p-3 border border-outline-variant">
-      <div class="flex justify-between items-start">
-        <div>
-          <p class="font-label-caps text-[9px] uppercase">Ganancia Neta</p>
-          <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
-        </div>
-        <div class="text-right">
-          <p class="text-[9px] text-gray-500">Meta: <span id="metaLabel">$500</span></p>
-          <div class="meta-bar w-32">
-            <div id="metaProgress" class="meta-bar-fill" style="width:0%; background:#004831;"></div>
-          </div>
+      <div class="flex justify-between items-center mt-1">
+        <span class="text-xs text-gray-500" id="periodLabel">Hoy</span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold">Meta $</span>
+          <input type="number" id="metaInput" class="border border-outline-variant rounded px-2 py-0.5 text-xs w-20" step="1" />
+          <button id="setMetaBtn" class="bg-primary text-white px-2 py-0.5 rounded text-xs font-bold">OK</button>
         </div>
       </div>
-      <div class="flex gap-2 text-right mt-1">
+      <!-- Barra de progreso meta -->
+      <div class="mt-1">
+        <div class="flex justify-between text-xs text-gray-500">
+          <span>Progreso meta</span>
+          <span id="metaProgressText">0%</span>
+        </div>
+        <div class="progress-bar">
+          <div id="metaProgressFill" class="progress-fill" style="width:0%; background:#004831;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESUMEN GLOBAL -->
+    <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
+      <div>
+        <p class="font-label-caps text-[9px] uppercase">Ganancia Neta</p>
+        <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
+      </div>
+      <div class="flex gap-2 text-right">
         <div class="border-r border-outline-variant pr-2">
           <p class="text-[9px]">Transporte</p>
           <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
@@ -172,8 +179,8 @@
           <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
         </div>
         <div>
-          <p class="text-[9px]">KM0</p>
-          <p class="text-sm font-bold text-km0-primary" id="gananciaKM0">$0.00</p>
+          <p class="text-[9px]">Otro</p>
+          <p class="text-sm font-bold text-gray-600" id="gananciaOtro">$0.00</p>
         </div>
       </div>
     </section>
@@ -196,6 +203,7 @@
       <div class="bg-white border rounded-xl p-3">
         <p class="font-label-caps text-[9px]">DISTANCIA (km)</p>
         <p class="text-lg font-bold" id="distanciaTotal">0</p>
+        <p class="text-[8px] text-gray-400">(Km totales del período)</p>
       </div>
       <div class="bg-white border rounded-xl p-3 relative">
         <p class="font-label-caps text-[9px]">HORAS</p>
@@ -219,20 +227,20 @@
       </div>
     </div>
 
-    <!-- PREDICCIONES (con km recorridos e icono de combustible) -->
+    <!-- PREDICCIONES (con clic para historial) -->
     <div class="grid grid-cols-2 gap-2">
-      <div class="bg-white border rounded-xl p-3">
+      <div id="cardAceite" class="bg-white border rounded-xl p-3 cursor-pointer hover:shadow-md transition" onclick="verHistorialAceite()">
         <p class="font-label-caps text-[9px]">🔧 Cambio de aceite</p>
         <div id="prediccionAceite" class="text-sm font-bold">Cargando...</div>
         <div id="detalleAceite" class="text-[10px] text-gray-500"></div>
-        <div id="kmDesdeAceite" class="text-[10px] text-gray-400 mt-1"></div>
+        <p class="text-[8px] text-gray-400 mt-1">🖱️ Clic para historial</p>
       </div>
-      <div class="bg-white border rounded-xl p-3">
+      <div id="cardCombustible" class="bg-white border rounded-xl p-3 cursor-pointer hover:shadow-md transition" onclick="verHistorialCombustible()">
         <p class="font-label-caps text-[9px]">⛽ Combustible</p>
         <div id="prediccionCombustible" class="text-sm font-bold">Cargando...</div>
         <div id="detalleCombustible" class="text-[10px] text-gray-500"></div>
-        <div id="kmDesdeLlenado" class="text-[10px] text-gray-400 mt-1"></div>
-        <div id="fuelIconContainer" class="mt-2 text-center"></div>
+        <div id="fuelIconContainer" class="mt-1"></div>
+        <p class="text-[8px] text-gray-400 mt-1">🖱️ Clic para historial</p>
       </div>
     </div>
 
@@ -252,7 +260,7 @@
       </button>
     </div>
 
-    <!-- ACTIVIDAD RECIENTE (2 columnas) -->
+    <!-- ACTIVIDAD RECIENTE -->
     <section>
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm">Actividad Reciente</h3>
@@ -261,6 +269,15 @@
       <div id="recentActivityContainer" class="space-y-2 mt-2"></div>
     </section>
   </main>
+
+  <!-- MODALES HISTORIAL -->
+  <div id="historialModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h3 id="historialTitle" class="font-bold text-base mb-2">Historial</h3>
+      <div id="historialBody" class="max-h-60 overflow-y-auto"></div>
+      <button id="closeHistorialBtn" class="mt-3 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm">Cerrar</button>
+    </div>
+  </div>
 
   <!-- MODAL RECORRIDO -->
   <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
@@ -294,8 +311,9 @@
     // ============================================================
     // CONFIGURACIÓN
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyzM8M9yqzm41UxP_5kZB8fTqXs-vriDJaBlk4N70NSUBJ0_yCwcREdiKgsvYa7KpXn1Q/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwLM8YXfNZM912AfWIca46Jz6-WYqo9KW1BmPgwxU9UJqfOmIq7yUN7cyL7V9kxp3gKxA/exec'; // REEMPLAZA CON TU URL
     const CACHE_KEY = 'dashboardCache';
+    const META_KEY = 'driverMeta';
 
     let rubroActual = 'general';
     let statsCompletos = null;
@@ -304,9 +322,7 @@
     let currentPeriod = 'today';
     let fechaInicio = null;
     let fechaFin = null;
-
-    // META (puedes cambiarla aquí)
-    let META_GANANCIA = 500;
+    let metaObjetivo = parseFloat(localStorage.getItem(META_KEY)) || 0;
 
     // ============================================================
     // UTILIDADES
@@ -328,6 +344,28 @@
 
     function getCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch(e) { return null; } }
     function setCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {} }
+
+    // META
+    function setMeta(val) {
+      metaObjetivo = parseFloat(val) || 0;
+      localStorage.setItem(META_KEY, metaObjetivo);
+      actualizarMeta();
+    }
+
+    function actualizarMeta() {
+      const ganancia = statsCompletos ? statsCompletos.ganancia : 0;
+      const pct = metaObjetivo > 0 ? Math.min(100, (ganancia / metaObjetivo) * 100) : 0;
+      document.getElementById('metaProgressText').textContent = Math.round(pct) + '%';
+      const fill = document.getElementById('metaProgressFill');
+      fill.style.width = pct + '%';
+      if (pct >= 100) {
+        fill.style.background = '#16a34a'; // verde
+      } else if (pct >= 50) {
+        fill.style.background = '#f59e0b'; // amarillo
+      } else {
+        fill.style.background = '#004831'; // verde oscuro
+      }
+    }
 
     // ============================================================
     // FECHAS
@@ -396,7 +434,7 @@
     }
 
     // ============================================================
-    // CONEXIÓN CON CARA FELIZ
+    // CONEXIÓN
     // ============================================================
     let reconnectTimer = null;
 
@@ -467,29 +505,23 @@
       return await res.json();
     }
 
+    async function fetchHistorial(tipo) {
+      const res = await fetch(`${SCRIPT_URL}?action=getHistorial${tipo}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
     // ============================================================
     // RENDERIZADO
     // ============================================================
     function renderDashboard(data) {
       if (!data) return;
       statsCompletos = data;
-      
-      // Totales
       document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia || 0);
       document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte || 0);
       document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica || 0);
-      document.getElementById('gananciaKM0').textContent = formatCurrency(data.gananciaKM0 || 0);
+      document.getElementById('gananciaOtro').textContent = formatCurrency(data.gananciaOtro || 0);
 
-      // Meta
-      const meta = META_GANANCIA;
-      const ganancia = data.ganancia || 0;
-      const pct = Math.min(100, (ganancia / meta) * 100);
-      document.getElementById('metaLabel').textContent = formatCurrency(meta);
-      const bar = document.getElementById('metaProgress');
-      bar.style.width = pct + '%';
-      bar.style.background = pct >= 100 ? '#22c55e' : pct >= 70 ? '#eab308' : '#004831';
-
-      // Rentabilidad
       const gananciaHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
       const costoKm = data.totalKmTotal > 0 ? (data.gastosCombustibleMantenimiento || 0) / data.totalKmTotal : 0;
       document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaHora);
@@ -498,45 +530,36 @@
       document.getElementById('horasTrabajadas').textContent = (data.totalHoras || 0).toFixed(1);
 
       actualizarVistaRubro();
+      actualizarMeta();
     }
 
     function actualizarVistaRubro() {
       if (!statsCompletos) return;
-      let titulo, valor, bruto, gastos, colorClass = 'text-primary';
+      let titulo, valor, bruto, gastos;
       if (rubroActual === 'general') {
         titulo = 'UTILIDAD NETA (GENERAL)';
         valor = statsCompletos.ganancia || 0;
         bruto = statsCompletos.totalIngresos || 0;
         gastos = statsCompletos.totalGastos || 0;
-        colorClass = 'text-primary';
       } else if (rubroActual === 'transporte') {
         titulo = 'UTILIDAD NETA - TRANSPORTE';
         valor = statsCompletos.gananciaTransporte || 0;
         bruto = statsCompletos.ingresosTransporte || 0;
         gastos = statsCompletos.gastosTransporte || 0;
-        colorClass = 'text-primary';
       } else if (rubroActual === 'electronica') {
         titulo = 'UTILIDAD NETA - ELECTRÓNICA';
         valor = statsCompletos.gananciaElectronica || 0;
         bruto = statsCompletos.ingresosElectronica || 0;
         gastos = statsCompletos.gastosElectronica || 0;
-        colorClass = 'text-electronica-primary';
       } else {
-        titulo = 'UTILIDAD NETA - KM0';
-        valor = statsCompletos.gananciaKM0 || 0;
-        bruto = statsCompletos.ingresosKM0 || 0;
-        gastos = statsCompletos.gastosKM0 || 0;
-        colorClass = 'text-km0-primary';
+        titulo = 'UTILIDAD NETA - OTRO';
+        valor = statsCompletos.gananciaOtro || 0;
+        bruto = statsCompletos.ingresosOtro || 0;
+        gastos = statsCompletos.gastosOtro || 0;
       }
-      const elTitulo = document.getElementById('tituloRubro');
-      const elValor = document.getElementById('rubroValor');
-      const elDetalle = document.getElementById('detalleRubro');
-      if (elTitulo) elTitulo.textContent = titulo;
-      if (elValor) {
-        elValor.textContent = formatCurrency(valor);
-        elValor.className = 'text-2xl font-bold ' + colorClass;
-      }
-      if (elDetalle) elDetalle.innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
+      document.getElementById('tituloRubro').textContent = titulo;
+      document.getElementById('rubroValor').textContent = formatCurrency(valor);
+      document.getElementById('detalleRubro').innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
     }
 
     function renderChart(dailyData) {
@@ -607,7 +630,6 @@
         const grid = document.createElement('div');
         grid.className = 'activity-grid';
 
-        // Columna Ingresos (izquierda)
         const colIng = document.createElement('div');
         colIng.className = 'col-ingreso';
         const ingLabel = document.createElement('div');
@@ -627,7 +649,6 @@
         colIng.appendChild(ingVal);
         grid.appendChild(colIng);
 
-        // Columna Gastos (derecha)
         const colGas = document.createElement('div');
         colGas.className = 'col-gasto';
         const gasLabel = document.createElement('div');
@@ -639,7 +660,7 @@
           gasVal.textContent = `-${formatCurrency(a.monto || 0)}`;
         } else if (a.tipo === 'recorrido') {
           gasVal.className = 'text-gray-500';
-          gasVal.textContent = `—`;
+          gasVal.textContent = '—';
         } else {
           gasVal.className = 'text-gray-400';
           gasVal.textContent = '—';
@@ -665,22 +686,18 @@
     function renderPredicciones(data) {
       const elAceite = document.getElementById('prediccionAceite');
       const detAceite = document.getElementById('detalleAceite');
-      const kmAceite = document.getElementById('kmDesdeAceite');
       const elComb = document.getElementById('prediccionCombustible');
       const detComb = document.getElementById('detalleCombustible');
-      const kmComb = document.getElementById('kmDesdeLlenado');
-      const fuelIcon = document.getElementById('fuelIconContainer');
+      const fuelIconContainer = document.getElementById('fuelIconContainer');
 
       if (!data || data.error) {
         elAceite.textContent = '⚠️ Sin datos';
         elAceite.className = 'text-sm font-bold text-gray-500';
         detAceite.textContent = 'Configura tu vehículo';
-        kmAceite.textContent = '';
         elComb.textContent = '⚠️ Sin datos';
         elComb.className = 'text-sm font-bold text-gray-500';
         detComb.textContent = 'Registra gastos de combustible';
-        kmComb.textContent = '';
-        fuelIcon.innerHTML = '';
+        fuelIconContainer.innerHTML = '';
         return;
       }
 
@@ -692,43 +709,84 @@
         (kmRestantesAceite === 0 ? 'text-red-600' : 
          kmRestantesAceite < 500 ? 'text-orange-500' : 'text-primary');
       detAceite.textContent = `Último cambio: ${aceite.ultimoAceite || 'N/A'} km • ${aceite.estado || 'Sin datos'}`;
-      kmAceite.textContent = `📍 Recorrido desde cambio: ${(aceite.kmDesdeAceite || 0).toFixed(0)} km`;
 
       // Combustible
       const comb = data.combustible || {};
+      const rendimiento = comb.rendimiento || 0;
       const kmRestantesComb = comb.kmRestantes !== undefined ? comb.kmRestantes : 0;
-      elComb.textContent = kmRestantesComb > 0 ? `${Math.round(kmRestantesComb)} km estimados` : '¡Necesita combustible!';
-      elComb.className = 'text-sm font-bold ' + 
-        (kmRestantesComb < 50 ? 'text-red-600' : 
-         kmRestantesComb < 150 ? 'text-orange-500' : 'text-primary');
-      detComb.textContent = `Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
-      kmComb.textContent = `📍 Recorrido desde llenado: ${(comb.kmDesdeLlenado || 0).toFixed(0)} km`;
+      if (rendimiento > 0) {
+        elComb.textContent = kmRestantesComb > 0 ? `${Math.round(kmRestantesComb)} km estimados` : '¡Necesita combustible!';
+        elComb.className = 'text-sm font-bold ' + 
+          (kmRestantesComb < 50 ? 'text-red-600' : 
+           kmRestantesComb < 150 ? 'text-orange-500' : 'text-primary');
+        detComb.textContent = `Rendimiento: ${rendimiento.toFixed(1)} km/l • Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
+      } else {
+        elComb.textContent = '⚠️ Sin datos';
+        elComb.className = 'text-sm font-bold text-gray-500';
+        detComb.textContent = 'Registra gastos de combustible para predicciones';
+      }
 
-      // Icono de combustible (nivel)
-      const nivel = comb.nivel !== undefined ? comb.nivel : 0;
-      let icon = '⛽', colorClass = 'fuel-empty';
-      if (nivel < 0.25) { icon = '🪫'; colorClass = 'fuel-empty'; }
-      else if (nivel < 0.5) { icon = '⛽'; colorClass = 'fuel-quarter'; }
-      else if (nivel < 0.75) { icon = '⛽'; colorClass = 'fuel-half'; }
-      else if (nivel < 0.95) { icon = '⛽'; colorClass = 'fuel-three-quarter'; }
-      else { icon = '⛽'; colorClass = 'fuel-full'; }
-      
-      fuelIcon.innerHTML = `<span class="fuel-icon ${colorClass}">${icon}</span>`;
+      // Icono tanque
+      const nivel = comb.nivelTanque || 0;
+      let icono = '⛽', colorClass = 'fuel-red';
+      if (nivel === 0) { icono = '🪫'; colorClass = 'fuel-red'; }
+      else if (nivel === 1) { icono = '🛢️'; colorClass = 'fuel-red'; } // 1/4
+      else if (nivel === 2) { icono = '🛢️'; colorClass = 'fuel-yellow'; } // 1/2
+      else if (nivel === 3) { icono = '🛢️'; colorClass = 'fuel-yellow'; } // 3/4
+      else if (nivel >= 4) { icono = '⛽'; colorClass = 'fuel-green'; } // lleno
+      fuelIconContainer.innerHTML = `<span class="fuel-icon ${colorClass}">${icono}</span>`;
     }
 
     // ============================================================
-    // CARGA PRINCIPAL (CON ANIMACIÓN)
+    // HISTORIALES (MODAL)
+    // ============================================================
+    async function verHistorialAceite() {
+      const data = await fetchHistorial('Aceite');
+      mostrarHistorial('Historial de Cambios de Aceite', data, 'aceite');
+    }
+
+    async function verHistorialCombustible() {
+      const data = await fetchHistorial('Combustible');
+      mostrarHistorial('Historial de Llenados de Combustible', data, 'combustible');
+    }
+
+    function mostrarHistorial(titulo, data, tipo) {
+      const modal = document.getElementById('historialModal');
+      document.getElementById('historialTitle').textContent = titulo;
+      const body = document.getElementById('historialBody');
+      if (!data || data.length === 0) {
+        body.innerHTML = '<p class="text-gray-500 text-sm">No hay registros.</p>';
+      } else {
+        let html = '<ul class="space-y-2 text-sm">';
+        if (tipo === 'aceite') {
+          data.forEach(item => {
+            html += `<li class="border-b pb-1">
+              <strong>${item.fecha}</strong> - ${item.kilometraje} km - Costo: ${formatCurrency(item.costo)}
+              <br/><span class="text-xs text-gray-500">Próximo: ${item.proximo_km} km - ${item.observaciones || ''}</span>
+            </li>`;
+          });
+        } else { // combustible
+          data.forEach((item, index) => {
+            const kmAnterior = index > 0 ? data[index-1].kilometraje : 0;
+            const recorrido = kmAnterior > 0 ? item.kilometraje - kmAnterior : 0;
+            html += `<li class="border-b pb-1">
+              <strong>${item.fecha}</strong> - ${item.kilometraje} km - Monto: ${formatCurrency(item.monto)}
+              <br/><span class="text-xs text-gray-500">Recorrido desde última carga: ${recorrido > 0 ? recorrido.toFixed(1)+' km' : 'N/A'}</span>
+            </li>`;
+          });
+        }
+        html += '</ul>';
+        body.innerHTML = html;
+      }
+      modal.style.display = 'flex';
+    }
+
+    // ============================================================
+    // CARGA PRINCIPAL
     // ============================================================
     async function cargarDashboard(fInicio, fFin) {
       const container = document.getElementById('recentActivityContainer');
-      if (container) {
-        container.innerHTML = `
-          <div class="flex flex-col items-center justify-center py-8">
-            <div class="spinner"></div>
-            <p class="text-xs text-gray-400 mt-2">Cargando datos...</p>
-          </div>
-        `;
-      }
+      if (container) container.innerHTML = '<div class="flex justify-center py-3"><div class="spinner"></div></div>';
       try {
         const stats = await fetchStats(fInicio, fFin);
         renderDashboard(stats);
@@ -772,7 +830,7 @@
       const activeBtn = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
       if (activeBtn) {
         if (rubro === 'electronica') activeBtn.classList.add('active-electronica');
-        else if (rubro === 'km0') activeBtn.classList.add('active-km0');
+        else if (rubro === 'otro') activeBtn.classList.add('active-otro');
         else activeBtn.classList.add('active-general');
         if (rubro === 'transporte') activeBtn.classList.add('active-general');
       }
@@ -801,6 +859,14 @@
     // EVENTOS
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
+      // Meta
+      document.getElementById('metaInput').value = metaObjetivo;
+      document.getElementById('setMetaBtn').addEventListener('click', function() {
+        const val = parseFloat(document.getElementById('metaInput').value);
+        if (!isNaN(val)) setMeta(val);
+        else showToast('Ingresa un número válido', 'error');
+      });
+
       // Filtros
       document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -834,8 +900,8 @@
         cargarDashboard(fechaInicio, fechaFin);
       });
 
-      // Modal
-      const modal = document.getElementById('tripModal');
+      // Modal recorrido
+      const modalTrip = document.getElementById('tripModal');
       const addBtn = document.getElementById('addTripBtn');
       const confirmBtn = document.getElementById('confirmTripBtn');
       const cancelBtn = document.getElementById('cancelTripBtn');
@@ -848,20 +914,20 @@
           tripDate.value = new Date().toISOString().slice(0,10);
           tripKm.value = '';
           tripNotes.value = '';
-          modal.style.display = 'flex';
+          modalTrip.style.display = 'flex';
           setTimeout(() => tripDate.focus(), 100);
         });
       }
 
       if (cancelBtn) {
         cancelBtn.addEventListener('click', function() {
-          modal.style.display = 'none';
+          modalTrip.style.display = 'none';
         });
       }
 
-      if (modal) {
-        modal.addEventListener('click', function(e) {
-          if (e.target === modal) modal.style.display = 'none';
+      if (modalTrip) {
+        modalTrip.addEventListener('click', function(e) {
+          if (e.target === modalTrip) modalTrip.style.display = 'none';
         });
       }
 
@@ -871,15 +937,26 @@
           const km = parseFloat(tripKm.value);
           if (!fecha) { showToast('Selecciona fecha', 'error'); tripDate.focus(); return; }
           if (isNaN(km) || km <= 0) { showToast('Ingresa km positivos', 'error'); tripKm.focus(); return; }
-          modal.style.display = 'none';
+          modalTrip.style.display = 'none';
           await registrarRecorrido(fecha, km, tripNotes.value.trim());
         });
       }
 
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
-          modal.style.display = 'none';
+        if (e.key === 'Escape') {
+          if (modalTrip && modalTrip.style.display === 'flex') modalTrip.style.display = 'none';
+          if (document.getElementById('historialModal').style.display === 'flex') {
+            document.getElementById('historialModal').style.display = 'none';
+          }
         }
+      });
+
+      // Modal historial (cerrar)
+      document.getElementById('closeHistorialBtn').addEventListener('click', function() {
+        document.getElementById('historialModal').style.display = 'none';
+      });
+      document.getElementById('historialModal').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
       });
 
       document.getElementById('verTodoBtn').addEventListener('click', function() {
