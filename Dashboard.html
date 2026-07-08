@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
-  <title>Driver Insights - Panel Unificado</title>
+  <title>Driver Insights - Panel</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#004831" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -15,37 +15,45 @@
 
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f8f9ff; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #f8f9ff; touch-action: manipulation; }
     .material-symbols-outlined { font-size: 24px; }
-    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 8px; }
+    /* Badge de conexión */
+    .status-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 0.6rem; padding: 2px 8px; border-radius: 20px; background: #f1f5f9; margin-left: 4px; white-space: nowrap; }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
-    .status-warning { background: #fef9c3; color: #854d0e; }
-    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 24px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
+    .status-warning { background: #fef3c7; color: #92400e; }
+    /* Toast */
+    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
     .toast.show { opacity: 1; }
     .toast.error { background: #dc2626; }
     .toast.success { background: #16a34a; }
-    .toast.warning { background: #d97706; }
-    .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 0 auto; }
+    /* Spinner */
+    .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
     .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; }
+    /* Pestañas */
     .tab-active { background-color: #004831; color: white; }
     .tab-inactive { background-color: #e5eeff; color: #3f4943; }
     .tab-electronica-active { background-color: #1E3A8A; color: white; }
-    .animate-card { animation: fadeInUp 0.4s ease-out; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .filter-section { background: white; border-radius: 12px; padding: 12px 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .btn-date { background: #e5eeff; padding: 4px 12px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; color: #1f2937; border: none; cursor: pointer; transition: all 0.2s; }
-    .btn-date.active { background: #004831; color: white; }
-    .btn-date:hover { background: #d1dbf5; }
-    .btn-date.active:hover { background: #003a28; }
-    .grid-cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    /* Animación */
+    .animate-card { animation: fadeInUp 0.3s ease-out; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Filtros rápidos */
+    .filter-btn { padding: 4px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
+    .filter-btn.active { background: #004831; color: white; }
+    .filter-btn:active { transform: scale(0.95); }
+    /* Tarjetas responsive */
+    .stat-card { background: white; border-radius: 12px; padding: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    /* Ajustes para móvil */
     @media (max-width: 640px) {
-      .grid-cols-2 { grid-template-columns: 1fr; }
-      .filter-section .flex-wrap { flex-direction: column; align-items: stretch; }
-      .filter-section .flex-wrap .gap-2 { gap: 8px; }
-      .filter-section input, .filter-section select, .filter-section button { width: 100%; }
+      .header-title { font-size: 1rem; }
+      .stat-value { font-size: 1.5rem; }
+      .filter-section { flex-wrap: wrap; }
+      .filter-btn { font-size: 0.6rem; padding: 3px 10px; }
+      .grid-cols-2 { grid-template-columns: 1fr 1fr; gap: 8px; }
+      .grid-cols-5 { grid-template-columns: repeat(5, 1fr); gap: 2px; }
     }
   </style>
   <script id="tailwind-config">
@@ -74,175 +82,171 @@
     }
   </script>
 </head>
-<body class="bg-surface text-on-surface min-h-screen pb-24">
+<body class="bg-surface text-on-surface min-h-screen pb-20">
 
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
   <!-- HEADER -->
   <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-3 h-12 w-full shadow-sm">
     <div class="flex items-center gap-2">
-      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center flex-shrink-0">
-        <span class="material-symbols-outlined text-white" style="font-size:20px">person</span>
+      <div class="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-primary-container flex items-center justify-center">
+        <span class="material-symbols-outlined text-white" style="font-size:18px">person</span>
       </div>
-      <h1 class="text-lg font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent whitespace-nowrap">Driver Insights</h1>
-      <div id="connectionStatus" class="status-badge status-error text-[10px] px-2 py-0.5" role="status">🔄</div>
+      <h1 class="text-base font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
+      <div id="connectionStatus" class="status-badge status-error" role="status">🔄</div>
     </div>
     <div class="flex gap-1">
-      <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full text-[22px]">settings</a>
-      <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full text-[22px]">refresh</button>
+      <a href="./configuracion.html" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">settings</a>
+      <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">refresh</button>
     </div>
   </header>
 
-  <!-- TABS -->
-  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-3 py-1.5 flex gap-1.5 overflow-x-auto">
-    <button id="tabGeneral" class="tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all whitespace-nowrap" onclick="cambiarRubro('general')">📊 General</button>
-    <button id="tabTransporte" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all whitespace-nowrap" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
-    <button id="tabElectronica" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all whitespace-nowrap" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+  <!-- PESTAÑAS RUBRO -->
+  <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-2 py-1.5 flex gap-1 overflow-x-auto">
+    <button id="tabGeneral" class="tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all" onclick="cambiarRubro('general')">📊 General</button>
+    <button id="tabTransporte" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
+    <button id="tabElectronica" class="tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
   </div>
 
   <!-- MAIN -->
-  <main class="pt-28 px-3 space-y-3 max-w-4xl mx-auto">
+  <main class="pt-24 px-3 space-y-3 max-w-4xl mx-auto">
 
-    <!-- FILTRO DE FECHAS -->
-    <section class="filter-section border border-outline-variant">
-      <div class="flex flex-wrap items-center gap-2">
-        <span class="text-xs font-bold uppercase text-on-surface-variant mr-1">Período:</span>
-        <button class="btn-date active" data-period="today">Hoy</button>
-        <button class="btn-date" data-period="7d">7 días</button>
-        <button class="btn-date" data-period="30d">30 días</button>
-        <button class="btn-date" data-period="90d">90 días</button>
-        <button class="btn-date" data-period="custom">Personalizado</button>
+    <!-- FILTRO DE FECHAS (rápido + personalizado) -->
+    <section class="filter-section bg-white rounded-xl p-3 border border-outline-variant shadow-sm">
+      <div class="flex flex-wrap items-center gap-1.5">
+        <button class="filter-btn active" data-period="today">Hoy</button>
+        <button class="filter-btn" data-period="week">Semana</button>
+        <button class="filter-btn" data-period="month">Mes</button>
+        <button class="filter-btn" data-period="30days">30 días</button>
+        <button class="filter-btn" data-period="custom">📅 Personal</button>
       </div>
       <div id="customDateRange" class="hidden mt-2 flex flex-wrap items-center gap-2">
-        <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
-        <input type="date" id="fechaInicio" class="border border-outline-variant rounded-lg px-2 py-1 text-sm flex-1 min-w-[120px]" />
-        <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
-        <input type="date" id="fechaFin" class="border border-outline-variant rounded-lg px-2 py-1 text-sm flex-1 min-w-[120px]" />
-        <button id="applyDateFilter" class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold">Aplicar</button>
-        <button id="clearDateFilter" class="bg-gray-200 text-gray-700 px-3 py-1 rounded-lg text-sm font-bold">Limpiar</button>
+        <label class="text-xs font-bold">Desde</label>
+        <input type="date" id="fechaInicio" class="border border-outline-variant rounded px-2 py-1 text-sm" />
+        <label class="text-xs font-bold">Hasta</label>
+        <input type="date" id="fechaFin" class="border border-outline-variant rounded px-2 py-1 text-sm" />
+        <button id="applyCustomDate" class="bg-primary text-white px-3 py-1 rounded text-xs font-bold">Aplicar</button>
+        <button id="clearCustomDate" class="bg-gray-200 text-gray-700 px-3 py-1 rounded text-xs font-bold">Limpiar</button>
       </div>
+      <div class="text-xs text-gray-500 mt-1" id="periodLabel">Hoy</div>
     </section>
 
     <!-- RESUMEN GLOBAL -->
     <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
       <div>
-        <p class="font-label-caps text-[10px] uppercase">Ganancia Neta</p>
+        <p class="font-label-caps text-[9px] uppercase">Ganancia Neta</p>
         <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
       </div>
-      <div class="flex gap-2 text-center">
-        <div class="border-r border-outline-variant pr-3">
-          <p class="text-[9px] uppercase text-on-surface-variant">Transporte</p>
+      <div class="flex gap-2 text-right">
+        <div class="border-r border-outline-variant pr-2">
+          <p class="text-[9px]">Transporte</p>
           <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
         </div>
         <div>
-          <p class="text-[9px] uppercase text-on-surface-variant">Electrónica</p>
+          <p class="text-[9px]">Electrónica</p>
           <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
         </div>
       </div>
     </section>
 
     <!-- TARJETA RUBRO -->
-    <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm relative overflow-hidden animate-card">
-      <div class="absolute top-0 right-0 p-3 opacity-10" aria-hidden="true">
-        <span class="material-symbols-outlined" style="font-size:48px">trending_up</span>
-      </div>
+    <section class="bg-white border border-outline-variant rounded-xl p-3 shadow-sm relative overflow-hidden animate-card">
+      <div class="absolute top-0 right-0 p-2 opacity-10"><span class="material-symbols-outlined" style="font-size:36px">trending_up</span></div>
       <p class="font-label-caps text-[10px] text-on-surface-variant" id="tituloRubro">UTILIDAD NETA (GENERAL)</p>
       <h2 class="text-2xl font-bold text-primary" id="rubroValor">$0.00</h2>
-      <div class="flex flex-wrap items-center gap-2 mt-1">
-        <span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[10px] font-bold">
-          <span class="material-symbols-outlined text-[14px]" style="font-size:14px">arrow_drop_up</span> vs ayer
+      <div class="flex items-center gap-2 mt-1">
+        <span class="bg-primary-fixed text-on-primary-fixed px-2 py-0.5 rounded text-[9px] font-bold">
+          <span class="material-symbols-outlined text-[12px]" style="font-size:12px">arrow_drop_up</span> vs ayer
         </span>
-        <p class="text-[11px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p>
+        <p class="text-[10px] text-on-surface-variant" id="detalleRubro">Bruto: $0.00 | Gastos: $0.00</p>
       </div>
     </section>
 
     <!-- MÉTRICAS RÁPIDAS -->
-    <div class="grid grid-cols-2 gap-3">
+    <div class="grid grid-cols-2 gap-2">
       <div class="bg-white border rounded-xl p-3">
-        <p class="font-label-caps text-[10px]">DISTANCIA TOTAL (km)</p>
-        <p class="font-data-mono text-lg" id="distanciaTotal">0</p>
+        <p class="font-label-caps text-[9px]">DISTANCIA (km)</p>
+        <p class="text-lg font-bold" id="distanciaTotal">0</p>
       </div>
       <div class="bg-white border rounded-xl p-3 relative">
-        <p class="font-label-caps text-[10px]">HORAS TRABAJADAS</p>
-        <p class="font-data-mono text-lg" id="horasTrabajadas">0</p>
-        <button id="addTripBtn" class="absolute bottom-2 right-2 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido adicional">
-          <span class="material-symbols-outlined text-sm" style="font-size:16px">add_road</span>
+        <p class="font-label-caps text-[9px]">HORAS</p>
+        <p class="text-lg font-bold" id="horasTrabajadas">0</p>
+        <button id="addTripBtn" class="absolute bottom-1 right-1 bg-primary text-white rounded-full p-1 shadow-md" title="Registrar recorrido">
+          <span class="material-symbols-outlined text-sm" style="font-size:14px">add_road</span>
         </button>
       </div>
     </div>
 
     <!-- RENTABILIDAD -->
-    <div class="bg-surface-container-low rounded-xl p-4 border">
-      <h3 class="font-label-caps text-[10px]">RENTABILIDAD REAL</h3>
-      <div class="flex justify-between mt-2">
-        <div><p class="text-sm font-bold">Ganancia por Hora</p><p class="text-xs">Promedio general</p></div>
-        <p class="font-data-mono text-primary" id="gananciaPorHora">$0.00</p>
+    <div class="bg-surface-container-low rounded-xl p-3 border">
+      <h3 class="font-label-caps text-[9px]">RENTABILIDAD REAL</h3>
+      <div class="flex justify-between mt-1">
+        <div><p class="text-sm font-bold">Ganancia / Hora</p><p class="text-[10px]">Promedio</p></div>
+        <p class="text-sm font-bold text-primary" id="gananciaPorHora">$0.00</p>
       </div>
-      <div class="flex justify-between mt-2">
-        <div><p class="text-sm font-bold">Costo por KM</p><p class="text-xs">Combustible + Mantenimiento</p></div>
-        <p class="font-data-mono text-tertiary" id="costoPorKm">$0.00</p>
+      <div class="flex justify-between mt-1">
+        <div><p class="text-sm font-bold">Costo / KM</p><p class="text-[10px]">Combustible + Mant.</p></div>
+        <p class="text-sm font-bold text-tertiary" id="costoPorKm">$0.00</p>
       </div>
     </div>
 
     <!-- GRÁFICO -->
     <div class="bg-white border rounded-xl p-3">
-      <h3 class="font-label-caps text-[10px] mb-2">📈 EVOLUCIÓN DIARIA</h3>
+      <h3 class="font-label-caps text-[9px] mb-1">📈 EVOLUCIÓN DIARIA</h3>
       <canvas id="chartCanvas" height="180" style="max-height:200px; width:100%"></canvas>
     </div>
 
     <!-- BOTONES -->
-    <div class="grid grid-cols-2 gap-3">
-      <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 text-sm">
-        <span class="material-symbols-outlined" style="font-size:20px">add_circle</span> Nuevo Ingreso
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="location.href='./registro_ingreso.html'" class="bg-primary text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined" style="font-size:18px">add_circle</span> Ingreso
       </button>
-      <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-1 text-sm">
-        <span class="material-symbols-outlined" style="font-size:20px">remove_circle</span> Nuevo Gasto
+      <button onclick="location.href='./registro_gasto.html'" class="bg-tertiary text-white py-2.5 rounded-xl font-bold text-sm flex items-center justify-center gap-1">
+        <span class="material-symbols-outlined" style="font-size:18px">remove_circle</span> Gasto
       </button>
     </div>
 
     <!-- ACTIVIDAD RECIENTE -->
     <section>
       <div class="flex justify-between items-center">
-        <h3 class="font-bold text-md">Actividad Reciente</h3>
-        <button id="verTodoBtn" class="text-secondary text-xs uppercase">Ver Todo</button>
+        <h3 class="font-bold text-sm">Actividad Reciente</h3>
+        <button id="verTodoBtn" class="text-secondary text-[10px] uppercase">Ver Todo</button>
       </div>
-      <div id="recentActivityContainer" class="space-y-2 mt-2">
-        <div class="flex justify-center py-4"><div class="spinner"></div></div>
-      </div>
+      <div id="recentActivityContainer" class="space-y-2 mt-2"></div>
     </section>
   </main>
 
-  <!-- MODAL -->
+  <!-- MODAL RECORRIDO -->
   <div id="tripModal" class="modal-overlay hidden" style="display: none;" role="dialog" aria-modal="true">
     <div class="modal-content">
-      <h3 class="font-bold text-lg mb-3">Registrar recorrido adicional</h3>
+      <h3 class="font-bold text-base mb-2">Registrar recorrido</h3>
       <label class="text-sm">Fecha</label>
-      <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2" />
-      <label class="text-sm">Kilómetros recorridos</label>
-      <input type="number" id="tripKm" placeholder="Ej: 15.5" class="w-full border rounded-lg p-2 mb-2" step="0.1" min="0.1" />
-      <label class="text-sm">Notas (opcional)</label>
-      <input type="text" id="tripNotes" placeholder="Notas" class="w-full border rounded-lg p-2 mb-4" />
+      <input type="date" id="tripDate" class="w-full border rounded-lg p-2 mb-2 text-sm" />
+      <label class="text-sm">Kilómetros</label>
+      <input type="number" id="tripKm" placeholder="Ej: 15.5" class="w-full border rounded-lg p-2 mb-2 text-sm" step="0.1" min="0.1" />
+      <label class="text-sm">Notas</label>
+      <input type="text" id="tripNotes" placeholder="Opcional" class="w-full border rounded-lg p-2 mb-3 text-sm" />
       <div class="flex gap-2">
-        <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1 font-bold">Guardar</button>
-        <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1">Cancelar</button>
+        <button id="confirmTripBtn" class="bg-primary text-white px-4 py-2 rounded-lg flex-1 font-bold text-sm">Guardar</button>
+        <button id="cancelTripBtn" class="bg-gray-200 px-4 py-2 rounded-lg flex-1 text-sm">Cancelar</button>
       </div>
     </div>
   </div>
 
   <!-- NAVEGACIÓN INFERIOR -->
   <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
-    <div class="grid grid-cols-5 gap-0 text-center">
-      <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined text-[20px]">dashboard</span><span class="text-[9px]">Panel</span></a>
-      <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">payments</span><span class="text-[9px]">Ingresos</span></a>
-      <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="text-[9px]">Gastos</span></a>
-      <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">directions_car</span><span class="text-[9px]">Vehículo</span></a>
-      <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined text-[20px]">analytics</span><span class="text-[9px]">Análisis</span></a>
+    <div class="grid grid-cols-5 gap-0.5 text-center">
+      <a href="./Dashboard.html" class="flex flex-col items-center py-1 bg-primary-container/60 text-primary rounded-lg"><span class="material-symbols-outlined" style="font-size:18px">dashboard</span><span class="text-[9px]">Panel</span></a>
+      <a href="./registro_ingreso.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:18px">payments</span><span class="text-[9px]">Ingresos</span></a>
+      <a href="./registro_gasto.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:18px">receipt_long</span><span class="text-[9px]">Gastos</span></a>
+      <a href="./vehiculo_mantenimiento.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:18px">directions_car</span><span class="text-[9px]">Vehículo</span></a>
+      <a href="./reporte_estadisticas.html" class="flex flex-col items-center py-1 text-on-surface-variant"><span class="material-symbols-outlined" style="font-size:18px">analytics</span><span class="text-[9px]">Análisis</span></a>
     </div>
   </nav>
 
   <script>
     // ============================================================
-    // CONFIGURACIÓN - REEMPLAZA CON TU URL
+    // CONFIGURACIÓN
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyvF92rIjHAKr8qS2Y4Qzjqa7EM8oF1sxY71jufLDlHDTfxXr5RQbF0tPfncvtf37ccZA/exec';
     const CACHE_KEY = 'dashboardCache';
@@ -251,19 +255,20 @@
     let statsCompletos = null;
     let allTransactions = [];
     let chartInstance = null;
-    let connectionAttempts = 0;
-    const MAX_RETRIES = 3;
+    let currentPeriod = 'today';
+    let fechaInicio = null;
+    let fechaFin = null;
 
     // ============================================================
     // UTILIDADES
     // ============================================================
-    function showToast(msg, type = 'info', duration = 3500) {
+    function showToast(msg, type = 'info', duration = 3000) {
       const t = document.getElementById('toast');
+      if (!t) return;
       t.textContent = msg;
       t.className = 'toast';
       if (type === 'error') t.classList.add('error');
       else if (type === 'success') t.classList.add('success');
-      else if (type === 'warning') t.classList.add('warning');
       t.classList.add('show');
       clearTimeout(t._hide);
       t._hide = setTimeout(() => t.classList.remove('show'), duration);
@@ -275,93 +280,155 @@
     function getCache() { try { return JSON.parse(localStorage.getItem(CACHE_KEY)); } catch(e) { return null; } }
     function setCache(data) { try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)); } catch(e) {} }
 
+    // ============================================================
+    // FECHAS
+    // ============================================================
     function getDateRange(period) {
-      const hoy = new Date();
-      const fin = hoy.toISOString().slice(0,10);
-      let inicio = fin;
+      const today = new Date();
+      let start = new Date(today);
+      let end = new Date(today);
       switch(period) {
-        case 'today': inicio = fin; break;
-        case '7d': { const d = new Date(hoy); d.setDate(d.getDate() - 7); inicio = d.toISOString().slice(0,10); break; }
-        case '30d': { const d = new Date(hoy); d.setDate(d.getDate() - 30); inicio = d.toISOString().slice(0,10); break; }
-        case '90d': { const d = new Date(hoy); d.setDate(d.getDate() - 90); inicio = d.toISOString().slice(0,10); break; }
-        default: break;
+        case 'today':
+          start.setHours(0,0,0,0);
+          end.setHours(23,59,59,999);
+          break;
+        case 'week':
+          const day = today.getDay();
+          start.setDate(today.getDate() - day);
+          start.setHours(0,0,0,0);
+          end.setDate(today.getDate() + (6 - day));
+          end.setHours(23,59,59,999);
+          break;
+        case 'month':
+          start.setDate(1);
+          start.setHours(0,0,0,0);
+          end.setMonth(today.getMonth() + 1, 0);
+          end.setHours(23,59,59,999);
+          break;
+        case '30days':
+          start.setDate(today.getDate() - 30);
+          start.setHours(0,0,0,0);
+          end.setHours(23,59,59,999);
+          break;
+        default:
+          return { start: null, end: null };
       }
-      return { inicio, fin };
+      return {
+        start: start.toISOString().slice(0,10),
+        end: end.toISOString().slice(0,10)
+      };
     }
 
-    // ============================================================
-    // FETCH CON REINTENTOS
-    // ============================================================
-    async function fetchWithRetry(url, options = {}, retries = MAX_RETRIES) {
-      for (let i = 0; i < retries; i++) {
-        try {
-          const res = await fetch(url, { ...options, signal: AbortSignal.timeout(10000) });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return await res.json();
-        } catch (e) {
-          if (i === retries - 1) throw e;
-          await new Promise(r => setTimeout(r, 1000 * (i + 1)));
-        }
+    function actualizarFiltros(period) {
+      currentPeriod = period;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      const btn = document.querySelector(`.filter-btn[data-period="${period}"]`);
+      if (btn) btn.classList.add('active');
+
+      const customDiv = document.getElementById('customDateRange');
+      if (period === 'custom') {
+        customDiv.classList.remove('hidden');
+        document.getElementById('periodLabel').textContent = 'Personalizado';
+        return;
+      } else {
+        customDiv.classList.add('hidden');
+      }
+
+      const range = getDateRange(period);
+      if (range.start && range.end) {
+        fechaInicio = range.start;
+        fechaFin = range.end;
+        document.getElementById('fechaInicio').value = range.start;
+        document.getElementById('fechaFin').value = range.end;
+        const label = { 'today':'Hoy', 'week':'Esta semana', 'month':'Este mes', '30days':'Últimos 30 días' }[period] || period;
+        document.getElementById('periodLabel').textContent = label;
+        cargarDashboard(fechaInicio, fechaFin);
       }
     }
 
-    async function fetchStats(fechaInicio, fechaFin) {
-      const params = new URLSearchParams();
-      params.append('action', 'getStats');
-      if (fechaInicio) params.append('fechaInicio', fechaInicio);
-      if (fechaFin) params.append('fechaFin', fechaFin);
-      return await fetchWithRetry(`${SCRIPT_URL}?${params.toString()}`);
-    }
-
-    async function fetchDailyEvolution(fechaInicio, fechaFin) {
-      const params = new URLSearchParams();
-      params.append('action', 'getDailyEvolution');
-      if (fechaInicio) params.append('fechaInicio', fechaInicio);
-      if (fechaFin) params.append('fechaFin', fechaFin);
-      return await fetchWithRetry(`${SCRIPT_URL}?${params.toString()}`);
-    }
-
-    async function fetchRecentActivity(fechaInicio, fechaFin) {
-      const params = new URLSearchParams();
-      params.append('action', 'getRecentActivity');
-      if (fechaInicio) params.append('fechaInicio', fechaInicio);
-      if (fechaFin) params.append('fechaFin', fechaFin);
-      return await fetchWithRetry(`${SCRIPT_URL}?${params.toString()}`);
-    }
-
     // ============================================================
-    // CONEXIÓN (con reintentos)
+    // CONEXIÓN (con reconexión automática)
     // ============================================================
+    let reconnectAttempts = 0;
+    let reconnectTimer = null;
+
     async function verificarConexion() {
       const status = document.getElementById('connectionStatus');
-      status.innerHTML = '🔄';
+      if (!status) return;
+      status.textContent = '🔄';
       status.className = 'status-badge status-error';
       try {
-        await fetchWithRetry(`${SCRIPT_URL}?action=getStats`, {}, 2);
-        status.innerHTML = '✅';
-        status.className = 'status-badge status-connected';
-        connectionAttempts = 0;
-        return true;
+        const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
+        if (res.ok) {
+          status.textContent = '✅';
+          status.className = 'status-badge status-connected';
+          reconnectAttempts = 0;
+          if (reconnectTimer) clearTimeout(reconnectTimer);
+          return true;
+        }
+        throw new Error('No OK');
       } catch(e) {
-        connectionAttempts++;
-        status.innerHTML = connectionAttempts > 2 ? '❌' : '⚠️';
-        status.className = connectionAttempts > 2 ? 'status-badge status-error' : 'status-badge status-warning';
-        if (connectionAttempts > 2) showToast('Sin conexión al servidor. Datos en caché.', 'error', 4000);
+        status.textContent = '❌';
+        status.className = 'status-badge status-error';
+        // Reintentar automáticamente cada 30 segundos
+        if (!reconnectTimer) {
+          reconnectTimer = setTimeout(() => {
+            reconnectTimer = null;
+            verificarConexion();
+            if (statsCompletos) cargarDashboard(fechaInicio, fechaFin);
+          }, 30000);
+        }
         return false;
       }
+    }
+
+    // ============================================================
+    // FETCH
+    // ============================================================
+    async function fetchStats(fInicio, fFin) {
+      const params = new URLSearchParams();
+      params.append('action', 'getStats');
+      if (fInicio) params.append('fechaInicio', fInicio);
+      if (fFin) params.append('fechaFin', fFin);
+      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function fetchDailyEvolution(fInicio, fFin) {
+      const params = new URLSearchParams();
+      params.append('action', 'getDailyEvolution');
+      if (fInicio) params.append('fechaInicio', fInicio);
+      if (fFin) params.append('fechaFin', fFin);
+      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function fetchRecentActivity(fInicio, fFin) {
+      const params = new URLSearchParams();
+      params.append('action', 'getRecentActivity');
+      if (fInicio) params.append('fechaInicio', fInicio);
+      if (fFin) params.append('fechaFin', fFin);
+      const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
     }
 
     // ============================================================
     // RENDERIZADO
     // ============================================================
     function renderDashboard(data) {
+      if (!data) return;
       statsCompletos = data;
-      document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia);
-      document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte);
-      document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica);
+      // Ganancia global
+      document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia || 0);
+      document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte || 0);
+      document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica || 0);
 
+      // Rentabilidad
       const gananciaHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
-      const costoKm = data.totalKmTotal > 0 ? data.gastosCombustibleMantenimiento / data.totalKmTotal : 0;
+      const costoKm = data.totalKmTotal > 0 ? (data.gastosCombustibleMantenimiento || 0) / data.totalKmTotal : 0;
       document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaHora);
       document.getElementById('costoPorKm').textContent = formatCurrency(costoKm);
       document.getElementById('distanciaTotal').textContent = (data.totalKmTotal || 0).toFixed(1);
@@ -375,40 +442,44 @@
       let titulo, valor, bruto, gastos;
       if (rubroActual === 'general') {
         titulo = 'UTILIDAD NETA (GENERAL)';
-        valor = statsCompletos.ganancia;
-        bruto = statsCompletos.totalIngresos;
-        gastos = statsCompletos.totalGastos;
+        valor = statsCompletos.ganancia || 0;
+        bruto = statsCompletos.totalIngresos || 0;
+        gastos = statsCompletos.totalGastos || 0;
       } else if (rubroActual === 'transporte') {
         titulo = 'UTILIDAD NETA - TRANSPORTE';
-        valor = statsCompletos.gananciaTransporte;
-        bruto = statsCompletos.ingresosTransporte;
-        gastos = statsCompletos.gastosTransporte;
+        valor = statsCompletos.gananciaTransporte || 0;
+        bruto = statsCompletos.ingresosTransporte || 0;
+        gastos = statsCompletos.gastosTransporte || 0;
       } else {
         titulo = 'UTILIDAD NETA - ELECTRÓNICA';
-        valor = statsCompletos.gananciaElectronica;
-        bruto = statsCompletos.ingresosElectronica;
-        gastos = statsCompletos.gastosElectronica;
+        valor = statsCompletos.gananciaElectronica || 0;
+        bruto = statsCompletos.ingresosElectronica || 0;
+        gastos = statsCompletos.gastosElectronica || 0;
       }
-      document.getElementById('tituloRubro').textContent = titulo;
-      document.getElementById('rubroValor').textContent = formatCurrency(valor);
-      document.getElementById('detalleRubro').innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
+      const elTitulo = document.getElementById('tituloRubro');
+      const elValor = document.getElementById('rubroValor');
+      const elDetalle = document.getElementById('detalleRubro');
+      if (elTitulo) elTitulo.textContent = titulo;
+      if (elValor) elValor.textContent = formatCurrency(valor);
+      if (elDetalle) elDetalle.innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
     }
 
     function renderChart(dailyData) {
       const canvas = document.getElementById('chartCanvas');
+      if (!canvas) return;
       if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
       const ctx = canvas.getContext('2d');
       if (!dailyData || dailyData.length === 0) {
         ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = '#999';
-        ctx.font = '14px Inter';
+        ctx.font = '12px Inter';
         ctx.textAlign = 'center';
         ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
         return;
       }
       const labels = dailyData.map(d => d.fecha);
-      const ingresos = dailyData.map(d => d.ingresos);
-      const gastos = dailyData.map(d => d.gastos);
+      const ingresos = dailyData.map(d => d.ingresos || 0);
+      const gastos = dailyData.map(d => d.gastos || 0);
       chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -419,23 +490,30 @@
           ]
         },
         options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
-          scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } }, x: { ticks: { maxTicksLimit: 10, font: { size: 9 } } } }
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top', labels: { boxWidth: 10, font: { size: 9 } } }
+          },
+          scales: {
+            y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0), font: { size: 9 } } },
+            x: { ticks: { maxTicksLimit: 10, font: { size: 8 } } }
+          }
         }
       });
     }
 
-    function renderActivity(transactions, limit = 10) {
+    function renderActivity(transactions, limit = 15) {
       const container = document.getElementById('recentActivityContainer');
+      if (!container) return;
       if (!transactions || transactions.length === 0) {
-        container.innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-gray-500">No hay actividad</div>';
+        container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-gray-500 text-sm">No hay actividad</div>';
         return;
       }
       const fragment = document.createDocumentFragment();
       transactions.slice(0, limit).forEach(a => {
         const div = document.createElement('div');
-        div.className = 'bg-white border p-3 rounded-xl flex justify-between items-center';
+        div.className = 'bg-white border p-2.5 rounded-xl flex justify-between items-center';
         const left = document.createElement('div');
         const title = document.createElement('p');
         title.className = 'font-bold text-sm';
@@ -469,17 +547,18 @@
     // ============================================================
     // CARGA PRINCIPAL
     // ============================================================
-    async function cargarDashboard(fechaInicio, fechaFin) {
-      document.getElementById('recentActivityContainer').innerHTML = '<div class="flex justify-center py-4"><div class="spinner"></div></div>';
+    async function cargarDashboard(fInicio, fFin) {
+      const container = document.getElementById('recentActivityContainer');
+      if (container) container.innerHTML = '<div class="flex justify-center py-3"><div class="spinner"></div></div>';
       try {
-        const stats = await fetchStats(fechaInicio, fechaFin);
+        const stats = await fetchStats(fInicio, fFin);
         renderDashboard(stats);
-        setCache({ stats, fechaInicio, fechaFin });
+        setCache({ stats, fechaInicio: fInicio, fechaFin: fFin });
 
-        const daily = await fetchDailyEvolution(fechaInicio, fechaFin);
+        const daily = await fetchDailyEvolution(fInicio, fFin);
         renderChart(daily);
 
-        const activity = await fetchRecentActivity(fechaInicio, fechaFin);
+        const activity = await fetchRecentActivity(fInicio, fFin);
         allTransactions = activity;
         renderActivity(activity);
 
@@ -493,7 +572,7 @@
           renderChart([]);
           renderActivity([]);
         } else {
-          document.getElementById('recentActivityContainer').innerHTML = '<div class="bg-white p-4 rounded-xl text-center text-red-500">No se pudieron cargar los datos.</div>';
+          if (container) container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-red-500 text-sm">No se pudieron cargar los datos.</div>';
         }
       }
     }
@@ -505,13 +584,17 @@
       rubroActual = rubro;
       ['general', 'transporte', 'electronica'].forEach(r => {
         const btn = document.getElementById('tab' + r.charAt(0).toUpperCase() + r.slice(1));
-        btn.className = 'tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
-        btn.setAttribute('aria-selected', 'false');
+        if (btn) {
+          btn.className = 'tab-inactive px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
+          btn.setAttribute('aria-selected', 'false');
+        }
       });
       const active = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
-      if (rubro === 'electronica') active.className = 'tab-electronica-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
-      else active.className = 'tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
-      active.setAttribute('aria-selected', 'true');
+      if (active) {
+        if (rubro === 'electronica') active.className = 'tab-electronica-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
+        else active.className = 'tab-active px-3 py-1 rounded-full text-xs font-bold shadow-sm transition-all';
+        active.setAttribute('aria-selected', 'true');
+      }
       actualizarVistaRubro();
     }
 
@@ -527,69 +610,52 @@
         payload.append('notas', notas);
         await fetch(SCRIPT_URL, { method: 'POST', body: payload });
         showToast('Recorrido registrado', 'success');
-        const inicio = document.getElementById('fechaInicio').value;
-        const fin = document.getElementById('fechaFin').value;
-        await cargarDashboard(inicio, fin);
+        cargarDashboard(fechaInicio, fechaFin);
       } catch(e) {
         showToast('Error al registrar: ' + e.message, 'error');
       }
     }
 
     // ============================================================
-    // EVENTOS
+    // EVENTOS Y DOMContentLoaded
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Fechas por defecto: últimos 30 días
-      const range = getDateRange('30d');
-      document.getElementById('fechaInicio').value = range.inicio;
-      document.getElementById('fechaFin').value = range.fin;
-      document.getElementById('periodLabel').textContent = 'Últimos 30 días';
-
-      // Botones de período rápido
-      document.querySelectorAll('.btn-date').forEach(btn => {
+      // Filtros rápidos
+      document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
-          document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
-          this.classList.add('active');
           const period = this.dataset.period;
-          if (period === 'custom') {
-            document.getElementById('customDateRange').classList.remove('hidden');
-            return;
-          }
-          document.getElementById('customDateRange').classList.add('hidden');
-          const range = getDateRange(period);
-          document.getElementById('fechaInicio').value = range.inicio;
-          document.getElementById('fechaFin').value = range.fin;
-          cargarDashboard(range.inicio, range.fin);
+          actualizarFiltros(period);
         });
       });
 
-      // Aplicar filtro personalizado
-      document.getElementById('applyDateFilter').addEventListener('click', function() {
+      // Filtro personalizado
+      document.getElementById('applyCustomDate').addEventListener('click', function() {
         const inicio = document.getElementById('fechaInicio').value;
         const fin = document.getElementById('fechaFin').value;
-        if (inicio && fin) {
-          document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
-          cargarDashboard(inicio, fin);
-        } else {
-          showToast('Selecciona ambas fechas', 'warning');
+        if (!inicio || !fin) {
+          showToast('Selecciona ambas fechas', 'error');
+          return;
         }
-      });
-
-      document.getElementById('clearDateFilter').addEventListener('click', function() {
-        document.getElementById('fechaInicio').value = '';
-        document.getElementById('fechaFin').value = '';
-        document.querySelectorAll('.btn-date').forEach(b => b.classList.remove('active'));
-        document.getElementById('customDateRange').classList.add('hidden');
-        cargarDashboard('', '');
-      });
-
-      document.getElementById('refreshBtn').addEventListener('click', function() {
-        const inicio = document.getElementById('fechaInicio').value;
-        const fin = document.getElementById('fechaFin').value;
+        fechaInicio = inicio;
+        fechaFin = fin;
+        document.getElementById('periodLabel').textContent = `${inicio} → ${fin}`;
         cargarDashboard(inicio, fin);
       });
 
-      // Modal
+      document.getElementById('clearCustomDate').addEventListener('click', function() {
+        document.getElementById('fechaInicio').value = '';
+        document.getElementById('fechaFin').value = '';
+        document.getElementById('customDateRange').classList.add('hidden');
+        actualizarFiltros('today');
+      });
+
+      // Refrescar
+      document.getElementById('refreshBtn').addEventListener('click', function() {
+        verificarConexion();
+        cargarDashboard(fechaInicio, fechaFin);
+      });
+
+      // Modal recorrido
       const modal = document.getElementById('tripModal');
       const addBtn = document.getElementById('addTripBtn');
       const confirmBtn = document.getElementById('confirmTripBtn');
@@ -598,44 +664,59 @@
       const tripKm = document.getElementById('tripKm');
       const tripNotes = document.getElementById('tripNotes');
 
-      addBtn.addEventListener('click', () => {
-        tripDate.value = new Date().toISOString().slice(0,10);
-        tripKm.value = '';
-        tripNotes.value = '';
-        modal.style.display = 'flex';
-        setTimeout(() => tripDate.focus(), 100);
+      if (addBtn) {
+        addBtn.addEventListener('click', function() {
+          tripDate.value = new Date().toISOString().slice(0,10);
+          tripKm.value = '';
+          tripNotes.value = '';
+          modal.style.display = 'flex';
+          setTimeout(() => tripDate.focus(), 100);
+        });
+      }
+
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+          modal.style.display = 'none';
+        });
+      }
+
+      if (modal) {
+        modal.addEventListener('click', function(e) {
+          if (e.target === modal) modal.style.display = 'none';
+        });
+      }
+
+      if (confirmBtn) {
+        confirmBtn.addEventListener('click', async function() {
+          const fecha = tripDate.value;
+          const km = parseFloat(tripKm.value);
+          if (!fecha) { showToast('Selecciona fecha', 'error'); tripDate.focus(); return; }
+          if (isNaN(km) || km <= 0) { showToast('Ingresa km positivos', 'error'); tripKm.focus(); return; }
+          modal.style.display = 'none';
+          await registrarRecorrido(fecha, km, tripNotes.value.trim());
+        });
+      }
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
+          modal.style.display = 'none';
+        }
       });
 
-      cancelBtn.addEventListener('click', () => modal.style.display = 'none');
-      modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-
-      confirmBtn.addEventListener('click', async () => {
-        const fecha = tripDate.value;
-        const km = parseFloat(tripKm.value);
-        if (!fecha) { showToast('Selecciona fecha', 'error'); tripDate.focus(); return; }
-        if (isNaN(km) || km <= 0) { showToast('Ingresa km positivos', 'error'); tripKm.focus(); return; }
-        modal.style.display = 'none';
-        await registrarRecorrido(fecha, km, tripNotes.value.trim());
-      });
-
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
-      });
-
-      document.getElementById('verTodoBtn').addEventListener('click', () => {
+      // Ver todo
+      document.getElementById('verTodoBtn').addEventListener('click', function() {
         showToast(`Total: ${allTransactions.length} actividades`, 'info', 3000);
       });
 
+      // Service Worker
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('./sw.js')
           .then(reg => console.log('SW registrado', reg))
           .catch(err => console.error('Error SW', err));
       }
 
-      cargarDashboard(
-        document.getElementById('fechaInicio').value,
-        document.getElementById('fechaFin').value
-      );
+      // Inicializar: hoy
+      actualizarFiltros('today');
     });
   </script>
 </body>
