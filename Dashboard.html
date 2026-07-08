@@ -21,40 +21,25 @@
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
     .status-warning { background: #fef3c7; color: #92400e; }
-    /* Animación cara feliz */
-    .happy-face {
-      display: inline-block;
-      animation: bounce 1.2s infinite;
-      font-size: 1.2rem;
-    }
-    @keyframes bounce {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.3) rotate(5deg); }
-    }
-    /* Toast */
+    .happy-face { display: inline-block; animation: bounce 1.2s infinite; font-size: 1.2rem; }
+    @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(5deg); } }
     .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
     .toast.show { opacity: 1; }
     .toast.error { background: #dc2626; }
     .toast.success { background: #16a34a; }
-    /* Spinner */
     .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    /* Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
     .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; }
-    /* Pestañas centradas */
     .tab-container { display: flex; justify-content: center; gap: 6px; }
     .tab-btn { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; border: none; background: #e5eeff; color: #3f4943; }
     .tab-btn.active-general { background: #004831; color: white; }
-    .tab-btn.active-transporte { background: #004831; color: white; }
     .tab-btn.active-electronica { background: #1E3A8A; color: white; }
     .tab-btn:active { transform: scale(0.95); }
-    /* Filtros centrados */
     .filter-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
     .filter-btn { padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
     .filter-btn.active { background: #004831; color: white; }
     .filter-btn:active { transform: scale(0.95); }
-    /* Tarjetas de actividad con dos columnas */
     .activity-item { background: white; border: 1px solid #e5e7eb; border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
     .activity-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
     .col-ingreso { border-right: 1px solid #e5e7eb; padding-right: 8px; }
@@ -63,7 +48,6 @@
     .activity-sub { font-size: 0.7rem; color: #6b7280; }
     .amount-positive { color: #004831; font-weight: 700; }
     .amount-negative { color: #752200; font-weight: 700; }
-    /* Ajustes móviles */
     @media (max-width: 640px) {
       .header-title { font-size: 0.9rem; }
       .stat-value { font-size: 1.3rem; }
@@ -121,7 +105,7 @@
     </div>
   </header>
 
-  <!-- PESTAÑAS RUBRO (CENTRADAS) -->
+  <!-- PESTAÑAS RUBRO -->
   <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-2 py-1.5">
     <div class="tab-container">
       <button id="tabGeneral" class="tab-btn active-general" onclick="cambiarRubro('general')">📊 General</button>
@@ -133,7 +117,7 @@
   <!-- MAIN -->
   <main class="pt-24 px-3 space-y-3 max-w-4xl mx-auto">
 
-    <!-- FILTRO DE FECHAS (CENTRADO) -->
+    <!-- FILTRO DE FECHAS -->
     <section class="bg-white rounded-xl p-3 border border-outline-variant shadow-sm">
       <div class="filter-container">
         <button class="filter-btn active" data-period="today">Hoy</button>
@@ -212,6 +196,20 @@
       </div>
     </div>
 
+    <!-- PREDICCIONES -->
+    <div class="grid grid-cols-2 gap-2">
+      <div class="bg-white border rounded-xl p-3">
+        <p class="font-label-caps text-[9px]">🔧 Cambio de aceite</p>
+        <div id="prediccionAceite" class="text-sm font-bold">Cargando...</div>
+        <div id="detalleAceite" class="text-[10px] text-gray-500"></div>
+      </div>
+      <div class="bg-white border rounded-xl p-3">
+        <p class="font-label-caps text-[9px]">⛽ Combustible</p>
+        <div id="prediccionCombustible" class="text-sm font-bold">Cargando...</div>
+        <div id="detalleCombustible" class="text-[10px] text-gray-500"></div>
+      </div>
+    </div>
+
     <!-- GRÁFICO -->
     <div class="bg-white border rounded-xl p-3">
       <h3 class="font-label-caps text-[9px] mb-1">📈 EVOLUCIÓN DIARIA</h3>
@@ -228,7 +226,7 @@
       </button>
     </div>
 
-    <!-- ACTIVIDAD RECIENTE (DOS COLUMNAS: INGRESOS VS GASTOS) -->
+    <!-- ACTIVIDAD RECIENTE -->
     <section>
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm">Actividad Reciente</h3>
@@ -268,7 +266,7 @@
 
   <script>
     // ============================================================
-    // CONFIGURACIÓN
+    // CONFIGURACIÓN - REEMPLAZA CON TU URL
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwHT9N_VarfJhHSg-NASNCERuMPWZ358XcYLzjNp8YdXys6MmOyVqV0jBM-SWvvg_565g/exec';
     const CACHE_KEY = 'dashboardCache';
@@ -371,7 +369,6 @@
     // ============================================================
     // CONEXIÓN CON CARA FELIZ
     // ============================================================
-    let reconnectAttempts = 0;
     let reconnectTimer = null;
 
     async function verificarConexion() {
@@ -382,10 +379,8 @@
       try {
         const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
         if (res.ok) {
-          // Conexión exitosa → mostrar cara feliz animada
-          status.innerHTML = '<span class="happy-face">😊</span><span>Conectado</span>';
+          status.innerHTML = '<span class="happy-face">😊</span><span>Google Sheets</span>';
           status.className = 'status-badge status-connected';
-          reconnectAttempts = 0;
           if (reconnectTimer) clearTimeout(reconnectTimer);
           return true;
         }
@@ -433,6 +428,12 @@
       if (fInicio) params.append('fechaInicio', fInicio);
       if (fFin) params.append('fechaFin', fFin);
       const res = await fetch(`${SCRIPT_URL}?${params.toString()}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function fetchPredicciones() {
+      const res = await fetch(`${SCRIPT_URL}?action=getPredicciones`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     }
@@ -531,13 +532,11 @@
         return;
       }
       const fragment = document.createDocumentFragment();
-      // Tomar los primeros 'limit' elementos
       const list = transactions.slice(0, limit);
       list.forEach(a => {
         const div = document.createElement('div');
         div.className = 'activity-item';
 
-        // Cabecera: fecha y descripción común
         const header = document.createElement('div');
         header.className = 'flex justify-between items-center mb-1';
         const title = document.createElement('span');
@@ -551,11 +550,9 @@
         header.appendChild(fechaSpan);
         div.appendChild(header);
 
-        // Grid de dos columnas: Ingresos vs Gastos (si es recorrido, se muestra km en ambas o solo una)
         const grid = document.createElement('div');
         grid.className = 'activity-grid';
 
-        // Columna Ingresos
         const colIng = document.createElement('div');
         colIng.className = 'col-ingreso';
         const ingLabel = document.createElement('div');
@@ -575,7 +572,6 @@
         colIng.appendChild(ingVal);
         grid.appendChild(colIng);
 
-        // Columna Gastos
         const colGas = document.createElement('div');
         colGas.className = 'col-gasto';
         const gasLabel = document.createElement('div');
@@ -587,7 +583,7 @@
           gasVal.textContent = `-${formatCurrency(a.monto || 0)}`;
         } else if (a.tipo === 'recorrido') {
           gasVal.className = 'text-gray-500';
-          gasVal.textContent = `—`;
+          gasVal.textContent = '—';
         } else {
           gasVal.className = 'text-gray-400';
           gasVal.textContent = '—';
@@ -597,7 +593,6 @@
 
         div.appendChild(grid);
 
-        // Rubro (opcional)
         if (a.rubro) {
           const rubroSpan = document.createElement('div');
           rubroSpan.className = 'text-[10px] text-gray-400 mt-1';
@@ -609,6 +604,45 @@
       });
       container.innerHTML = '';
       container.appendChild(fragment);
+    }
+
+    function renderPredicciones(data) {
+      const elAceite = document.getElementById('prediccionAceite');
+      const detAceite = document.getElementById('detalleAceite');
+      const elComb = document.getElementById('prediccionCombustible');
+      const detComb = document.getElementById('detalleCombustible');
+
+      if (!data || data.error) {
+        elAceite.textContent = '⚠️ Sin datos';
+        elAceite.className = 'text-sm font-bold text-gray-500';
+        detAceite.textContent = 'Configura tu vehículo';
+        elComb.textContent = '⚠️ Sin datos';
+        elComb.className = 'text-sm font-bold text-gray-500';
+        detComb.textContent = 'Registra gastos de combustible';
+        return;
+      }
+
+      // Aceite
+      const aceite = data.aceite;
+      elAceite.textContent = aceite.kmRestantes > 0 ? `${aceite.kmRestantes.toFixed(0)} km restantes` : '¡Ya!';
+      elAceite.className = 'text-sm font-bold ' + 
+        (aceite.kmRestantes === 0 ? 'text-red-600' : 
+         aceite.kmRestantes < 500 ? 'text-orange-500' : 'text-primary');
+      detAceite.textContent = `Último cambio: ${aceite.ultimoAceite || 'N/A'} km • ${aceite.estado}`;
+
+      // Combustible
+      const comb = data.combustible;
+      if (comb.rendimiento > 0) {
+        elComb.textContent = comb.kmRestantes > 0 ? `${comb.kmRestantes.toFixed(0)} km estimados` : '¡Necesita combustible!';
+        elComb.className = 'text-sm font-bold ' + 
+          (comb.kmRestantes < 50 ? 'text-red-600' : 
+           comb.kmRestantes < 150 ? 'text-orange-500' : 'text-primary');
+        detComb.textContent = `Rendimiento: ${comb.rendimiento.toFixed(1)} km/l • Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
+      } else {
+        elComb.textContent = '⚠️ Sin datos';
+        elComb.className = 'text-sm font-bold text-gray-500';
+        detComb.textContent = 'Registra gastos de combustible para predicciones';
+      }
     }
 
     // ============================================================
@@ -629,6 +663,9 @@
         allTransactions = activity;
         renderActivity(activity);
 
+        const predicciones = await fetchPredicciones();
+        renderPredicciones(predicciones);
+
         await verificarConexion();
       } catch (error) {
         console.error('Error:', error);
@@ -638,6 +675,8 @@
           renderDashboard(cache.stats);
           renderChart([]);
           renderActivity([]);
+          document.getElementById('prediccionAceite').textContent = '⚠️ Sin conexión';
+          document.getElementById('prediccionCombustible').textContent = '⚠️ Sin conexión';
         } else {
           if (container) container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-red-500 text-sm">No se pudieron cargar los datos.</div>';
         }
@@ -649,23 +688,20 @@
     // ============================================================
     function cambiarRubro(rubro) {
       rubroActual = rubro;
-      // Resetear todas las pestañas
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.className = 'tab-btn';
       });
-      // Activar la correcta
       const activeBtn = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
       if (activeBtn) {
         if (rubro === 'electronica') activeBtn.classList.add('active-electronica');
-        else activeBtn.classList.add('active-general'); // transporte y general usan mismo color
-        // Para transporte también usamos active-general (verde)
+        else activeBtn.classList.add('active-general');
         if (rubro === 'transporte') activeBtn.classList.add('active-general');
       }
       actualizarVistaRubro();
     }
 
     // ============================================================
-    // REGISTRAR RECORRIDO (POST)
+    // REGISTRAR RECORRIDO
     // ============================================================
     async function registrarRecorrido(fecha, km, notas) {
       try {
@@ -777,7 +813,6 @@
           .catch(err => console.error('Error SW', err));
       }
 
-      // Inicializar
       actualizarFiltros('today');
     });
   </script>
