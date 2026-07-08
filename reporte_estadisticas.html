@@ -138,7 +138,7 @@
     <!-- GRÁFICOS PRINCIPALES -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">📊 Evolución diaria (Ingresos vs Gastos)</h3>
+        <h3 class="font-bold text-sm mb-2">📈 Evolución diaria (Ingresos vs Gastos)</h3>
         <canvas id="ingresosGastosChart" height="200"></canvas>
       </div>
       <div class="bg-white border border-outline-variant rounded-xl p-4">
@@ -232,7 +232,7 @@
     // ============================================================
     // CONFIGURACIÓN - REEMPLAZA CON TU URL
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw7pFp9VS4y9uAR0XWeyqr_BmTBD5wggcnDN5GHSM37xO4vzOyNALjnvf-tih4zsx3LYg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnY4HIWNiIqRjPDig0PPVIAUBvIbRpV4Qv6OZavA-cFjOcQXdjeIB0awGMEqmKzYes-w/exec';
 
     let datosCompletos = null;
     let datosFiltrados = null;
@@ -353,7 +353,6 @@
       }
       function filtrarRubro(item) {
         if (rubro === 'all') return true;
-        // Normalizar rubros (pueden venir como 'Otro' o 'otro')
         const r = item.rubro ? item.rubro.toLowerCase() : '';
         if (rubro === 'general') return r === 'general';
         if (rubro === 'transporte') return r === 'transporte';
@@ -403,14 +402,31 @@
     }
 
     // ============================================================
-    // GRÁFICOS
+    // GRÁFICOS (CORREGIDO)
     // ============================================================
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const ctx = document.getElementById('ingresosGastosChart').getContext('2d');
       if (charts.ig) { charts.ig.destroy(); charts.ig = null; }
-      const fechas = [...new Set([...ingresos.map(i=>i.fecha), ...gastos.map(g=>g.fecha)])].sort();
-      const dataIng = fechas.map(f => ingresos.filter(i=>i.fecha===f).reduce((s,i)=>s+i.monto,0));
-      const dataGas = fechas.map(f => gastos.filter(g=>g.fecha===f).reduce((s,g)=>s+g.monto,0));
+
+      // Agrupar por fecha
+      const fechasMap = {};
+      ingresos.forEach(i => {
+        const f = i.fecha || '';
+        if (!f) return;
+        if (!fechasMap[f]) fechasMap[f] = { ingresos: 0, gastos: 0 };
+        fechasMap[f].ingresos += i.monto || 0;
+      });
+      gastos.forEach(g => {
+        const f = g.fecha || '';
+        if (!f) return;
+        if (!fechasMap[f]) fechasMap[f] = { ingresos: 0, gastos: 0 };
+        fechasMap[f].gastos += g.monto || 0;
+      });
+
+      const fechas = Object.keys(fechasMap).sort();
+      const dataIng = fechas.map(f => fechasMap[f].ingresos);
+      const dataGas = fechas.map(f => fechasMap[f].gastos);
+
       if (fechas.length === 0) {
         ctx.fillStyle = '#999';
         ctx.font = '14px Inter';
@@ -418,19 +434,58 @@
         ctx.fillText('Sin datos', ctx.canvas.width/2, ctx.canvas.height/2);
         return;
       }
+
       charts.ig = new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
           labels: fechas,
           datasets: [
-            { label: 'Ingresos', data: dataIng, backgroundColor: '#004831', borderRadius: 4 },
-            { label: 'Gastos', data: dataGas, backgroundColor: '#752200', borderRadius: 4 }
+            {
+              label: 'Ingresos',
+              data: dataIng,
+              borderColor: '#004831',
+              backgroundColor: 'rgba(0,72,49,0.1)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 3,
+              pointBackgroundColor: '#004831'
+            },
+            {
+              label: 'Gastos',
+              data: dataGas,
+              borderColor: '#752200',
+              backgroundColor: 'rgba(117,34,0,0.1)',
+              fill: true,
+              tension: 0.3,
+              pointRadius: 3,
+              pointBackgroundColor: '#752200'
+            }
           ]
         },
         options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 10 } } } },
-          scales: { y: { beginAtZero: true, ticks: { callback: v => '$'+v.toFixed(0) } } }
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'top',
+              labels: { boxWidth: 12, font: { size: 10 } }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: v => '$' + v.toFixed(0),
+                font: { size: 9 }
+              }
+            },
+            x: {
+              ticks: {
+                maxTicksLimit: 15,
+                font: { size: 9 }
+              }
+            }
+          }
         }
       });
     }
