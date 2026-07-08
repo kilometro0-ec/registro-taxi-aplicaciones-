@@ -31,10 +31,11 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; backdrop-filter: blur(4px); }
     .modal-content { background: white; border-radius: 1rem; padding: 1.5rem; width: 90%; max-width: 380px; }
-    .tab-container { display: flex; justify-content: center; gap: 6px; }
+    .tab-container { display: flex; justify-content: center; gap: 6px; flex-wrap: wrap; }
     .tab-btn { padding: 4px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; border: none; background: #e5eeff; color: #3f4943; }
     .tab-btn.active-general { background: #004831; color: white; }
     .tab-btn.active-electronica { background: #1E3A8A; color: white; }
+    .tab-btn.active-km0 { background: #D97706; color: white; }
     .tab-btn:active { transform: scale(0.95); }
     .filter-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
     .filter-btn { padding: 3px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; background: #e5eeff; color: #3f4943; border: none; cursor: pointer; transition: all 0.2s; }
@@ -48,10 +49,14 @@
     .activity-sub { font-size: 0.7rem; color: #6b7280; }
     .amount-positive { color: #004831; font-weight: 700; }
     .amount-negative { color: #752200; font-weight: 700; }
-    /* Animación de carga persistente */
-    .loading-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 0; }
-    .loading-text { margin-top: 10px; font-size: 0.9rem; color: #6b7280; animation: pulse-text 1.5s ease-in-out infinite; }
-    @keyframes pulse-text { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+    .fuel-icon { display: inline-block; font-size: 1.8rem; transition: all 0.3s; }
+    .fuel-empty { color: #dc2626; }
+    .fuel-quarter { color: #f97316; }
+    .fuel-half { color: #eab308; }
+    .fuel-three-quarter { color: #84cc16; }
+    .fuel-full { color: #22c55e; }
+    .meta-bar { height: 8px; border-radius: 4px; background: #e5e7eb; overflow: hidden; margin-top: 4px; }
+    .meta-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
     @media (max-width: 640px) {
       .header-title { font-size: 0.9rem; }
       .stat-value { font-size: 1.3rem; }
@@ -71,6 +76,7 @@
             "primary": "#004831",
             "tertiary": "#752200",
             "electronica-primary": "#1E3A8A",
+            "km0-primary": "#D97706",
             "surface": "#f8f9ff",
             "on-surface": "#0b1c30",
             "surface-container-low": "#eff4ff",
@@ -109,12 +115,13 @@
     </div>
   </header>
 
-  <!-- PESTAÑAS RUBRO -->
+  <!-- PESTAÑAS RUBRO (incluye KM0) -->
   <div class="fixed top-12 left-0 w-full z-40 bg-surface/90 backdrop-blur-sm border-b border-outline-variant px-2 py-1.5">
     <div class="tab-container">
       <button id="tabGeneral" class="tab-btn active-general" onclick="cambiarRubro('general')">📊 General</button>
       <button id="tabTransporte" class="tab-btn" onclick="cambiarRubro('transporte')">🚖 Transporte</button>
       <button id="tabElectronica" class="tab-btn" onclick="cambiarRubro('electronica')">🤖 Electrónica</button>
+      <button id="tabKM0" class="tab-btn" onclick="cambiarRubro('km0')">🛣️ KM0</button>
     </div>
   </div>
 
@@ -141,20 +148,32 @@
       <div class="text-xs text-gray-500 text-center mt-1" id="periodLabel">Hoy</div>
     </section>
 
-    <!-- RESUMEN GLOBAL -->
-    <section class="bg-surface-container-low rounded-xl p-3 flex justify-between items-center border border-outline-variant">
-      <div>
-        <p class="font-label-caps text-[9px] uppercase">Ganancia Neta</p>
-        <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
+    <!-- RESUMEN GLOBAL CON META -->
+    <section class="bg-surface-container-low rounded-xl p-3 border border-outline-variant">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="font-label-caps text-[9px] uppercase">Ganancia Neta</p>
+          <p class="text-xl font-bold text-primary" id="gananciaGlobal">$0.00</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[9px] text-gray-500">Meta: <span id="metaLabel">$500</span></p>
+          <div class="meta-bar w-32">
+            <div id="metaProgress" class="meta-bar-fill" style="width:0%; background:#004831;"></div>
+          </div>
+        </div>
       </div>
-      <div class="flex gap-2 text-right">
+      <div class="flex gap-2 text-right mt-1">
         <div class="border-r border-outline-variant pr-2">
           <p class="text-[9px]">Transporte</p>
           <p class="text-sm font-bold text-primary" id="gananciaTransporte">$0.00</p>
         </div>
-        <div>
+        <div class="border-r border-outline-variant pr-2">
           <p class="text-[9px]">Electrónica</p>
           <p class="text-sm font-bold text-electronica-primary" id="gananciaElectronica">$0.00</p>
+        </div>
+        <div>
+          <p class="text-[9px]">KM0</p>
+          <p class="text-sm font-bold text-km0-primary" id="gananciaKM0">$0.00</p>
         </div>
       </div>
     </section>
@@ -200,17 +219,20 @@
       </div>
     </div>
 
-    <!-- PREDICCIONES -->
+    <!-- PREDICCIONES (con km recorridos e icono de combustible) -->
     <div class="grid grid-cols-2 gap-2">
       <div class="bg-white border rounded-xl p-3">
         <p class="font-label-caps text-[9px]">🔧 Cambio de aceite</p>
         <div id="prediccionAceite" class="text-sm font-bold">Cargando...</div>
         <div id="detalleAceite" class="text-[10px] text-gray-500"></div>
+        <div id="kmDesdeAceite" class="text-[10px] text-gray-400 mt-1"></div>
       </div>
       <div class="bg-white border rounded-xl p-3">
         <p class="font-label-caps text-[9px]">⛽ Combustible</p>
         <div id="prediccionCombustible" class="text-sm font-bold">Cargando...</div>
         <div id="detalleCombustible" class="text-[10px] text-gray-500"></div>
+        <div id="kmDesdeLlenado" class="text-[10px] text-gray-400 mt-1"></div>
+        <div id="fuelIconContainer" class="mt-2 text-center"></div>
       </div>
     </div>
 
@@ -230,19 +252,13 @@
       </button>
     </div>
 
-    <!-- ACTIVIDAD RECIENTE -->
+    <!-- ACTIVIDAD RECIENTE (2 columnas) -->
     <section>
       <div class="flex justify-between items-center">
         <h3 class="font-bold text-sm">Actividad Reciente</h3>
         <button id="verTodoBtn" class="text-secondary text-[10px] uppercase">Ver Todo</button>
       </div>
-      <div id="recentActivityContainer" class="space-y-2 mt-2">
-        <!-- Loading inicial -->
-        <div class="loading-container">
-          <div class="spinner"></div>
-          <div class="loading-text">Cargando datos...</div>
-        </div>
-      </div>
+      <div id="recentActivityContainer" class="space-y-2 mt-2"></div>
     </section>
   </main>
 
@@ -278,7 +294,7 @@
     // ============================================================
     // CONFIGURACIÓN
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwuvkj_6Tsq76ZV2GMLgZVkvcBmQHck6npbtrOlKMRb67HFdPDUowpj4oVJv0ZCHf1uw/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyzM8M9yqzm41UxP_5kZB8fTqXs-vriDJaBlk4N70NSUBJ0_yCwcREdiKgsvYa7KpXn1Q/exec';
     const CACHE_KEY = 'dashboardCache';
 
     let rubroActual = 'general';
@@ -288,6 +304,9 @@
     let currentPeriod = 'today';
     let fechaInicio = null;
     let fechaFin = null;
+
+    // META (puedes cambiarla aquí)
+    let META_GANANCIA = 500;
 
     // ============================================================
     // UTILIDADES
@@ -454,10 +473,23 @@
     function renderDashboard(data) {
       if (!data) return;
       statsCompletos = data;
+      
+      // Totales
       document.getElementById('gananciaGlobal').textContent = formatCurrency(data.ganancia || 0);
       document.getElementById('gananciaTransporte').textContent = formatCurrency(data.gananciaTransporte || 0);
       document.getElementById('gananciaElectronica').textContent = formatCurrency(data.gananciaElectronica || 0);
+      document.getElementById('gananciaKM0').textContent = formatCurrency(data.gananciaKM0 || 0);
 
+      // Meta
+      const meta = META_GANANCIA;
+      const ganancia = data.ganancia || 0;
+      const pct = Math.min(100, (ganancia / meta) * 100);
+      document.getElementById('metaLabel').textContent = formatCurrency(meta);
+      const bar = document.getElementById('metaProgress');
+      bar.style.width = pct + '%';
+      bar.style.background = pct >= 100 ? '#22c55e' : pct >= 70 ? '#eab308' : '#004831';
+
+      // Rentabilidad
       const gananciaHora = data.totalHoras > 0 ? data.ganancia / data.totalHoras : 0;
       const costoKm = data.totalKmTotal > 0 ? (data.gastosCombustibleMantenimiento || 0) / data.totalKmTotal : 0;
       document.getElementById('gananciaPorHora').textContent = formatCurrency(gananciaHora);
@@ -470,28 +502,40 @@
 
     function actualizarVistaRubro() {
       if (!statsCompletos) return;
-      let titulo, valor, bruto, gastos;
+      let titulo, valor, bruto, gastos, colorClass = 'text-primary';
       if (rubroActual === 'general') {
         titulo = 'UTILIDAD NETA (GENERAL)';
         valor = statsCompletos.ganancia || 0;
         bruto = statsCompletos.totalIngresos || 0;
         gastos = statsCompletos.totalGastos || 0;
+        colorClass = 'text-primary';
       } else if (rubroActual === 'transporte') {
         titulo = 'UTILIDAD NETA - TRANSPORTE';
         valor = statsCompletos.gananciaTransporte || 0;
         bruto = statsCompletos.ingresosTransporte || 0;
         gastos = statsCompletos.gastosTransporte || 0;
-      } else {
+        colorClass = 'text-primary';
+      } else if (rubroActual === 'electronica') {
         titulo = 'UTILIDAD NETA - ELECTRÓNICA';
         valor = statsCompletos.gananciaElectronica || 0;
         bruto = statsCompletos.ingresosElectronica || 0;
         gastos = statsCompletos.gastosElectronica || 0;
+        colorClass = 'text-electronica-primary';
+      } else {
+        titulo = 'UTILIDAD NETA - KM0';
+        valor = statsCompletos.gananciaKM0 || 0;
+        bruto = statsCompletos.ingresosKM0 || 0;
+        gastos = statsCompletos.gastosKM0 || 0;
+        colorClass = 'text-km0-primary';
       }
       const elTitulo = document.getElementById('tituloRubro');
       const elValor = document.getElementById('rubroValor');
       const elDetalle = document.getElementById('detalleRubro');
       if (elTitulo) elTitulo.textContent = titulo;
-      if (elValor) elValor.textContent = formatCurrency(valor);
+      if (elValor) {
+        elValor.textContent = formatCurrency(valor);
+        elValor.className = 'text-2xl font-bold ' + colorClass;
+      }
       if (elDetalle) elDetalle.innerHTML = `Bruto: ${formatCurrency(bruto)} | Gastos: ${formatCurrency(gastos)}`;
     }
 
@@ -547,7 +591,6 @@
         const div = document.createElement('div');
         div.className = 'activity-item';
 
-        // Cabecera: fecha y descripción
         const header = document.createElement('div');
         header.className = 'flex justify-between items-center mb-1';
         const title = document.createElement('span');
@@ -561,15 +604,14 @@
         header.appendChild(fechaSpan);
         div.appendChild(header);
 
-        // Grid de dos columnas: INGRESOS (izquierda) | GASTOS (derecha)
         const grid = document.createElement('div');
         grid.className = 'activity-grid';
 
-        // Columna Ingresos
+        // Columna Ingresos (izquierda)
         const colIng = document.createElement('div');
         colIng.className = 'col-ingreso';
         const ingLabel = document.createElement('div');
-        ingLabel.className = 'text-xs text-gray-500'; ingLabel.textContent = 'INGRESOS';
+        ingLabel.className = 'text-xs text-gray-500'; ingLabel.textContent = 'Ingresos';
         colIng.appendChild(ingLabel);
         const ingVal = document.createElement('div');
         if (a.tipo === 'ingreso') {
@@ -585,11 +627,11 @@
         colIng.appendChild(ingVal);
         grid.appendChild(colIng);
 
-        // Columna Gastos
+        // Columna Gastos (derecha)
         const colGas = document.createElement('div');
         colGas.className = 'col-gasto';
         const gasLabel = document.createElement('div');
-        gasLabel.className = 'text-xs text-gray-500'; gasLabel.textContent = 'GASTOS';
+        gasLabel.className = 'text-xs text-gray-500'; gasLabel.textContent = 'Gastos';
         colGas.appendChild(gasLabel);
         const gasVal = document.createElement('div');
         if (a.tipo === 'gasto') {
@@ -597,7 +639,7 @@
           gasVal.textContent = `-${formatCurrency(a.monto || 0)}`;
         } else if (a.tipo === 'recorrido') {
           gasVal.className = 'text-gray-500';
-          gasVal.textContent = '—';
+          gasVal.textContent = `—`;
         } else {
           gasVal.className = 'text-gray-400';
           gasVal.textContent = '—';
@@ -607,7 +649,6 @@
 
         div.appendChild(grid);
 
-        // Rubro (opcional)
         if (a.rubro) {
           const rubroSpan = document.createElement('div');
           rubroSpan.className = 'text-[10px] text-gray-400 mt-1';
@@ -624,63 +665,70 @@
     function renderPredicciones(data) {
       const elAceite = document.getElementById('prediccionAceite');
       const detAceite = document.getElementById('detalleAceite');
+      const kmAceite = document.getElementById('kmDesdeAceite');
       const elComb = document.getElementById('prediccionCombustible');
       const detComb = document.getElementById('detalleCombustible');
+      const kmComb = document.getElementById('kmDesdeLlenado');
+      const fuelIcon = document.getElementById('fuelIconContainer');
 
-      // Si no hay datos o hay error
       if (!data || data.error) {
         elAceite.textContent = '⚠️ Sin datos';
         elAceite.className = 'text-sm font-bold text-gray-500';
         detAceite.textContent = 'Configura tu vehículo';
+        kmAceite.textContent = '';
         elComb.textContent = '⚠️ Sin datos';
         elComb.className = 'text-sm font-bold text-gray-500';
         detComb.textContent = 'Registra gastos de combustible';
+        kmComb.textContent = '';
+        fuelIcon.innerHTML = '';
         return;
       }
 
-      // Asegurar que existan las propiedades
-      const aceite = data.aceite || {};
-      const comb = data.combustible || {};
-
       // Aceite
+      const aceite = data.aceite || {};
       const kmRestantesAceite = aceite.kmRestantes !== undefined ? aceite.kmRestantes : 0;
       elAceite.textContent = kmRestantesAceite > 0 ? `${Math.round(kmRestantesAceite)} km restantes` : '¡Ya!';
       elAceite.className = 'text-sm font-bold ' + 
         (kmRestantesAceite === 0 ? 'text-red-600' : 
          kmRestantesAceite < 500 ? 'text-orange-500' : 'text-primary');
       detAceite.textContent = `Último cambio: ${aceite.ultimoAceite || 'N/A'} km • ${aceite.estado || 'Sin datos'}`;
+      kmAceite.textContent = `📍 Recorrido desde cambio: ${(aceite.kmDesdeAceite || 0).toFixed(0)} km`;
 
       // Combustible
-      const rendimiento = comb.rendimiento || 0;
+      const comb = data.combustible || {};
       const kmRestantesComb = comb.kmRestantes !== undefined ? comb.kmRestantes : 0;
-      if (rendimiento > 0) {
-        elComb.textContent = kmRestantesComb > 0 ? `${Math.round(kmRestantesComb)} km estimados` : '¡Necesita combustible!';
-        elComb.className = 'text-sm font-bold ' + 
-          (kmRestantesComb < 50 ? 'text-red-600' : 
-           kmRestantesComb < 150 ? 'text-orange-500' : 'text-primary');
-        detComb.textContent = `Rendimiento: ${rendimiento.toFixed(1)} km/l • Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
-      } else {
-        elComb.textContent = '⚠️ Sin datos';
-        elComb.className = 'text-sm font-bold text-gray-500';
-        detComb.textContent = 'Registra gastos de combustible para predicciones';
-      }
+      elComb.textContent = kmRestantesComb > 0 ? `${Math.round(kmRestantesComb)} km estimados` : '¡Necesita combustible!';
+      elComb.className = 'text-sm font-bold ' + 
+        (kmRestantesComb < 50 ? 'text-red-600' : 
+         kmRestantesComb < 150 ? 'text-orange-500' : 'text-primary');
+      detComb.textContent = `Último llenado: ${comb.ultimoLlenadoKm || 'N/A'} km`;
+      kmComb.textContent = `📍 Recorrido desde llenado: ${(comb.kmDesdeLlenado || 0).toFixed(0)} km`;
+
+      // Icono de combustible (nivel)
+      const nivel = comb.nivel !== undefined ? comb.nivel : 0;
+      let icon = '⛽', colorClass = 'fuel-empty';
+      if (nivel < 0.25) { icon = '🪫'; colorClass = 'fuel-empty'; }
+      else if (nivel < 0.5) { icon = '⛽'; colorClass = 'fuel-quarter'; }
+      else if (nivel < 0.75) { icon = '⛽'; colorClass = 'fuel-half'; }
+      else if (nivel < 0.95) { icon = '⛽'; colorClass = 'fuel-three-quarter'; }
+      else { icon = '⛽'; colorClass = 'fuel-full'; }
+      
+      fuelIcon.innerHTML = `<span class="fuel-icon ${colorClass}">${icon}</span>`;
     }
 
     // ============================================================
-    // CARGA PRINCIPAL CON ANIMACIÓN DE CARGA
+    // CARGA PRINCIPAL (CON ANIMACIÓN)
     // ============================================================
     async function cargarDashboard(fInicio, fFin) {
       const container = document.getElementById('recentActivityContainer');
-      // Mostrar animación de carga mientras se obtienen los datos
       if (container) {
         container.innerHTML = `
-          <div class="loading-container">
+          <div class="flex flex-col items-center justify-center py-8">
             <div class="spinner"></div>
-            <div class="loading-text">Cargando datos...</div>
+            <p class="text-xs text-gray-400 mt-2">Cargando datos...</p>
           </div>
         `;
       }
-
       try {
         const stats = await fetchStats(fInicio, fFin);
         renderDashboard(stats);
@@ -708,9 +756,7 @@
           document.getElementById('prediccionAceite').textContent = '⚠️ Sin conexión';
           document.getElementById('prediccionCombustible').textContent = '⚠️ Sin conexión';
         } else {
-          if (container) {
-            container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-red-500 text-sm">No se pudieron cargar los datos.</div>';
-          }
+          if (container) container.innerHTML = '<div class="bg-white p-3 rounded-xl text-center text-red-500 text-sm">No se pudieron cargar los datos.</div>';
         }
       }
     }
@@ -726,6 +772,7 @@
       const activeBtn = document.getElementById('tab' + rubro.charAt(0).toUpperCase() + rubro.slice(1));
       if (activeBtn) {
         if (rubro === 'electronica') activeBtn.classList.add('active-electronica');
+        else if (rubro === 'km0') activeBtn.classList.add('active-km0');
         else activeBtn.classList.add('active-general');
         if (rubro === 'transporte') activeBtn.classList.add('active-general');
       }
