@@ -34,9 +34,15 @@
     input:focus, select:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.15); }
     .chart-container { position: relative; width: 100%; height: 200px; min-height: 200px; }
     .chart-container canvas { width: 100% !important; height: 100% !important; }
+
+    /* Ajustes para móvil: inputs de fecha más grandes y en columna */
     @media (max-width: 640px) {
       .filter-card .flex { flex-direction: column; align-items: stretch; }
-      .filter-card .flex>* { width: 100%; }
+      .filter-card .flex > * { width: 100%; }
+      .filter-card input[type="date"] {
+        font-size: 16px; /* evita zoom en iOS */
+        padding: 12px 8px;
+      }
       .chart-container { height: 180px; min-height: 180px; }
     }
   </style>
@@ -90,17 +96,20 @@
   <!-- MAIN -->
   <main class="pt-16 px-3 py-4 space-y-4 max-w-6xl mx-auto">
 
-    <!-- FILTROS (afectan solo a gráficos y tabla, NO a totales) -->
+    <!-- FILTROS (afectan a todos los totales, gráficos y tabla) -->
     <section class="filter-card border border-outline-variant">
       <div class="flex flex-wrap items-end gap-3">
+        <!-- Desde -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
           <input type="date" id="fechaInicio" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm" />
         </div>
+        <!-- Hasta -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
           <input type="date" id="fechaFin" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm" />
         </div>
+        <!-- Rubro -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro</label>
           <select id="rubroFilter" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
@@ -111,28 +120,31 @@
             <option value="general">🏠 General</option>
           </select>
         </div>
+        <!-- Categoría (gastos) -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría (gastos)</label>
           <select id="categoriaFilter" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
             <option value="all">Todas</option>
-            <!-- Se llena dinámicamente desde JS -->
           </select>
         </div>
-        <button id="applyFiltersBtn" class="bg-primary text-white px-5 py-2 rounded-lg font-bold text-sm flex items-center gap-1 shadow-sm">
-          <span class="material-symbols-outlined text-[18px]">filter_alt</span> Aplicar
-        </button>
-        <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold">Limpiar</button>
+        <!-- Botones -->
+        <div class="flex gap-2 flex-wrap">
+          <button id="applyFiltersBtn" class="bg-primary text-white px-5 py-2 rounded-lg font-bold text-sm flex items-center gap-1 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">filter_alt</span> Aplicar
+          </button>
+          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold">Limpiar</button>
+        </div>
       </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO (TOTALES GLOBALES, SIN FILTROS) -->
+    <!-- RESUMEN EJECUTIVO (TOTALES SEGÚN FILTROS) -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
       <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Ingresos Totales (global)</p>
+        <p class="text-xs text-on-surface-variant uppercase font-bold">Ingresos Totales</p>
         <p class="text-2xl font-bold text-primary" id="totalIngresos">$0</p>
       </div>
       <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Gastos Totales (global)</p>
+        <p class="text-xs text-on-surface-variant uppercase font-bold">Gastos Totales</p>
         <p class="text-2xl font-bold text-tertiary" id="totalGastos">$0</p>
       </div>
       <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
@@ -250,8 +262,8 @@
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMu5NkDxrTJb8Cvnnzh5ESs2Ndq4FW-ro5VmscGHRWjOut6zFFEEYT0hEEsk51TcLvDA/exec';
 
-    let datosCompletos = null;      // todos los datos sin filtrar (globales)
-    let datosFiltrados = null;      // datos filtrados por fecha, rubro y categoría
+    let datosCompletos = null;      // todos los datos sin filtrar
+    let datosFiltrados = null;      // datos filtrados según fecha, rubro y categoría
     let charts = {};
 
     // ============================================================
@@ -312,14 +324,12 @@
         const gastos = actividad.filter(a => a.tipo === 'gasto');
         const recorridos = actividad.filter(a => a.tipo === 'recorrido');
 
-        // Guardar globales (sin filtros)
         datosCompletos = { ingresos, gastos, recorridos };
         console.log('✅ Datos globales cargados');
 
         // Poblar el selector de categorías con las categorías únicas de los gastos
         poblarCategorias(gastos);
 
-        // Si no hay gastos o ingresos, mostrar mensaje
         if (gastos.length === 0) {
           showToast('No se encontraron gastos en la hoja', 'info', 4000);
         }
@@ -339,13 +349,11 @@
     // ============================================================
     function poblarCategorias(gastos) {
       const select = document.getElementById('categoriaFilter');
-      // Obtener categorías únicas (campo categoria o Categoría o rubro)
       const cats = new Set();
       gastos.forEach(g => {
         const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
         if (cat) cats.add(cat);
       });
-      // Mantener la opción "Todas"
       select.innerHTML = '<option value="all">Todas</option>';
       cats.forEach(c => {
         const opt = document.createElement('option');
@@ -357,7 +365,7 @@
     }
 
     // ============================================================
-    // FILTRADO (afecta solo a gráficos y tabla, NO a totales)
+    // FILTRADO (afecta a totales, gráficos y tabla)
     // ============================================================
     function filtrarDatos(fechaInicio, fechaFin, rubro, categoria) {
       if (!datosCompletos) return null;
@@ -395,13 +403,15 @@
     }
 
     // ============================================================
-    // RENDERIZADO
+    // RENDERIZADO COMPLETO (totales, gráficos, tabla, KPIs)
     // ============================================================
-    function renderizarTotalesGlobales() {
-      if (!datosCompletos) return;
-      const { ingresos, gastos } = datosCompletos;
-      const totalIngresos = ingresos.reduce((s,i) => s + i.monto, 0);
-      const totalGastos = gastos.reduce((s,g) => s + g.monto, 0);
+    function renderizarTodo(datos) {
+      if (!datos) return;
+      const { ingresos, gastos, recorridos } = datos;
+
+      // ----- TOTALES (calculados sobre los datos filtrados) -----
+      const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
+      const totalGastos = gastos.reduce((s, g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
       const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
 
@@ -409,17 +419,11 @@
       document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
       document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
       document.getElementById('margen').textContent = margen.toFixed(1) + '%';
-    }
 
-    function renderizarGraficosYTabla(datos) {
-      if (!datos) return;
-      const { ingresos, gastos, recorridos } = datos;
-
-      // KPIs basados en datos filtrados
-      const totalKm = recorridos.reduce((s,r) => s + (r.km || 0), 0);
+      // ----- KPIs (sobre datos filtrados) -----
+      const totalKm = recorridos.reduce((s, r) => s + (r.km || 0), 0);
       const totalViajes = ingresos.filter(i => i.rubro === 'transporte').length;
-      const horas = recorridos.length * 0.5; // asumiendo 0.5h por recorrido
-      const ganancia = ingresos.reduce((s,i) => s + i.monto, 0) - gastos.reduce((s,g) => s + g.monto, 0);
+      const horas = recorridos.length * 0.5; // asumiendo 0.5h por recorrido (ajustable)
       const gananciaHora = horas > 0 ? ganancia / horas : 0;
       const gananciaKm = totalKm > 0 ? ganancia / totalKm : 0;
 
@@ -428,7 +432,7 @@
       document.getElementById('totalViajes').textContent = totalViajes;
       document.getElementById('totalKm').textContent = totalKm.toFixed(1);
 
-      // Gráficos
+      // ----- GRÁFICOS y TABLA -----
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
@@ -437,7 +441,7 @@
     }
 
     // ============================================================
-    // GRÁFICOS (sin cambios respecto a antes, pero usan datos filtrados)
+    // GRÁFICOS (versiones optimizadas)
     // ============================================================
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
@@ -671,7 +675,7 @@
     }
 
     // ============================================================
-    // APLICAR FILTROS
+    // APLICAR FILTROS Y ACTUALIZAR TODO
     // ============================================================
     function aplicarFiltros() {
       const inicio = document.getElementById('fechaInicio').value;
@@ -680,7 +684,11 @@
       const categoria = document.getElementById('categoriaFilter').value;
 
       datosFiltrados = filtrarDatos(inicio, fin, rubro, categoria);
-      renderizarGraficosYTabla(datosFiltrados);
+      if (datosFiltrados) {
+        renderizarTodo(datosFiltrados);
+      } else {
+        showToast('No hay datos con esos filtros', 'info', 3000);
+      }
     }
 
     // ============================================================
@@ -695,9 +703,6 @@
 
       await cargarDatos();
       await verificarConexion();
-
-      // Renderizar totales globales (sin filtros)
-      renderizarTotalesGlobales();
 
       // Aplicar filtros por defecto (últimos 30 días, todos los rubros, todas las categorías)
       aplicarFiltros();
@@ -714,7 +719,6 @@
       document.getElementById('refreshBtn').addEventListener('click', async () => {
         await cargarDatos();
         await verificarConexion();
-        renderizarTotalesGlobales();
         aplicarFiltros();
       });
       document.getElementById('exportCsvBtn').addEventListener('click', () => {
