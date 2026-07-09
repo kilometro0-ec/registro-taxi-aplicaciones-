@@ -241,7 +241,7 @@
     // ============================================================
     // CONFIGURACIÓN - REEMPLAZA CON TU URL REAL
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnY4HIWNiIqRjPDig0PPVIAUBvIbRpV4Qv6OZavA-cFjOcQXdjeIB0awGMEqmKzYes-w/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMu5NkDxrTJb8Cvnnzh5ESs2Ndq4FW-ro5VmscGHRWjOut6zFFEEYT0hEEsk51TcLvDA/exec';
 
     let datosCompletos = null;
     let datosFiltrados = null;
@@ -299,6 +299,8 @@
         if (!resAct.ok) throw new Error(`Error en getRecentActivity: ${resAct.status}`);
         const actividad = await resAct.json();
         console.log('📋 Actividad recibida:', actividad.length, 'registros');
+        // Mostrar primeros 5 para depuración
+        if (actividad.length > 0) console.log('Ejemplo de actividad:', actividad.slice(0,3));
 
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
@@ -364,6 +366,9 @@
       if (!datos) return;
       const { ingresos, gastos, recorridos } = datos;
 
+      // Depuración: ver qué categorías vienen en gastos
+      console.log('Gastos recibidos para gráfico:', gastos.map(g => ({ categoria: g.categoria, rubro: g.rubro, monto: g.monto })));
+
       const totalIngresos = ingresos.reduce((s,i) => s + i.monto, 0);
       const totalGastos = gastos.reduce((s,g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
@@ -397,13 +402,11 @@
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
       const ctx = canvas.getContext('2d');
-      // Destruir gráfico anterior si existe
       if (charts.ig) {
         charts.ig.destroy();
         charts.ig = null;
       }
 
-      // Agrupar por fecha
       const fechasMap = {};
       ingresos.forEach(i => {
         const f = i.fecha || '';
@@ -486,10 +489,16 @@
       }
 
       const cats = {};
-      gastos.forEach(g => { const c = g.categoria || 'otros'; cats[c] = (cats[c]||0) + g.monto; });
+      gastos.forEach(g => {
+        // Priorizar categoria, luego Categoría, luego rubro
+        let cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
+        // Si es 'transporte' y tiene subcategoría (como 'Combustible'), se podría mejorar, pero asumimos que ya viene en categoria
+        cats[cat] = (cats[cat] || 0) + g.monto;
+      });
+
       const labels = Object.keys(cats);
       const data = Object.values(cats);
-      const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280','#f97316'];
+      const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280','#f97316', '#10B981', '#8B5CF6'];
 
       if (labels.length === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -568,7 +577,10 @@
     function renderListaCategorias(gastos) {
       const container = document.getElementById('categoriaGastosList');
       const cats = {};
-      gastos.forEach(g => { const c = g.categoria || 'otros'; cats[c] = (cats[c]||0) + g.monto; });
+      gastos.forEach(g => {
+        let cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
+        cats[cat] = (cats[cat] || 0) + g.monto;
+      });
       const total = gastos.reduce((s,g) => s + g.monto, 0);
       const sorted = Object.entries(cats).sort((a,b) => b[1] - a[1]);
       if (sorted.length === 0) {
