@@ -90,7 +90,7 @@
   <!-- MAIN -->
   <main class="pt-16 px-3 py-4 space-y-4 max-w-6xl mx-auto">
 
-    <!-- FILTROS -->
+    <!-- FILTROS (afectan solo a gráficos y tabla, NO a totales) -->
     <section class="filter-card border border-outline-variant">
       <div class="flex flex-wrap items-end gap-3">
         <div class="flex-1 min-w-[120px]">
@@ -111,6 +111,13 @@
             <option value="general">🏠 General</option>
           </select>
         </div>
+        <div class="flex-1 min-w-[120px]">
+          <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría (gastos)</label>
+          <select id="categoriaFilter" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+            <option value="all">Todas</option>
+            <!-- Se llena dinámicamente desde JS -->
+          </select>
+        </div>
         <button id="applyFiltersBtn" class="bg-primary text-white px-5 py-2 rounded-lg font-bold text-sm flex items-center gap-1 shadow-sm">
           <span class="material-symbols-outlined text-[18px]">filter_alt</span> Aplicar
         </button>
@@ -118,14 +125,14 @@
       </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO -->
+    <!-- RESUMEN EJECUTIVO (TOTALES GLOBALES, SIN FILTROS) -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
       <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Ingresos Totales</p>
+        <p class="text-xs text-on-surface-variant uppercase font-bold">Ingresos Totales (global)</p>
         <p class="text-2xl font-bold text-primary" id="totalIngresos">$0</p>
       </div>
       <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Gastos Totales</p>
+        <p class="text-xs text-on-surface-variant uppercase font-bold">Gastos Totales (global)</p>
         <p class="text-2xl font-bold text-tertiary" id="totalGastos">$0</p>
       </div>
       <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
@@ -138,7 +145,7 @@
       </div>
     </section>
 
-    <!-- GRÁFICOS PRINCIPALES -->
+    <!-- GRÁFICOS PRINCIPALES (con datos filtrados) -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div class="bg-white border border-outline-variant rounded-xl p-4">
         <h3 class="font-bold text-sm mb-2">📈 Evolución diaria (Ingresos vs Gastos)</h3>
@@ -168,7 +175,7 @@
       </div>
     </div>
 
-    <!-- KPIs AVANZADOS -->
+    <!-- KPIs AVANZADOS (sobre datos filtrados) -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
       <div class="bg-white border border-outline-variant rounded-xl p-3">
         <p class="text-xs text-on-surface-variant uppercase font-bold">Ganancia / Hora</p>
@@ -188,7 +195,7 @@
       </div>
     </div>
 
-    <!-- TABLA DETALLADA -->
+    <!-- TABLA DETALLADA (con datos filtrados) -->
     <div class="bg-white border border-outline-variant rounded-xl p-4">
       <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
       <div class="overflow-x-auto">
@@ -243,8 +250,8 @@
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMu5NkDxrTJb8Cvnnzh5ESs2Ndq4FW-ro5VmscGHRWjOut6zFFEEYT0hEEsk51TcLvDA/exec';
 
-    let datosCompletos = null;
-    let datosFiltrados = null;
+    let datosCompletos = null;      // todos los datos sin filtrar (globales)
+    let datosFiltrados = null;      // datos filtrados por fecha, rubro y categoría
     let charts = {};
 
     // ============================================================
@@ -299,37 +306,60 @@
         if (!resAct.ok) throw new Error(`Error en getRecentActivity: ${resAct.status}`);
         const actividad = await resAct.json();
         console.log('📋 Actividad recibida:', actividad.length, 'registros');
-        // Mostrar primeros 5 para depuración
         if (actividad.length > 0) console.log('Ejemplo de actividad:', actividad.slice(0,3));
 
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
         const recorridos = actividad.filter(a => a.tipo === 'recorrido');
 
-        // Si no hay datos en actividad pero sí en stats, crear un registro ficticio para mostrar totales
-        if (ingresos.length === 0 && stats.totalIngresos > 0) {
-          const hoy = new Date().toISOString().slice(0,10);
-          ingresos.push({ fecha: hoy, rubro: 'transporte', plataforma: 'Uber', monto: stats.totalIngresos, descripcion: 'Total del día', tipo: 'ingreso' });
+        // Guardar globales (sin filtros)
+        datosCompletos = { ingresos, gastos, recorridos };
+        console.log('✅ Datos globales cargados');
+
+        // Poblar el selector de categorías con las categorías únicas de los gastos
+        poblarCategorias(gastos);
+
+        // Si no hay gastos o ingresos, mostrar mensaje
+        if (gastos.length === 0) {
+          showToast('No se encontraron gastos en la hoja', 'info', 4000);
         }
-        if (gastos.length === 0 && stats.totalGastos > 0) {
-          const hoy = new Date().toISOString().slice(0,10);
-          gastos.push({ fecha: hoy, rubro: 'general', categoria: 'otros', monto: stats.totalGastos, descripcion: 'Total del día', tipo: 'gasto' });
+        if (ingresos.length === 0) {
+          showToast('No se encontraron ingresos en la hoja', 'info', 4000);
         }
 
-        datosCompletos = { ingresos, gastos, recorridos };
-        console.log('✅ Datos cargados correctamente');
       } catch (e) {
         console.error('❌ Error cargando datos:', e);
         showToast('Error al cargar datos reales. Verifica la URL del script.', 'error', 5000);
-        // No generamos datos de ejemplo, mostramos error visible
         datosCompletos = { ingresos: [], gastos: [], recorridos: [] };
       }
     }
 
     // ============================================================
-    // FILTRADO
+    // POBLAR SELECTOR DE CATEGORÍAS
     // ============================================================
-    function filtrarDatos(fechaInicio, fechaFin, rubro) {
+    function poblarCategorias(gastos) {
+      const select = document.getElementById('categoriaFilter');
+      // Obtener categorías únicas (campo categoria o Categoría o rubro)
+      const cats = new Set();
+      gastos.forEach(g => {
+        const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
+        if (cat) cats.add(cat);
+      });
+      // Mantener la opción "Todas"
+      select.innerHTML = '<option value="all">Todas</option>';
+      cats.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+        select.appendChild(opt);
+      });
+      console.log('Categorías disponibles:', Array.from(cats));
+    }
+
+    // ============================================================
+    // FILTRADO (afecta solo a gráficos y tabla, NO a totales)
+    // ============================================================
+    function filtrarDatos(fechaInicio, fechaFin, rubro, categoria) {
       if (!datosCompletos) return null;
       const { ingresos, gastos, recorridos } = datosCompletos;
       const inicio = fechaInicio ? new Date(fechaInicio) : null;
@@ -352,9 +382,14 @@
         if (rubro === 'otro') return r === 'otro' || r === 'km0';
         return true;
       }
+      function filtrarCategoria(item) {
+        if (categoria === 'all' || item.tipo !== 'gasto') return true;
+        const cat = (item.categoria || item.Categoría || item.rubro || item.Rubro || 'otros').toLowerCase();
+        return cat === categoria.toLowerCase();
+      }
 
       const iF = ingresos.filter(i => filtrarFecha(i) && filtrarRubro(i));
-      const gF = gastos.filter(g => filtrarFecha(g) && filtrarRubro(g));
+      const gF = gastos.filter(g => filtrarFecha(g) && filtrarRubro(g) && filtrarCategoria(g));
       const rF = recorridos.filter(r => filtrarFecha(r));
       return { ingresos: iF, gastos: gF, recorridos: rF };
     }
@@ -362,13 +397,9 @@
     // ============================================================
     // RENDERIZADO
     // ============================================================
-    function renderizar(datos) {
-      if (!datos) return;
-      const { ingresos, gastos, recorridos } = datos;
-
-      // Depuración: ver qué categorías vienen en gastos
-      console.log('Gastos recibidos para gráfico:', gastos.map(g => ({ categoria: g.categoria, rubro: g.rubro, monto: g.monto })));
-
+    function renderizarTotalesGlobales() {
+      if (!datosCompletos) return;
+      const { ingresos, gastos } = datosCompletos;
       const totalIngresos = ingresos.reduce((s,i) => s + i.monto, 0);
       const totalGastos = gastos.reduce((s,g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
@@ -378,17 +409,26 @@
       document.getElementById('totalGastos').textContent = '$' + totalGastos.toFixed(2);
       document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
       document.getElementById('margen').textContent = margen.toFixed(1) + '%';
+    }
 
+    function renderizarGraficosYTabla(datos) {
+      if (!datos) return;
+      const { ingresos, gastos, recorridos } = datos;
+
+      // KPIs basados en datos filtrados
       const totalKm = recorridos.reduce((s,r) => s + (r.km || 0), 0);
       const totalViajes = ingresos.filter(i => i.rubro === 'transporte').length;
-      const horas = recorridos.length * 0.5;
+      const horas = recorridos.length * 0.5; // asumiendo 0.5h por recorrido
+      const ganancia = ingresos.reduce((s,i) => s + i.monto, 0) - gastos.reduce((s,g) => s + g.monto, 0);
       const gananciaHora = horas > 0 ? ganancia / horas : 0;
       const gananciaKm = totalKm > 0 ? ganancia / totalKm : 0;
+
       document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
       document.getElementById('gananciaKm').textContent = '$' + gananciaKm.toFixed(2);
       document.getElementById('totalViajes').textContent = totalViajes;
       document.getElementById('totalKm').textContent = totalKm.toFixed(1);
 
+      // Gráficos
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
@@ -397,15 +437,12 @@
     }
 
     // ============================================================
-    // GRÁFICOS (OPTIMIZADOS, SIN PARPADEO)
+    // GRÁFICOS (sin cambios respecto a antes, pero usan datos filtrados)
     // ============================================================
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
       const ctx = canvas.getContext('2d');
-      if (charts.ig) {
-        charts.ig.destroy();
-        charts.ig = null;
-      }
+      if (charts.ig) { charts.ig.destroy(); charts.ig = null; }
 
       const fechasMap = {};
       ingresos.forEach(i => {
@@ -483,16 +520,11 @@
     function renderGraficoGastosPie(gastos) {
       const canvas = document.getElementById('gastosPieChart');
       const ctx = canvas.getContext('2d');
-      if (charts.gp) {
-        charts.gp.destroy();
-        charts.gp = null;
-      }
+      if (charts.gp) { charts.gp.destroy(); charts.gp = null; }
 
       const cats = {};
       gastos.forEach(g => {
-        // Priorizar categoria, luego Categoría, luego rubro
         let cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
-        // Si es 'transporte' y tiene subcategoría (como 'Combustible'), se podría mejorar, pero asumimos que ya viene en categoria
         cats[cat] = (cats[cat] || 0) + g.monto;
       });
 
@@ -533,10 +565,7 @@
     function renderGraficoPlataformas(ingresos) {
       const canvas = document.getElementById('platformChart');
       const ctx = canvas.getContext('2d');
-      if (charts.pl) {
-        charts.pl.destroy();
-        charts.pl = null;
-      }
+      if (charts.pl) { charts.pl.destroy(); charts.pl = null; }
 
       const plat = {};
       ingresos.forEach(i => { const p = i.plataforma || 'Otros'; plat[p] = (plat[p]||0) + i.monto; });
@@ -601,7 +630,7 @@
       const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
       all.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
       if (all.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No hay actividad</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No hay actividad con estos filtros</td></tr>';
         return;
       }
       tbody.innerHTML = all.slice(0, 30).map(item => {
@@ -620,7 +649,7 @@
     }
 
     // ============================================================
-    // EXPORTAR CSV
+    // EXPORTAR CSV (sobre datos filtrados)
     // ============================================================
     function exportarCSV(datos) {
       if (!datos) return;
@@ -642,14 +671,16 @@
     }
 
     // ============================================================
-    // APLICAR FILTROS Y EVENTOS
+    // APLICAR FILTROS
     // ============================================================
     function aplicarFiltros() {
       const inicio = document.getElementById('fechaInicio').value;
       const fin = document.getElementById('fechaFin').value;
       const rubro = document.getElementById('rubroFilter').value;
-      datosFiltrados = filtrarDatos(inicio, fin, rubro);
-      renderizar(datosFiltrados);
+      const categoria = document.getElementById('categoriaFilter').value;
+
+      datosFiltrados = filtrarDatos(inicio, fin, rubro, categoria);
+      renderizarGraficosYTabla(datosFiltrados);
     }
 
     // ============================================================
@@ -664,22 +695,31 @@
 
       await cargarDatos();
       await verificarConexion();
+
+      // Renderizar totales globales (sin filtros)
+      renderizarTotalesGlobales();
+
+      // Aplicar filtros por defecto (últimos 30 días, todos los rubros, todas las categorías)
       aplicarFiltros();
 
+      // Event listeners
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
       document.getElementById('clearFiltersBtn').addEventListener('click', () => {
         document.getElementById('fechaInicio').value = '';
         document.getElementById('fechaFin').value = '';
         document.getElementById('rubroFilter').value = 'all';
+        document.getElementById('categoriaFilter').value = 'all';
         aplicarFiltros();
       });
       document.getElementById('refreshBtn').addEventListener('click', async () => {
         await cargarDatos();
         await verificarConexion();
+        renderizarTotalesGlobales();
         aplicarFiltros();
       });
       document.getElementById('exportCsvBtn').addEventListener('click', () => {
         if (datosFiltrados) exportarCSV(datosFiltrados);
+        else showToast('No hay datos filtrados para exportar', 'error');
       });
     });
   </script>
