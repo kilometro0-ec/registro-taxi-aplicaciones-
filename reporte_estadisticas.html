@@ -74,8 +74,8 @@
     .chart-container {
       position: relative;
       width: 100%;
-      height: 200px;
-      min-height: 200px;
+      height: 220px;
+      min-height: 220px;
     }
     .chart-container canvas { width: 100% !important; height: 100% !important; }
 
@@ -198,6 +198,21 @@
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-info { background: #dbeafe; color: #1e40af; }
+
+    .threshold-input {
+      width: 80px;
+      padding: 6px 8px;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .threshold-input:focus {
+      border-color: #004831;
+      box-shadow: 0 0 0 3px rgba(0,72,49,0.12);
+    }
 
     @media (max-width: 640px) {
       .filter-card .flex { flex-direction: column; align-items: stretch; }
@@ -207,17 +222,42 @@
         padding: 10px 8px;
       }
       .stat-card .value { font-size: 1.2rem; }
-      .chart-container { height: 170px; min-height: 170px; }
+      .chart-container { height: 190px; min-height: 190px; }
       .modal-card { max-width: 100%; border-radius: 20px; }
       .modal-header { padding: 14px 16px 8px 16px; }
       .modal-body { padding: 10px 16px 16px 16px; }
       .analysis-card .value { font-size: 1rem; }
       .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .table-scroll table { min-width: 500px; font-size: 0.7rem; }
+      .threshold-input { width: 70px; font-size: 0.8rem; }
     }
 
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table-scroll table { min-width: 600px; }
+
+    .rentabilidad-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .rentabilidad-stats .item {
+      background: white;
+      border-radius: 12px;
+      padding: 8px 10px;
+      text-align: center;
+      border: 1px solid #e5e7eb;
+    }
+    .rentabilidad-stats .item .num {
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .rentabilidad-stats .item .lbl {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      color: #6b7280;
+      font-weight: 600;
+    }
   </style>
   <script id="tailwind-config">
     tailwind.config = {
@@ -313,7 +353,7 @@
       </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO (CORREGIDO) -->
+    <!-- RESUMEN EJECUTIVO -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
       <div class="stat-card">
         <p class="label">💰 Ingresos</p>
@@ -333,7 +373,7 @@
       </div>
     </section>
 
-    <!-- KPIs DE OPERACIÓN (CORREGIDOS) -->
+    <!-- KPIs DE OPERACIÓN -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
       <div class="stat-card">
         <p class="label">🚗 Viajes Totales</p>
@@ -357,30 +397,37 @@
       </div>
     </section>
 
-    <!-- ANÁLISIS DE RENTABILIDAD POR DÍA -->
+    <!-- GRÁFICO DE RENTABILIDAD DIARIA (NUEVO) -->
     <div class="analysis-card">
-      <div class="flex justify-between items-center mb-2">
-        <span class="label">📅 Análisis por Día</span>
-        <span class="text-xs text-gray-500">Los días más rentables</span>
+      <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
+        <span class="label">📊 Rentabilidad Diaria</span>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-600 font-medium">Umbral rentable:</span>
+          <input type="number" id="umbralRentabilidad" class="threshold-input" value="40" step="5" min="0" />
+          <span class="text-xs text-gray-600">$</span>
+          <button id="actualizarUmbral" class="bg-primary text-white px-3 py-1 rounded-xl text-xs font-bold">Actualizar</button>
+        </div>
       </div>
-      <div id="analisisDias" class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <div class="bg-white rounded-xl p-2 text-center">
-          <p class="text-xs text-gray-500">Mejor día</p>
-          <p class="font-bold text-primary" id="mejorDia">-</p>
-          <p class="text-xs" id="mejorDiaGanancia">$0</p>
+      <div class="chart-container" style="height:250px; min-height:250px;">
+        <canvas id="rentabilidadChart"></canvas>
+      </div>
+      <!-- Estadísticas de rentabilidad -->
+      <div class="rentabilidad-stats" id="rentabilidadStats">
+        <div class="item">
+          <div class="num text-green-600" id="diasRentables">0</div>
+          <div class="lbl">Días Rentables</div>
         </div>
-        <div class="bg-white rounded-xl p-2 text-center">
-          <p class="text-xs text-gray-500">Peor día</p>
-          <p class="font-bold text-tertiary" id="peorDia">-</p>
-          <p class="text-xs" id="peorDiaGanancia">$0</p>
+        <div class="item">
+          <div class="num text-red-600" id="diasNoRentables">0</div>
+          <div class="lbl">Días No Rentables</div>
         </div>
-        <div class="bg-white rounded-xl p-2 text-center">
-          <p class="text-xs text-gray-500">Promedio diario</p>
-          <p class="font-bold text-secondary" id="promedioDiario">$0</p>
+        <div class="item">
+          <div class="num text-blue-600" id="porcentajeRentabilidad">0%</div>
+          <div class="lbl">% Rentabilidad</div>
         </div>
-        <div class="bg-white rounded-xl p-2 text-center">
-          <p class="text-xs text-gray-500">Días trabajados</p>
-          <p class="font-bold text-secondary" id="diasTrabajados">0</p>
+        <div class="item">
+          <div class="num text-primary" id="gananciaPromedioDiasRentables">$0</div>
+          <div class="lbl">Promedio días rentables</div>
         </div>
       </div>
     </div>
@@ -430,7 +477,7 @@
       </div>
     </div>
 
-    <!-- TABLA DETALLADA (con scroll horizontal en móvil) -->
+    <!-- TABLA DETALLADA -->
     <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
       <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
       <div class="table-scroll">
@@ -484,13 +531,14 @@
 
   <script>
     // ============================================================
-    // CONFIGURACIÓN - REEMPLAZA CON TU URL REAL
+    // CONFIGURACIÓN
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMu5NkDxrTJb8Cvnnzh5ESs2Ndq4FW-ro5VmscGHRWjOut6zFFEEYT0hEEsk51TcLvDA/exec';
 
     let datosCompletos = null;
     let datosFiltrados = null;
     let charts = {};
+    let umbralRentabilidad = 40;
 
     // ============================================================
     // TOAST
@@ -578,7 +626,7 @@
     }
 
     // ============================================================
-    // CARGAR DATOS (CORREGIDO: ahora lee KmTotal, Orden, Horas)
+    // CARGAR DATOS
     // ============================================================
     async function cargarDatos() {
       try {
@@ -599,7 +647,6 @@
 
         datosCompletos = { ingresos, gastos, recorridos };
 
-        // Extraer categorías únicas
         const cats = new Set();
         gastos.forEach(g => {
           const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
@@ -662,13 +709,13 @@
     }
 
     // ============================================================
-    // RENDERIZADO COMPLETO (CORREGIDO)
+    // RENDERIZADO COMPLETO
     // ============================================================
     function renderizarTodo(datos) {
       if (!datos) return;
       const { ingresos, gastos, recorridos } = datos;
 
-      // --- Totales financieros ---
+      // Totales financieros
       const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
       const totalGastos = gastos.reduce((s, g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
@@ -679,20 +726,13 @@
       document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
       document.getElementById('margen').textContent = margen.toFixed(1) + '%';
 
-      // --- KPIs de operación (CORREGIDOS) ---
-      // Viajes: sumar Orden (columna I)
+      // KPIs
       const viajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
       const viajesTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.orden || 0), 0);
-      
-      // Km: sumar KmTotal (columna G)
       const kmTotal = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
       const kmTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.kmTotal || 0), 0);
-      
-      // Horas: sumar Horas (columna H)
       const horasTotal = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
       const horasTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.horas || 0), 0);
-      
-      // Ganancia/Hora y Ganancia/Km
       const gananciaHora = horasTotal > 0 ? ganancia / horasTotal : 0;
       const gananciaKm = kmTotal > 0 ? ganancia / kmTotal : 0;
 
@@ -705,13 +745,13 @@
       document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
       document.getElementById('gananciaKmLabel').textContent = `Ganancia/Km: $${gananciaKm.toFixed(2)}`;
 
-      // --- Análisis por día ---
-      renderAnalisisDias(ingresos, gastos);
+      // Gráfico de rentabilidad diaria (NUEVO)
+      renderGraficoRentabilidad(ingresos, gastos);
 
-      // --- Análisis por rubro ---
+      // Análisis por rubro
       renderAnalisisRubros(ingresos, gastos);
 
-      // --- Gráficos ---
+      // Gráficos existentes
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
@@ -720,57 +760,160 @@
     }
 
     // ============================================================
-    // ANÁLISIS POR DÍA
+    // GRÁFICO DE RENTABILIDAD DIARIA (NUEVO)
     // ============================================================
-    function renderAnalisisDias(ingresos, gastos) {
+    function renderGraficoRentabilidad(ingresos, gastos) {
+      const canvas = document.getElementById('rentabilidadChart');
+      const ctx = canvas.getContext('2d');
+      if (charts.rent) { charts.rent.destroy(); charts.rent = null; }
+
+      // Agrupar por día
       const dias = {};
-      
       ingresos.forEach(i => {
-        const fecha = i.fecha || '';
-        if (!fecha) return;
-        if (!dias[fecha]) dias[fecha] = { ingresos: 0, gastos: 0 };
-        dias[fecha].ingresos += i.monto || 0;
+        const f = i.fecha || '';
+        if (!f) return;
+        if (!dias[f]) dias[f] = { ingresos: 0, gastos: 0 };
+        dias[f].ingresos += i.monto || 0;
       });
-      
       gastos.forEach(g => {
-        const fecha = g.fecha || '';
-        if (!fecha) return;
-        if (!dias[fecha]) dias[fecha] = { ingresos: 0, gastos: 0 };
-        dias[fecha].gastos += g.monto || 0;
+        const f = g.fecha || '';
+        if (!f) return;
+        if (!dias[f]) dias[f] = { ingresos: 0, gastos: 0 };
+        dias[f].gastos += g.monto || 0;
       });
 
-      const fechas = Object.keys(dias);
+      const fechas = Object.keys(dias).sort();
       if (fechas.length === 0) {
-        document.getElementById('mejorDia').textContent = '-';
-        document.getElementById('peorDia').textContent = '-';
-        document.getElementById('promedioDiario').textContent = '$0';
-        document.getElementById('diasTrabajados').textContent = '0';
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#999';
+        ctx.font = '14px Inter';
+        ctx.textAlign = 'center';
+        ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
         return;
       }
 
-      let mejor = { fecha: '', ganancia: -Infinity };
-      let peor = { fecha: '', ganancia: Infinity };
-      let totalGanancia = 0;
+      const ganancias = fechas.map(f => dias[f].ingresos - dias[f].gastos);
+      const colores = ganancias.map(g => g >= umbralRentabilidad ? '#10B981' : '#EF4444');
 
-      fechas.forEach(f => {
-        const ganancia = dias[f].ingresos - dias[f].gastos;
-        totalGanancia += ganancia;
-        if (ganancia > mejor.ganancia) { mejor = { fecha: f, ganancia }; }
-        if (ganancia < peor.ganancia) { peor = { fecha: f, ganancia }; }
+      // Calcular estadísticas
+      const diasRentables = ganancias.filter(g => g >= umbralRentabilidad).length;
+      const diasNoRentables = ganancias.filter(g => g < umbralRentabilidad).length;
+      const porcentaje = fechas.length > 0 ? (diasRentables / fechas.length) * 100 : 0;
+      const gananciaPromedioRentables = diasRentables > 0 ? 
+        ganancias.filter(g => g >= umbralRentabilidad).reduce((s, g) => s + g, 0) / diasRentables : 0;
+
+      document.getElementById('diasRentables').textContent = diasRentables;
+      document.getElementById('diasNoRentables').textContent = diasNoRentables;
+      document.getElementById('porcentajeRentabilidad').textContent = porcentaje.toFixed(1) + '%';
+      document.getElementById('gananciaPromedioDiasRentables').textContent = '$' + gananciaPromedioRentables.toFixed(2);
+
+      // Crear gráfico
+      charts.rent = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: fechas,
+          datasets: [{
+            label: 'Ganancia Diaria',
+            data: ganancias,
+            backgroundColor: colores,
+            borderColor: colores.map(c => c === '#10B981' ? '#059669' : '#DC2626'),
+            borderWidth: 2,
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const valor = context.parsed.y;
+                  const umbral = umbralRentabilidad;
+                  const estado = valor >= umbral ? '✅ Rentable' : '❌ No rentable';
+                  return `Ganancia: $${valor.toFixed(2)} (${estado})`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: v => '$' + v.toFixed(0),
+                font: { size: 9 }
+              },
+              grid: {
+                color: 'rgba(0,0,0,0.05)'
+              }
+            },
+            x: {
+              ticks: {
+                maxTicksLimit: 20,
+                font: { size: 8 }
+              },
+              grid: {
+                display: false
+              }
+            }
+          },
+          // Línea de umbral
+          annotation: {
+            annotations: {
+              line1: {
+                type: 'line',
+                yMin: umbralRentabilidad,
+                yMax: umbralRentabilidad,
+                borderColor: '#004831',
+                borderWidth: 2,
+                borderDash: [6, 4],
+                label: {
+                  content: 'Umbral: $' + umbralRentabilidad,
+                  enabled: true,
+                  position: 'right',
+                  font: { size: 10, weight: 'bold' },
+                  color: '#004831'
+                }
+              }
+            }
+          }
+        },
+        plugins: [{
+          id: 'umbralLine',
+          afterDraw(chart) {
+            const yScale = chart.scales.y;
+            const xScale = chart.scales.x;
+            const yPos = yScale.getPixelForValue(umbralRentabilidad);
+            
+            if (yPos !== undefined && yPos >= 0 && yPos <= chart.height) {
+              const ctx2 = chart.ctx;
+              ctx2.save();
+              ctx2.beginPath();
+              ctx2.setLineDash([6, 4]);
+              ctx2.strokeStyle = '#004831';
+              ctx2.lineWidth = 2;
+              ctx2.moveTo(xScale.left, yPos);
+              ctx2.lineTo(xScale.right, yPos);
+              ctx2.stroke();
+              
+              // Etiqueta del umbral
+              ctx2.setLineDash([]);
+              ctx2.fillStyle = '#004831';
+              ctx2.font = 'bold 10px Inter';
+              ctx2.textAlign = 'right';
+              ctx2.fillText('Umbral: $' + umbralRentabilidad, xScale.right - 5, yPos - 6);
+              ctx2.restore();
+            }
+          }
+        }]
       });
-
-      const promedio = totalGanancia / fechas.length;
-
-      document.getElementById('mejorDia').textContent = mejor.fecha;
-      document.getElementById('mejorDiaGanancia').textContent = '$' + mejor.ganancia.toFixed(2);
-      document.getElementById('peorDia').textContent = peor.fecha;
-      document.getElementById('peorDiaGanancia').textContent = '$' + peor.ganancia.toFixed(2);
-      document.getElementById('promedioDiario').textContent = '$' + promedio.toFixed(2);
-      document.getElementById('diasTrabajados').textContent = fechas.length;
     }
 
     // ============================================================
-    // ANÁLISIS POR RUBRO Y RECOMENDACIÓN
+    // ANÁLISIS POR RUBRO
     // ============================================================
     function renderAnalisisRubros(ingresos, gastos) {
       const container = document.getElementById('analisisRubros');
@@ -797,7 +940,6 @@
         return;
       }
 
-      // Calcular rentabilidad por rubro
       const analisis = rubrosKeys.map(r => {
         const data = rubros[r];
         const ganancia = data.ingresos - data.gastos;
@@ -806,10 +948,8 @@
         return { rubro: r, ...data, ganancia, margen, gananciaHora };
       });
 
-      // Ordenar por ganancia total (de mejor a peor)
       analisis.sort((a, b) => b.ganancia - a.ganancia);
 
-      // Mostrar top 4 rubros
       container.innerHTML = analisis.slice(0, 4).map(r => {
         const badgeClass = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
         const icon = r.rubro === 'transporte' ? '🚖' : r.rubro === 'electronica' ? '🤖' : r.rubro === 'general' ? '🏠' : '📦';
@@ -822,7 +962,6 @@
         </div>`;
       }).join('');
 
-      // Recomendación
       const recomendacion = document.getElementById('recomendacionRubros');
       if (analisis.length > 0) {
         const mejor = analisis[0];
@@ -845,7 +984,7 @@
     }
 
     // ============================================================
-    // GRÁFICOS
+    // GRÁFICOS EXISTENTES
     // ============================================================
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
@@ -1132,10 +1271,18 @@
       document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
       document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
 
+      // Cargar umbral desde localStorage
+      const savedUmbral = localStorage.getItem('umbralRentabilidad');
+      if (savedUmbral) {
+        umbralRentabilidad = parseFloat(savedUmbral);
+        document.getElementById('umbralRentabilidad').value = umbralRentabilidad;
+      }
+
       await cargarDatos();
       await verificarConexion();
       aplicarFiltros();
 
+      // Event listeners
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
       document.getElementById('clearFiltersBtn').addEventListener('click', () => {
         document.getElementById('fechaInicio').value = '';
@@ -1152,6 +1299,26 @@
       document.getElementById('exportCsvBtn').addEventListener('click', () => {
         if (datosFiltrados) exportarCSV(datosFiltrados);
         else showToast('No hay datos para exportar', 'error');
+      });
+
+      // Actualizar umbral
+      document.getElementById('actualizarUmbral').addEventListener('click', () => {
+        const val = parseFloat(document.getElementById('umbralRentabilidad').value);
+        if (val >= 0) {
+          umbralRentabilidad = val;
+          localStorage.setItem('umbralRentabilidad', val);
+          aplicarFiltros();
+          showToast('✅ Umbral actualizado a $' + val, 'success');
+        } else {
+          showToast('⚠️ Ingresa un valor válido', 'error');
+        }
+      });
+
+      // Enter en el input del umbral
+      document.getElementById('umbralRentabilidad').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('actualizarUmbral').click();
+        }
       });
     });
   </script>
