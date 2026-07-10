@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
-  <title>Driver Insights - Estadísticas</title>
+  <title>Driver Insights - Rentabilidad Real</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#004831" />
   <meta name="mobile-web-app-capable" content="yes" />
@@ -171,15 +171,6 @@
       padding-top: 10px;
     }
 
-    .cat-item {
-      cursor: pointer;
-      transition: background 0.15s;
-      border-radius: 8px;
-      padding: 4px 8px;
-      margin: 2px 0;
-    }
-    .cat-item:hover { background: #f0f4ff; }
-
     .analysis-card {
       background: linear-gradient(135deg, #f8faff 0%, #eef4ff 100%);
       border-radius: 16px;
@@ -257,6 +248,14 @@
       text-transform: uppercase;
       color: #6b7280;
       font-weight: 600;
+    }
+
+    .costo-km-card {
+      background: white;
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 2px solid #004831;
+      margin-top: 8px;
     }
   </style>
   <script id="tailwind-config">
@@ -353,18 +352,50 @@
       </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO -->
+    <!-- RESUMEN EJECUTIVO (con rentabilidad real) -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
       <div class="stat-card">
-        <p class="label">💰 Ingresos</p>
+        <p class="label">💰 Ingresos Transporte</p>
+        <p class="value text-primary" id="totalIngresosTransporte">$0</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">⛽ Costo Combustible</p>
+        <p class="value text-tertiary" id="totalCombustible">$0</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">🔧 Mantenimiento</p>
+        <p class="value text-tertiary" id="totalMantenimiento">$0</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">📊 Ganancia Real Transporte</p>
+        <p class="value text-primary" id="gananciaRealTransporte">$0</p>
+      </div>
+    </section>
+
+    <!-- COSTO POR KM -->
+    <div class="costo-km-card">
+      <div class="flex justify-between items-center flex-wrap gap-2">
+        <span class="text-sm font-bold text-primary">🚗 Costo operativo por km</span>
+        <div class="flex items-center gap-3">
+          <span class="text-xs text-gray-600">Combustible: <strong id="costoCombustibleKm">$0.00</strong>/km</span>
+          <span class="text-xs text-gray-600">Mantenimiento: <strong id="costoMantenimientoKm">$0.00</strong>/km</span>
+          <span class="text-xs text-gray-600 font-bold">Total: <strong id="costoTotalKm">$0.00</strong>/km</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESUMEN EJECUTIVO GENERAL -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div class="stat-card">
+        <p class="label">💰 Ingresos Totales</p>
         <p class="value text-primary" id="totalIngresos">$0</p>
       </div>
       <div class="stat-card">
-        <p class="label">💸 Gastos</p>
+        <p class="label">💸 Gastos Totales</p>
         <p class="value text-tertiary" id="totalGastos">$0</p>
       </div>
       <div class="stat-card">
-        <p class="label">📈 Ganancia</p>
+        <p class="label">📈 Ganancia Neta</p>
         <p class="value text-primary" id="gananciaNeta">$0</p>
       </div>
       <div class="stat-card">
@@ -378,29 +409,25 @@
       <div class="stat-card">
         <p class="label">🚗 Viajes Totales</p>
         <p class="value text-secondary" id="totalViajes">0</p>
-        <p class="sub" id="viajesTransporte">Transporte: 0</p>
       </div>
       <div class="stat-card">
         <p class="label">📏 Km Totales</p>
         <p class="value text-secondary" id="totalKm">0</p>
-        <p class="sub" id="kmTransporte">Transporte: 0</p>
       </div>
       <div class="stat-card">
         <p class="label">⏱️ Horas Trabajadas</p>
         <p class="value text-secondary" id="totalHoras">0</p>
-        <p class="sub" id="horasTransporte">Transporte: 0</p>
       </div>
       <div class="stat-card">
-        <p class="label">📊 Ganancia/Hora</p>
-        <p class="value text-primary" id="gananciaHora">$0</p>
-        <p class="sub" id="gananciaKmLabel">Ganancia/Km: $0</p>
+        <p class="label">📊 Ganancia Real/Hora</p>
+        <p class="value text-primary" id="gananciaRealHora">$0</p>
       </div>
     </section>
 
-    <!-- GRÁFICO DE RENTABILIDAD DIARIA (NUEVO) -->
+    <!-- GRÁFICO DE RENTABILIDAD REAL -->
     <div class="analysis-card">
       <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-        <span class="label">📊 Rentabilidad Diaria</span>
+        <span class="label">📊 Rentabilidad Real Diaria (Transporte)</span>
         <div class="flex items-center gap-2">
           <span class="text-xs text-gray-600 font-medium">Umbral rentable:</span>
           <input type="number" id="umbralRentabilidad" class="threshold-input" value="40" step="5" min="0" />
@@ -411,7 +438,6 @@
       <div class="chart-container" style="height:250px; min-height:250px;">
         <canvas id="rentabilidadChart"></canvas>
       </div>
-      <!-- Estadísticas de rentabilidad -->
       <div class="rentabilidad-stats" id="rentabilidadStats">
         <div class="item">
           <div class="num text-green-600" id="diasRentables">0</div>
@@ -432,11 +458,11 @@
       </div>
     </div>
 
-    <!-- ANÁLISIS POR RUBRO/NEGOCIO -->
+    <!-- ANÁLISIS POR RUBRO CON RENTABILIDAD REAL -->
     <div class="analysis-card">
       <div class="flex justify-between items-center mb-2">
-        <span class="label">🏢 Análisis por Rubro/Negocio</span>
-        <span class="text-xs text-gray-500">Rentabilidad por tipo</span>
+        <span class="label">🏢 Análisis por Rubro (Rentabilidad Real)</span>
+        <span class="text-xs text-gray-500">Costos operativos incluidos</span>
       </div>
       <div id="analisisRubros" class="grid grid-cols-2 md:grid-cols-4 gap-2">
         <!-- Se llena dinámicamente -->
@@ -539,6 +565,7 @@
     let datosFiltrados = null;
     let charts = {};
     let umbralRentabilidad = 40;
+    let costoPorKm = { combustible: 0, mantenimiento: 0, total: 0 };
 
     // ============================================================
     // TOAST
@@ -647,6 +674,7 @@
 
         datosCompletos = { ingresos, gastos, recorridos };
 
+        // Extraer categorías únicas
         const cats = new Set();
         gastos.forEach(g => {
           const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
@@ -709,13 +737,85 @@
     }
 
     // ============================================================
-    // RENDERIZADO COMPLETO
+    // CALCULAR COSTO POR KM
+    // ============================================================
+    function calcularCostoPorKm(gastos, ingresos) {
+      // Obtener solo gastos de transporte
+      const gastosTransporte = gastos.filter(g => g.rubro === 'transporte');
+      
+      // Sumar combustible
+      const combustible = gastosTransporte
+        .filter(g => (g.categoria || '').toLowerCase() === 'combustible')
+        .reduce((s, g) => s + g.monto, 0);
+      
+      // Sumar mantenimiento (aceite, frenos, etc.)
+      const mantenimiento = gastosTransporte
+        .filter(g => {
+          const cat = (g.categoria || '').toLowerCase();
+          return cat === 'mantenimiento' || cat === 'aceite' || cat === 'frenos' || cat === 'neumaticos' || cat === 'transmision';
+        })
+        .reduce((s, g) => s + g.monto, 0);
+      
+      // Sumar comisiones de plataforma
+      const comisiones = gastosTransporte
+        .filter(g => (g.categoria || '').toLowerCase() === 'comisión de plataforma' || (g.categoria || '').toLowerCase() === 'comision de plataforma')
+        .reduce((s, g) => s + g.monto, 0);
+      
+      // Obtener km totales recorridos (de ingresos de transporte)
+      const kmTotales = ingresos
+        .filter(i => i.rubro === 'transporte')
+        .reduce((s, i) => s + (i.kmTotal || 0), 0);
+      
+      // Calcular costo por km
+      const totalCostosVehiculo = combustible + mantenimiento + comisiones;
+      const costoPorKmCombustible = kmTotales > 0 ? combustible / kmTotales : 0;
+      const costoPorKmMantenimiento = kmTotales > 0 ? (mantenimiento + comisiones) / kmTotales : 0;
+      const costoPorKmTotal = kmTotales > 0 ? totalCostosVehiculo / kmTotales : 0;
+      
+      return {
+        combustible,
+        mantenimiento,
+        comisiones,
+        total: totalCostosVehiculo,
+        kmTotales,
+        costoCombustibleKm: costoPorKmCombustible,
+        costoMantenimientoKm: costoPorKmMantenimiento,
+        costoTotalKm: costoPorKmTotal
+      };
+    }
+
+    // ============================================================
+    // RENDERIZADO COMPLETO (CON RENTABILIDAD REAL)
     // ============================================================
     function renderizarTodo(datos) {
       if (!datos) return;
       const { ingresos, gastos, recorridos } = datos;
 
-      // Totales financieros
+      // --- Calcular costo por km ---
+      const costos = calcularCostoPorKm(gastos, ingresos);
+      costoPorKm = {
+        combustible: costos.costoCombustibleKm,
+        mantenimiento: costos.costoMantenimientoKm,
+        total: costos.costoTotalKm
+      };
+      
+      document.getElementById('costoCombustibleKm').textContent = '$' + costos.costoCombustibleKm.toFixed(3);
+      document.getElementById('costoMantenimientoKm').textContent = '$' + costos.costoMantenimientoKm.toFixed(3);
+      document.getElementById('costoTotalKm').textContent = '$' + costos.costoTotalKm.toFixed(3);
+
+      // --- Totales de transporte con costos reales ---
+      const ingresosTransporte = ingresos.filter(i => i.rubro === 'transporte');
+      const totalIngresosTransporte = ingresosTransporte.reduce((s, i) => s + i.monto, 0);
+      const kmTransporte = ingresosTransporte.reduce((s, i) => s + (i.kmTotal || 0), 0);
+      const costoOperativoTransporte = kmTransporte * costos.costoTotalKm;
+      const gananciaRealTransporte = totalIngresosTransporte - costoOperativoTransporte;
+
+      document.getElementById('totalIngresosTransporte').textContent = '$' + totalIngresosTransporte.toFixed(2);
+      document.getElementById('totalCombustible').textContent = '$' + costos.combustible.toFixed(2);
+      document.getElementById('totalMantenimiento').textContent = '$' + (costos.mantenimiento + costos.comisiones).toFixed(2);
+      document.getElementById('gananciaRealTransporte').textContent = '$' + gananciaRealTransporte.toFixed(2);
+
+      // --- Totales generales ---
       const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
       const totalGastos = gastos.reduce((s, g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
@@ -726,32 +826,24 @@
       document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
       document.getElementById('margen').textContent = margen.toFixed(1) + '%';
 
-      // KPIs
+      // --- KPIs ---
       const viajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
-      const viajesTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.orden || 0), 0);
       const kmTotal = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
-      const kmTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.kmTotal || 0), 0);
       const horasTotal = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
-      const horasTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.horas || 0), 0);
-      const gananciaHora = horasTotal > 0 ? ganancia / horasTotal : 0;
-      const gananciaKm = kmTotal > 0 ? ganancia / kmTotal : 0;
+      const gananciaRealHora = horasTotal > 0 ? gananciaRealTransporte / horasTotal : 0;
 
       document.getElementById('totalViajes').textContent = viajes;
-      document.getElementById('viajesTransporte').textContent = `Transporte: ${viajesTransporte}`;
       document.getElementById('totalKm').textContent = kmTotal.toFixed(1);
-      document.getElementById('kmTransporte').textContent = `Transporte: ${kmTransporte.toFixed(1)}`;
       document.getElementById('totalHoras').textContent = horasTotal.toFixed(1);
-      document.getElementById('horasTransporte').textContent = `Transporte: ${horasTransporte.toFixed(1)}`;
-      document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
-      document.getElementById('gananciaKmLabel').textContent = `Ganancia/Km: $${gananciaKm.toFixed(2)}`;
+      document.getElementById('gananciaRealHora').textContent = '$' + gananciaRealHora.toFixed(2);
 
-      // Gráfico de rentabilidad diaria (NUEVO)
-      renderGraficoRentabilidad(ingresos, gastos);
+      // --- Gráfico de rentabilidad real ---
+      renderGraficoRentabilidadReal(ingresosTransporte, costos);
 
-      // Análisis por rubro
-      renderAnalisisRubros(ingresos, gastos);
+      // --- Análisis por rubro con costos reales ---
+      renderAnalisisRubrosReales(ingresos, gastos, costos);
 
-      // Gráficos existentes
+      // --- Gráficos existentes ---
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
@@ -760,26 +852,21 @@
     }
 
     // ============================================================
-    // GRÁFICO DE RENTABILIDAD DIARIA (NUEVO)
+    // GRÁFICO DE RENTABILIDAD REAL (Transporte)
     // ============================================================
-    function renderGraficoRentabilidad(ingresos, gastos) {
+    function renderGraficoRentabilidadReal(ingresosTransporte, costos) {
       const canvas = document.getElementById('rentabilidadChart');
       const ctx = canvas.getContext('2d');
       if (charts.rent) { charts.rent.destroy(); charts.rent = null; }
 
       // Agrupar por día
       const dias = {};
-      ingresos.forEach(i => {
+      ingresosTransporte.forEach(i => {
         const f = i.fecha || '';
         if (!f) return;
-        if (!dias[f]) dias[f] = { ingresos: 0, gastos: 0 };
+        if (!dias[f]) dias[f] = { ingresos: 0, km: 0 };
         dias[f].ingresos += i.monto || 0;
-      });
-      gastos.forEach(g => {
-        const f = g.fecha || '';
-        if (!f) return;
-        if (!dias[f]) dias[f] = { ingresos: 0, gastos: 0 };
-        dias[f].gastos += g.monto || 0;
+        dias[f].km += i.kmTotal || 0;
       });
 
       const fechas = Object.keys(dias).sort();
@@ -788,19 +875,26 @@
         ctx.fillStyle = '#999';
         ctx.font = '14px Inter';
         ctx.textAlign = 'center';
-        ctx.fillText('Sin datos', canvas.width/2, canvas.height/2);
+        ctx.fillText('Sin datos de transporte', canvas.width/2, canvas.height/2);
         return;
       }
 
-      const ganancias = fechas.map(f => dias[f].ingresos - dias[f].gastos);
-      const colores = ganancias.map(g => g >= umbralRentabilidad ? '#10B981' : '#EF4444');
+      // Calcular ganancia real por día
+      const gananciasReales = fechas.map(f => {
+        const ingreso = dias[f].ingresos;
+        const km = dias[f].km;
+        const costo = km * costos.costoTotalKm;
+        return ingreso - costo;
+      });
 
-      // Calcular estadísticas
-      const diasRentables = ganancias.filter(g => g >= umbralRentabilidad).length;
-      const diasNoRentables = ganancias.filter(g => g < umbralRentabilidad).length;
+      const colores = gananciasReales.map(g => g >= umbralRentabilidad ? '#10B981' : '#EF4444');
+
+      // Estadísticas
+      const diasRentables = gananciasReales.filter(g => g >= umbralRentabilidad).length;
+      const diasNoRentables = gananciasReales.filter(g => g < umbralRentabilidad).length;
       const porcentaje = fechas.length > 0 ? (diasRentables / fechas.length) * 100 : 0;
       const gananciaPromedioRentables = diasRentables > 0 ? 
-        ganancias.filter(g => g >= umbralRentabilidad).reduce((s, g) => s + g, 0) / diasRentables : 0;
+        gananciasReales.filter(g => g >= umbralRentabilidad).reduce((s, g) => s + g, 0) / diasRentables : 0;
 
       document.getElementById('diasRentables').textContent = diasRentables;
       document.getElementById('diasNoRentables').textContent = diasNoRentables;
@@ -813,8 +907,8 @@
         data: {
           labels: fechas,
           datasets: [{
-            label: 'Ganancia Diaria',
-            data: ganancias,
+            label: 'Ganancia Real (Transporte)',
+            data: gananciasReales,
             backgroundColor: colores,
             borderColor: colores.map(c => c === '#10B981' ? '#059669' : '#DC2626'),
             borderWidth: 2,
@@ -825,16 +919,14 @@
           responsive: true,
           maintainAspectRatio: false,
           plugins: {
-            legend: {
-              display: false
-            },
+            legend: { display: false },
             tooltip: {
               callbacks: {
                 label: function(context) {
                   const valor = context.parsed.y;
                   const umbral = umbralRentabilidad;
                   const estado = valor >= umbral ? '✅ Rentable' : '❌ No rentable';
-                  return `Ganancia: $${valor.toFixed(2)} (${estado})`;
+                  return `Ganancia real: $${valor.toFixed(2)} (${estado})`;
                 }
               }
             }
@@ -846,38 +938,11 @@
                 callback: v => '$' + v.toFixed(0),
                 font: { size: 9 }
               },
-              grid: {
-                color: 'rgba(0,0,0,0.05)'
-              }
+              grid: { color: 'rgba(0,0,0,0.05)' }
             },
             x: {
-              ticks: {
-                maxTicksLimit: 20,
-                font: { size: 8 }
-              },
-              grid: {
-                display: false
-              }
-            }
-          },
-          // Línea de umbral
-          annotation: {
-            annotations: {
-              line1: {
-                type: 'line',
-                yMin: umbralRentabilidad,
-                yMax: umbralRentabilidad,
-                borderColor: '#004831',
-                borderWidth: 2,
-                borderDash: [6, 4],
-                label: {
-                  content: 'Umbral: $' + umbralRentabilidad,
-                  enabled: true,
-                  position: 'right',
-                  font: { size: 10, weight: 'bold' },
-                  color: '#004831'
-                }
-              }
+              ticks: { maxTicksLimit: 20, font: { size: 8 } },
+              grid: { display: false }
             }
           }
         },
@@ -899,7 +964,6 @@
               ctx2.lineTo(xScale.right, yPos);
               ctx2.stroke();
               
-              // Etiqueta del umbral
               ctx2.setLineDash([]);
               ctx2.fillStyle = '#004831';
               ctx2.font = 'bold 10px Inter';
@@ -913,9 +977,9 @@
     }
 
     // ============================================================
-    // ANÁLISIS POR RUBRO
+    // ANÁLISIS POR RUBRO CON RENTABILIDAD REAL
     // ============================================================
-    function renderAnalisisRubros(ingresos, gastos) {
+    function renderAnalisisRubrosReales(ingresos, gastos, costos) {
       const container = document.getElementById('analisisRubros');
       const rubros = {};
       
@@ -942,10 +1006,17 @@
 
       const analisis = rubrosKeys.map(r => {
         const data = rubros[r];
-        const ganancia = data.ingresos - data.gastos;
+        // Para transporte, usar costo por km real
+        let costoOperativo = 0;
+        if (r === 'transporte') {
+          costoOperativo = data.km * costos.costoTotalKm;
+        }
+        // Para otros rubros, usar gastos directos
+        const gastosTotales = r === 'transporte' ? costoOperativo : data.gastos;
+        const ganancia = data.ingresos - gastosTotales;
         const margen = data.ingresos > 0 ? (ganancia / data.ingresos) * 100 : 0;
         const gananciaHora = data.horas > 0 ? ganancia / data.horas : 0;
-        return { rubro: r, ...data, ganancia, margen, gananciaHora };
+        return { rubro: r, ...data, gastosTotales, ganancia, margen, gananciaHora };
       });
 
       analisis.sort((a, b) => b.ganancia - a.ganancia);
@@ -958,6 +1029,7 @@
           <p class="text-xs text-gray-500">Ganancia: <span class="font-bold text-primary">$${r.ganancia.toFixed(2)}</span></p>
           <p class="text-xs text-gray-500">Margen: <span class="font-bold">${r.margen.toFixed(1)}%</span></p>
           <p class="text-xs text-gray-500">Viajes: ${r.viajes} | Km: ${r.km.toFixed(1)}</p>
+          ${r.rubro === 'transporte' ? `<p class="text-xs text-gray-500">Costo operativo: $${r.gastosTotales.toFixed(2)}</p>` : ''}
           <span class="badge ${badgeClass} mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
         </div>`;
       }).join('');
@@ -968,12 +1040,12 @@
         const peor = analisis[analisis.length - 1];
         let msg = '';
         if (mejor.ganancia > 0) {
-          msg = `✅ <strong>${mejor.rubro}</strong> es tu negocio más rentable ($${mejor.ganancia.toFixed(2)} ganancia). `;
+          msg = `✅ <strong>${mejor.rubro}</strong> es tu negocio más rentable ($${mejor.ganancia.toFixed(2)} ganancia real). `;
         }
         if (peor.ganancia < 0 && peor.rubro !== mejor.rubro) {
           msg += `⚠️ <strong>${peor.rubro}</strong> no es rentable (pérdida de $${Math.abs(peor.ganancia).toFixed(2)}). Considera reducir tiempo en este rubro.`;
         } else if (peor.ganancia < 0) {
-          msg += `⚠️ Todos los rubros están generando pérdidas. Revisa tus gastos.`;
+          msg += `⚠️ Todos los rubros están generando pérdidas. Revisa tus costos.`;
         } else {
           msg += `🎉 Todos los rubros son rentables. ¡Sigue así!`;
         }
@@ -1271,7 +1343,6 @@
       document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
       document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
 
-      // Cargar umbral desde localStorage
       const savedUmbral = localStorage.getItem('umbralRentabilidad');
       if (savedUmbral) {
         umbralRentabilidad = parseFloat(savedUmbral);
@@ -1282,7 +1353,6 @@
       await verificarConexion();
       aplicarFiltros();
 
-      // Event listeners
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
       document.getElementById('clearFiltersBtn').addEventListener('click', () => {
         document.getElementById('fechaInicio').value = '';
@@ -1301,7 +1371,6 @@
         else showToast('No hay datos para exportar', 'error');
       });
 
-      // Actualizar umbral
       document.getElementById('actualizarUmbral').addEventListener('click', () => {
         const val = parseFloat(document.getElementById('umbralRentabilidad').value);
         if (val >= 0) {
@@ -1314,7 +1383,6 @@
         }
       });
 
-      // Enter en el input del umbral
       document.getElementById('umbralRentabilidad').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           document.getElementById('actualizarUmbral').click();
