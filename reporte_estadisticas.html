@@ -19,6 +19,7 @@
       font-family: 'Inter', sans-serif;
       background: #f4f6fb;
       touch-action: manipulation;
+      font-size: 14px;
     }
     .material-symbols-outlined { font-size: 24px; }
     .status-badge {
@@ -36,7 +37,6 @@
     .happy-face { display: inline-block; animation: bounce 1.2s infinite; font-size: 1.2rem; }
     @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(5deg); } }
 
-    /* Toast */
     .toast {
       position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
       background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px;
@@ -48,25 +48,23 @@
     .toast.error { background: #dc2626; }
     .toast.success { background: #16a34a; }
 
-    /* Filtros y tarjetas */
     .filter-card {
       background: white;
       border-radius: 20px;
-      padding: 20px 16px;
+      padding: 16px 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.04);
       border: 1px solid rgba(0,0,0,0.04);
     }
     .stat-card {
       background: white;
       border-radius: 16px;
-      padding: 14px 16px;
+      padding: 12px 14px;
       border: 1px solid rgba(0,0,0,0.04);
       box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      transition: transform 0.2s;
     }
-    .stat-card:hover { transform: translateY(-2px); }
-    .stat-card .label { font-size: 0.6rem; letter-spacing: 0.03em; }
-    .stat-card .value { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+    .stat-card .label { font-size: 0.55rem; letter-spacing: 0.04em; text-transform: uppercase; color: #6b7280; font-weight: 600; }
+    .stat-card .value { font-size: 1.4rem; font-weight: 800; line-height: 1.2; }
+    .stat-card .sub { font-size: 0.7rem; color: #6b7280; font-weight: 500; }
 
     input:focus, select:focus {
       outline: none;
@@ -76,12 +74,11 @@
     .chart-container {
       position: relative;
       width: 100%;
-      height: 210px;
-      min-height: 210px;
+      height: 200px;
+      min-height: 200px;
     }
     .chart-container canvas { width: 100% !important; height: 100% !important; }
 
-    /* Modal */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -116,7 +113,7 @@
       transform: translateY(0);
     }
     .modal-header {
-      padding: 20px 24px 12px 24px;
+      padding: 16px 20px 10px 20px;
       border-bottom: 1px solid #f0f0f0;
       display: flex;
       justify-content: space-between;
@@ -124,7 +121,7 @@
       flex-shrink: 0;
     }
     .modal-header h2 {
-      font-size: 1.25rem;
+      font-size: 1.1rem;
       font-weight: 700;
       display: flex;
       align-items: center;
@@ -133,70 +130,47 @@
     .modal-close {
       background: #f3f4f6;
       border: none;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       color: #4b5563;
-      transition: background 0.2s;
     }
-    .modal-close:hover { background: #e5e7eb; }
     .modal-body {
-      padding: 16px 24px 24px 24px;
+      padding: 12px 20px 20px 20px;
       overflow-y: auto;
       flex: 1;
     }
     .modal-body table {
       width: 100%;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       border-collapse: collapse;
     }
     .modal-body th {
       text-align: left;
       font-weight: 600;
       color: #6b7280;
-      font-size: 0.65rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
       letter-spacing: 0.04em;
-      padding-bottom: 8px;
+      padding-bottom: 6px;
     }
     .modal-body td {
-      padding: 8px 0;
+      padding: 6px 0;
       border-bottom: 1px solid #f3f4f6;
     }
-    .modal-body tr:last-child td { border-bottom: none; }
     .modal-total {
-      margin-top: 12px;
+      margin-top: 10px;
       font-weight: 700;
       text-align: right;
-      font-size: 1rem;
+      font-size: 0.95rem;
       border-top: 2px solid #e5e7eb;
-      padding-top: 12px;
+      padding-top: 10px;
     }
 
-    /* Scrollbar bonita */
-    .modal-body::-webkit-scrollbar { width: 4px; }
-    .modal-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-
-    /* Ajustes móviles */
-    @media (max-width: 640px) {
-      .filter-card .flex { flex-direction: column; align-items: stretch; }
-      .filter-card .flex > * { width: 100%; }
-      .filter-card input[type="date"] {
-        font-size: 16px;
-        padding: 12px 8px;
-      }
-      .stat-card .value { font-size: 1.4rem; }
-      .chart-container { height: 180px; min-height: 180px; }
-      .modal-card { max-width: 100%; border-radius: 20px; }
-      .modal-header { padding: 16px 20px 10px 20px; }
-      .modal-body { padding: 12px 20px 20px 20px; }
-    }
-
-    /* Lista de categorías clickeable */
     .cat-item {
       cursor: pointer;
       transition: background 0.15s;
@@ -204,15 +178,46 @@
       padding: 4px 8px;
       margin: 2px 0;
     }
-    .cat-item:hover {
-      background: #f0f4ff;
+    .cat-item:hover { background: #f0f4ff; }
+
+    .analysis-card {
+      background: linear-gradient(135deg, #f8faff 0%, #eef4ff 100%);
+      border-radius: 16px;
+      padding: 14px;
+      border: 1px solid rgba(0,72,49,0.08);
     }
-    .cat-item .cat-name {
-      font-weight: 500;
+    .analysis-card .label { font-size: 0.6rem; text-transform: uppercase; color: #6b7280; font-weight: 600; }
+    .analysis-card .value { font-size: 1.2rem; font-weight: 700; }
+    .analysis-card .badge {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 600;
     }
-    .cat-item .cat-amount {
-      font-weight: 700;
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
+
+    @media (max-width: 640px) {
+      .filter-card .flex { flex-direction: column; align-items: stretch; }
+      .filter-card .flex > * { width: 100%; }
+      .filter-card input[type="date"] {
+        font-size: 16px;
+        padding: 10px 8px;
+      }
+      .stat-card .value { font-size: 1.2rem; }
+      .chart-container { height: 170px; min-height: 170px; }
+      .modal-card { max-width: 100%; border-radius: 20px; }
+      .modal-header { padding: 14px 16px 8px 16px; }
+      .modal-body { padding: 10px 16px 16px 16px; }
+      .analysis-card .value { font-size: 1rem; }
+      .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .table-scroll table { min-width: 500px; font-size: 0.7rem; }
     }
+
+    .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .table-scroll table { min-width: 600px; }
   </style>
   <script id="tailwind-config">
     tailwind.config = {
@@ -222,18 +227,13 @@
           colors: {
             "primary": "#004831",
             "tertiary": "#752200",
-            "electronica-primary": "#1E3A8A",
             "surface": "#f4f6fb",
             "on-surface": "#0b1c30",
             "surface-container-low": "#eff4ff",
             "outline-variant": "#e0e4ea",
-            "primary-fixed": "#a6f2cc",
-            "on-primary-fixed": "#005138",
             "secondary": "#455f88",
             "on-surface-variant": "#4a5568",
             "primary-container": "#0e6245",
-            "on-primary": "#ffffff",
-            "on-tertiary": "#ffffff"
           }
         }
       }
@@ -253,9 +253,7 @@
           <span class="material-symbols-outlined" style="font-size:20px">close</span>
         </button>
       </div>
-      <div class="modal-body" id="modalBody">
-        <!-- Contenido dinámico -->
-      </div>
+      <div class="modal-body" id="modalBody"></div>
     </div>
   </div>
 
@@ -277,20 +275,20 @@
   </header>
 
   <!-- MAIN -->
-  <main class="pt-16 px-3 py-4 space-y-4 max-w-6xl mx-auto">
+  <main class="pt-16 px-3 py-3 space-y-3 max-w-7xl mx-auto">
 
     <!-- FILTROS -->
     <section class="filter-card">
-      <div class="flex flex-wrap items-end gap-3">
-        <div class="flex-1 min-w-[120px]">
+      <div class="flex flex-wrap items-end gap-2">
+        <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
           <input type="date" id="fechaInicio" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm" />
         </div>
-        <div class="flex-1 min-w-[120px]">
+        <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
           <input type="date" id="fechaFin" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm" />
         </div>
-        <div class="flex-1 min-w-[120px]">
+        <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro</label>
           <select id="rubroFilter" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm">
             <option value="all">Todos</option>
@@ -300,43 +298,109 @@
             <option value="general">🏠 General</option>
           </select>
         </div>
-        <div class="flex-1 min-w-[120px]">
-          <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría (gastos)</label>
+        <div class="flex-1 min-w-[110px]">
+          <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría</label>
           <select id="categoriaFilter" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm">
             <option value="all">Todas</option>
           </select>
         </div>
         <div class="flex gap-2 flex-wrap">
-          <button id="applyFiltersBtn" class="bg-primary text-white px-5 py-2 rounded-xl font-bold text-sm flex items-center gap-1 shadow-sm">
+          <button id="applyFiltersBtn" class="bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-1 shadow-sm">
             <span class="material-symbols-outlined text-[18px]">filter_alt</span> Aplicar
           </button>
-          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold">Limpiar</button>
+          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-sm font-bold">Limpiar</button>
         </div>
       </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO -->
-    <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <!-- RESUMEN EJECUTIVO (CORREGIDO) -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
       <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Ingresos Totales</p>
+        <p class="label">💰 Ingresos</p>
         <p class="value text-primary" id="totalIngresos">$0</p>
       </div>
       <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Gastos Totales</p>
+        <p class="label">💸 Gastos</p>
         <p class="value text-tertiary" id="totalGastos">$0</p>
       </div>
       <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Ganancia Neta</p>
+        <p class="label">📈 Ganancia</p>
         <p class="value text-primary" id="gananciaNeta">$0</p>
       </div>
       <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Margen</p>
+        <p class="label">🎯 Margen</p>
         <p class="value text-secondary" id="margen">0%</p>
       </div>
     </section>
 
+    <!-- KPIs DE OPERACIÓN (CORREGIDOS) -->
+    <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
+      <div class="stat-card">
+        <p class="label">🚗 Viajes Totales</p>
+        <p class="value text-secondary" id="totalViajes">0</p>
+        <p class="sub" id="viajesTransporte">Transporte: 0</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">📏 Km Totales</p>
+        <p class="value text-secondary" id="totalKm">0</p>
+        <p class="sub" id="kmTransporte">Transporte: 0</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">⏱️ Horas Trabajadas</p>
+        <p class="value text-secondary" id="totalHoras">0</p>
+        <p class="sub" id="horasTransporte">Transporte: 0</p>
+      </div>
+      <div class="stat-card">
+        <p class="label">📊 Ganancia/Hora</p>
+        <p class="value text-primary" id="gananciaHora">$0</p>
+        <p class="sub" id="gananciaKmLabel">Ganancia/Km: $0</p>
+      </div>
+    </section>
+
+    <!-- ANÁLISIS DE RENTABILIDAD POR DÍA -->
+    <div class="analysis-card">
+      <div class="flex justify-between items-center mb-2">
+        <span class="label">📅 Análisis por Día</span>
+        <span class="text-xs text-gray-500">Los días más rentables</span>
+      </div>
+      <div id="analisisDias" class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div class="bg-white rounded-xl p-2 text-center">
+          <p class="text-xs text-gray-500">Mejor día</p>
+          <p class="font-bold text-primary" id="mejorDia">-</p>
+          <p class="text-xs" id="mejorDiaGanancia">$0</p>
+        </div>
+        <div class="bg-white rounded-xl p-2 text-center">
+          <p class="text-xs text-gray-500">Peor día</p>
+          <p class="font-bold text-tertiary" id="peorDia">-</p>
+          <p class="text-xs" id="peorDiaGanancia">$0</p>
+        </div>
+        <div class="bg-white rounded-xl p-2 text-center">
+          <p class="text-xs text-gray-500">Promedio diario</p>
+          <p class="font-bold text-secondary" id="promedioDiario">$0</p>
+        </div>
+        <div class="bg-white rounded-xl p-2 text-center">
+          <p class="text-xs text-gray-500">Días trabajados</p>
+          <p class="font-bold text-secondary" id="diasTrabajados">0</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANÁLISIS POR RUBRO/NEGOCIO -->
+    <div class="analysis-card">
+      <div class="flex justify-between items-center mb-2">
+        <span class="label">🏢 Análisis por Rubro/Negocio</span>
+        <span class="text-xs text-gray-500">Rentabilidad por tipo</span>
+      </div>
+      <div id="analisisRubros" class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <!-- Se llena dinámicamente -->
+      </div>
+      <div id="recomendacionRubros" class="mt-2 text-sm font-medium text-center p-2 bg-white rounded-xl">
+        <!-- Recomendación -->
+      </div>
+    </div>
+
     <!-- GRÁFICOS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
         <h3 class="font-bold text-sm mb-2">📈 Evolución diaria</h3>
         <div class="chart-container">
@@ -348,12 +412,11 @@
         <div class="chart-container">
           <canvas id="gastosPieChart"></canvas>
         </div>
-        <p class="text-xs text-center text-gray-400 mt-1">Haz clic en una porción para ver el detalle</p>
+        <p class="text-xs text-center text-gray-400 mt-1">👆 Clic en porción para detalle</p>
       </div>
     </div>
 
-    <!-- ANÁLISIS POR PLATAFORMA Y CATEGORÍA -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
       <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
         <h3 class="font-bold text-sm mb-2">🚖 Ingresos por Plataforma</h3>
         <div class="chart-container">
@@ -363,54 +426,37 @@
       <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
         <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos</h3>
         <div id="categoriaGastosList" class="space-y-1 max-h-[200px] overflow-y-auto"></div>
-        <p class="text-xs text-center text-gray-400 mt-1">Haz clic en una categoría para ver el detalle</p>
+        <p class="text-xs text-center text-gray-400 mt-1">👆 Clic en categoría para detalle</p>
       </div>
     </div>
 
-    <!-- KPIs -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Ganancia / Hora</p>
-        <p class="value text-primary" id="gananciaHora">$0</p>
-      </div>
-      <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Ganancia / Km</p>
-        <p class="value text-primary" id="gananciaKm">$0</p>
-      </div>
-      <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Total Viajes</p>
-        <p class="value text-secondary" id="totalViajes">0</p>
-      </div>
-      <div class="stat-card">
-        <p class="label uppercase text-on-surface-variant">Total Km</p>
-        <p class="value text-secondary" id="totalKm">0</p>
-      </div>
-    </div>
-
-    <!-- TABLA -->
+    <!-- TABLA DETALLADA (con scroll horizontal en móvil) -->
     <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
       <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
-      <div class="overflow-x-auto">
+      <div class="table-scroll">
         <table class="w-full text-sm">
           <thead class="bg-surface-container-low text-left text-xs uppercase">
             <tr>
               <th class="p-2">Fecha</th>
               <th class="p-2">Tipo</th>
               <th class="p-2">Rubro</th>
-              <th class="p-2">Categoría/Plataforma</th>
+              <th class="p-2">Categoría</th>
               <th class="p-2">Descripción</th>
               <th class="p-2 text-right">Monto</th>
+              <th class="p-2 text-right">Km</th>
+              <th class="p-2 text-right">Horas</th>
+              <th class="p-2 text-right">Orden</th>
             </tr>
           </thead>
           <tbody id="tablaBody" class="divide-y divide-gray-100">
-            <tr><td colspan="6" class="text-center py-4 text-gray-500">Cargando datos...</td></tr>
+            <tr><td colspan="9" class="text-center py-4 text-gray-500">Cargando datos...</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR (igual) -->
+  <!-- NAVEGACIÓN INFERIOR -->
   <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t py-1 z-50">
     <div class="grid grid-cols-5 gap-0.5 text-center">
       <a href="./Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant">
@@ -445,7 +491,6 @@
     let datosCompletos = null;
     let datosFiltrados = null;
     let charts = {};
-    let categoriasDisponibles = [];
 
     // ============================================================
     // TOAST
@@ -533,7 +578,7 @@
     }
 
     // ============================================================
-    // CARGAR DATOS
+    // CARGAR DATOS (CORREGIDO: ahora lee KmTotal, Orden, Horas)
     // ============================================================
     async function cargarDatos() {
       try {
@@ -546,7 +591,7 @@
         const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
         if (!resAct.ok) throw new Error(`Error en getRecentActivity: ${resAct.status}`);
         const actividad = await resAct.json();
-        console.log('📋 Actividad:', actividad.length);
+        console.log('📋 Actividad recibida:', actividad.length);
 
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
@@ -560,12 +605,10 @@
           const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
           if (cat) cats.add(cat);
         });
-        categoriasDisponibles = Array.from(cats);
 
-        // Poblar selector de categorías
         const select = document.getElementById('categoriaFilter');
         select.innerHTML = '<option value="all">Todas</option>';
-        categoriasDisponibles.forEach(c => {
+        cats.forEach(c => {
           const opt = document.createElement('option');
           opt.value = c;
           opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
@@ -619,12 +662,13 @@
     }
 
     // ============================================================
-    // RENDERIZADO COMPLETO
+    // RENDERIZADO COMPLETO (CORREGIDO)
     // ============================================================
     function renderizarTodo(datos) {
       if (!datos) return;
       const { ingresos, gastos, recorridos } = datos;
 
+      // --- Totales financieros ---
       const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
       const totalGastos = gastos.reduce((s, g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
@@ -635,17 +679,39 @@
       document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
       document.getElementById('margen').textContent = margen.toFixed(1) + '%';
 
-      const totalKm = recorridos.reduce((s, r) => s + (r.km || 0), 0);
-      const totalViajes = ingresos.filter(i => i.rubro === 'transporte').length;
-      const horas = recorridos.length * 0.5;
-      const gananciaHora = horas > 0 ? ganancia / horas : 0;
-      const gananciaKm = totalKm > 0 ? ganancia / totalKm : 0;
+      // --- KPIs de operación (CORREGIDOS) ---
+      // Viajes: sumar Orden (columna I)
+      const viajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
+      const viajesTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.orden || 0), 0);
+      
+      // Km: sumar KmTotal (columna G)
+      const kmTotal = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
+      const kmTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.kmTotal || 0), 0);
+      
+      // Horas: sumar Horas (columna H)
+      const horasTotal = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
+      const horasTransporte = ingresos.filter(i => i.rubro === 'transporte').reduce((s, i) => s + (i.horas || 0), 0);
+      
+      // Ganancia/Hora y Ganancia/Km
+      const gananciaHora = horasTotal > 0 ? ganancia / horasTotal : 0;
+      const gananciaKm = kmTotal > 0 ? ganancia / kmTotal : 0;
 
+      document.getElementById('totalViajes').textContent = viajes;
+      document.getElementById('viajesTransporte').textContent = `Transporte: ${viajesTransporte}`;
+      document.getElementById('totalKm').textContent = kmTotal.toFixed(1);
+      document.getElementById('kmTransporte').textContent = `Transporte: ${kmTransporte.toFixed(1)}`;
+      document.getElementById('totalHoras').textContent = horasTotal.toFixed(1);
+      document.getElementById('horasTransporte').textContent = `Transporte: ${horasTransporte.toFixed(1)}`;
       document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
-      document.getElementById('gananciaKm').textContent = '$' + gananciaKm.toFixed(2);
-      document.getElementById('totalViajes').textContent = totalViajes;
-      document.getElementById('totalKm').textContent = totalKm.toFixed(1);
+      document.getElementById('gananciaKmLabel').textContent = `Ganancia/Km: $${gananciaKm.toFixed(2)}`;
 
+      // --- Análisis por día ---
+      renderAnalisisDias(ingresos, gastos);
+
+      // --- Análisis por rubro ---
+      renderAnalisisRubros(ingresos, gastos);
+
+      // --- Gráficos ---
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
@@ -654,7 +720,132 @@
     }
 
     // ============================================================
-    // GRÁFICOS CON CLICK PARA MODAL
+    // ANÁLISIS POR DÍA
+    // ============================================================
+    function renderAnalisisDias(ingresos, gastos) {
+      const dias = {};
+      
+      ingresos.forEach(i => {
+        const fecha = i.fecha || '';
+        if (!fecha) return;
+        if (!dias[fecha]) dias[fecha] = { ingresos: 0, gastos: 0 };
+        dias[fecha].ingresos += i.monto || 0;
+      });
+      
+      gastos.forEach(g => {
+        const fecha = g.fecha || '';
+        if (!fecha) return;
+        if (!dias[fecha]) dias[fecha] = { ingresos: 0, gastos: 0 };
+        dias[fecha].gastos += g.monto || 0;
+      });
+
+      const fechas = Object.keys(dias);
+      if (fechas.length === 0) {
+        document.getElementById('mejorDia').textContent = '-';
+        document.getElementById('peorDia').textContent = '-';
+        document.getElementById('promedioDiario').textContent = '$0';
+        document.getElementById('diasTrabajados').textContent = '0';
+        return;
+      }
+
+      let mejor = { fecha: '', ganancia: -Infinity };
+      let peor = { fecha: '', ganancia: Infinity };
+      let totalGanancia = 0;
+
+      fechas.forEach(f => {
+        const ganancia = dias[f].ingresos - dias[f].gastos;
+        totalGanancia += ganancia;
+        if (ganancia > mejor.ganancia) { mejor = { fecha: f, ganancia }; }
+        if (ganancia < peor.ganancia) { peor = { fecha: f, ganancia }; }
+      });
+
+      const promedio = totalGanancia / fechas.length;
+
+      document.getElementById('mejorDia').textContent = mejor.fecha;
+      document.getElementById('mejorDiaGanancia').textContent = '$' + mejor.ganancia.toFixed(2);
+      document.getElementById('peorDia').textContent = peor.fecha;
+      document.getElementById('peorDiaGanancia').textContent = '$' + peor.ganancia.toFixed(2);
+      document.getElementById('promedioDiario').textContent = '$' + promedio.toFixed(2);
+      document.getElementById('diasTrabajados').textContent = fechas.length;
+    }
+
+    // ============================================================
+    // ANÁLISIS POR RUBRO Y RECOMENDACIÓN
+    // ============================================================
+    function renderAnalisisRubros(ingresos, gastos) {
+      const container = document.getElementById('analisisRubros');
+      const rubros = {};
+      
+      ingresos.forEach(i => {
+        const r = i.rubro || 'otros';
+        if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
+        rubros[r].ingresos += i.monto || 0;
+        rubros[r].viajes += i.orden || 0;
+        rubros[r].km += i.kmTotal || 0;
+        rubros[r].horas += i.horas || 0;
+      });
+      
+      gastos.forEach(g => {
+        const r = g.rubro || 'otros';
+        if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
+        rubros[r].gastos += g.monto || 0;
+      });
+
+      const rubrosKeys = Object.keys(rubros);
+      if (rubrosKeys.length === 0) {
+        container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-2">Sin datos</div>';
+        return;
+      }
+
+      // Calcular rentabilidad por rubro
+      const analisis = rubrosKeys.map(r => {
+        const data = rubros[r];
+        const ganancia = data.ingresos - data.gastos;
+        const margen = data.ingresos > 0 ? (ganancia / data.ingresos) * 100 : 0;
+        const gananciaHora = data.horas > 0 ? ganancia / data.horas : 0;
+        return { rubro: r, ...data, ganancia, margen, gananciaHora };
+      });
+
+      // Ordenar por ganancia total (de mejor a peor)
+      analisis.sort((a, b) => b.ganancia - a.ganancia);
+
+      // Mostrar top 4 rubros
+      container.innerHTML = analisis.slice(0, 4).map(r => {
+        const badgeClass = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
+        const icon = r.rubro === 'transporte' ? '🚖' : r.rubro === 'electronica' ? '🤖' : r.rubro === 'general' ? '🏠' : '📦';
+        return `<div class="bg-white rounded-xl p-2 text-center border border-gray-100">
+          <p class="font-bold text-sm">${icon} ${r.rubro}</p>
+          <p class="text-xs text-gray-500">Ganancia: <span class="font-bold text-primary">$${r.ganancia.toFixed(2)}</span></p>
+          <p class="text-xs text-gray-500">Margen: <span class="font-bold">${r.margen.toFixed(1)}%</span></p>
+          <p class="text-xs text-gray-500">Viajes: ${r.viajes} | Km: ${r.km.toFixed(1)}</p>
+          <span class="badge ${badgeClass} mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
+        </div>`;
+      }).join('');
+
+      // Recomendación
+      const recomendacion = document.getElementById('recomendacionRubros');
+      if (analisis.length > 0) {
+        const mejor = analisis[0];
+        const peor = analisis[analisis.length - 1];
+        let msg = '';
+        if (mejor.ganancia > 0) {
+          msg = `✅ <strong>${mejor.rubro}</strong> es tu negocio más rentable ($${mejor.ganancia.toFixed(2)} ganancia). `;
+        }
+        if (peor.ganancia < 0 && peor.rubro !== mejor.rubro) {
+          msg += `⚠️ <strong>${peor.rubro}</strong> no es rentable (pérdida de $${Math.abs(peor.ganancia).toFixed(2)}). Considera reducir tiempo en este rubro.`;
+        } else if (peor.ganancia < 0) {
+          msg += `⚠️ Todos los rubros están generando pérdidas. Revisa tus gastos.`;
+        } else {
+          msg += `🎉 Todos los rubros son rentables. ¡Sigue así!`;
+        }
+        recomendacion.innerHTML = msg;
+      } else {
+        recomendacion.innerHTML = '📊 Sin datos para recomendar';
+      }
+    }
+
+    // ============================================================
+    // GRÁFICOS
     // ============================================================
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
@@ -829,9 +1020,6 @@
       });
     }
 
-    // ============================================================
-    // LISTA DE CATEGORÍAS CLICKEABLE
-    // ============================================================
     function renderListaCategorias(gastos) {
       const container = document.getElementById('categoriaGastosList');
       const cats = {};
@@ -855,7 +1043,6 @@
                 </div>`;
       }).join('');
 
-      // Añadir event listeners a cada elemento
       container.querySelectorAll('.cat-item').forEach(el => {
         el.addEventListener('click', function() {
           const categoria = this.dataset.categoria;
@@ -866,15 +1053,12 @@
       });
     }
 
-    // ============================================================
-    // TABLA
-    // ============================================================
     function renderTabla(ingresos, gastos) {
       const tbody = document.getElementById('tablaBody');
       const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
       all.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
       if (all.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="text-center py-4 text-gray-500">No hay actividad con estos filtros</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="9" class="text-center py-4 text-gray-500">No hay actividad</td></tr>';
         return;
       }
       tbody.innerHTML = all.slice(0, 30).map(item => {
@@ -888,6 +1072,9 @@
                   <td class="p-2">${categoria}</td>
                   <td class="p-2">${item.descripcion || ''}</td>
                   <td class="p-2 text-right font-bold ${color}">${signo}$${(item.monto||0).toFixed(2)}</td>
+                  <td class="p-2 text-right">${item.kmTotal ? item.kmTotal.toFixed(1) : '-'}</td>
+                  <td class="p-2 text-right">${item.horas ? item.horas.toFixed(1) : '-'}</td>
+                  <td class="p-2 text-right">${item.orden || '-'}</td>
                 </tr>`;
       }).join('');
     }
@@ -900,8 +1087,12 @@
       const { ingresos, gastos } = datos;
       const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
       if (all.length === 0) { showToast('No hay datos para exportar', 'error'); return; }
-      const headers = ['Fecha','Tipo','Rubro','Categoría/Plataforma','Descripción','Monto'];
-      const rows = all.map(item => [item.fecha||'', item.tipo, item.rubro||'', item.plataforma||item.categoria||'', item.descripcion||'', item.monto||0]);
+      const headers = ['Fecha','Tipo','Rubro','Categoría','Descripción','Monto','KmTotal','Horas','Orden'];
+      const rows = all.map(item => [
+        item.fecha||'', item.tipo, item.rubro||'', 
+        item.plataforma||item.categoria||'', item.descripcion||'', 
+        item.monto||0, item.kmTotal||0, item.horas||0, item.orden||0
+      ]);
       let csv = headers.join(',') + '\n' + rows.map(row => row.join(',')).join('\n');
       const blob = new Blob([csv], {type: 'text/csv'});
       const link = document.createElement('a');
