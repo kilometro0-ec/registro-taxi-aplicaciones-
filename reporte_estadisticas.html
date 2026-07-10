@@ -15,35 +15,203 @@
 
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f8f9ff; touch-action: manipulation; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f6fb;
+      touch-action: manipulation;
+    }
     .material-symbols-outlined { font-size: 24px; }
-    .status-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 0.6rem; padding: 2px 10px; border-radius: 20px; background: #f1f5f9; white-space: nowrap; }
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6rem;
+      padding: 2px 10px;
+      border-radius: 20px;
+      background: #f1f5f9;
+      white-space: nowrap;
+    }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
     .happy-face { display: inline-block; animation: bounce 1.2s infinite; font-size: 1.2rem; }
     @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(5deg); } }
-    .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem; }
+
+    /* Toast */
+    .toast {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999;
+      opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
+      max-width: 90%; text-align: center; font-size: 0.9rem;
+    }
     .toast.show { opacity: 1; }
     .toast.error { background: #dc2626; }
     .toast.success { background: #16a34a; }
-    .spinner { border: 4px solid rgba(0,0,0,0.1); border-radius: 50%; border-top: 4px solid #004831; width: 32px; height: 32px; animation: spin 1s linear infinite; margin: 0 auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .filter-card { background: white; border-radius: 12px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-    .stat-card { transition: transform 0.2s; }
+
+    /* Filtros y tarjetas */
+    .filter-card {
+      background: white;
+      border-radius: 20px;
+      padding: 20px 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .stat-card {
+      background: white;
+      border-radius: 16px;
+      padding: 14px 16px;
+      border: 1px solid rgba(0,0,0,0.04);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+      transition: transform 0.2s;
+    }
     .stat-card:hover { transform: translateY(-2px); }
-    input:focus, select:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.15); }
-    .chart-container { position: relative; width: 100%; height: 200px; min-height: 200px; }
+    .stat-card .label { font-size: 0.6rem; letter-spacing: 0.03em; }
+    .stat-card .value { font-size: 1.6rem; font-weight: 800; line-height: 1.2; }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #004831;
+      box-shadow: 0 0 0 3px rgba(0,72,49,0.12);
+    }
+    .chart-container {
+      position: relative;
+      width: 100%;
+      height: 210px;
+      min-height: 210px;
+    }
     .chart-container canvas { width: 100% !important; height: 100% !important; }
 
-    /* Ajustes para móvil: inputs de fecha más grandes y en columna */
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-card {
+      background: white;
+      border-radius: 28px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      transform: translateY(10px);
+      transition: transform 0.25s ease;
+    }
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+    .modal-header {
+      padding: 20px 24px 12px 24px;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .modal-header h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .modal-close {
+      background: #f3f4f6;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: #4b5563;
+      transition: background 0.2s;
+    }
+    .modal-close:hover { background: #e5e7eb; }
+    .modal-body {
+      padding: 16px 24px 24px 24px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .modal-body table {
+      width: 100%;
+      font-size: 0.85rem;
+      border-collapse: collapse;
+    }
+    .modal-body th {
+      text-align: left;
+      font-weight: 600;
+      color: #6b7280;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding-bottom: 8px;
+    }
+    .modal-body td {
+      padding: 8px 0;
+      border-bottom: 1px solid #f3f4f6;
+    }
+    .modal-body tr:last-child td { border-bottom: none; }
+    .modal-total {
+      margin-top: 12px;
+      font-weight: 700;
+      text-align: right;
+      font-size: 1rem;
+      border-top: 2px solid #e5e7eb;
+      padding-top: 12px;
+    }
+
+    /* Scrollbar bonita */
+    .modal-body::-webkit-scrollbar { width: 4px; }
+    .modal-body::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+
+    /* Ajustes móviles */
     @media (max-width: 640px) {
       .filter-card .flex { flex-direction: column; align-items: stretch; }
       .filter-card .flex > * { width: 100%; }
       .filter-card input[type="date"] {
-        font-size: 16px; /* evita zoom en iOS */
+        font-size: 16px;
         padding: 12px 8px;
       }
+      .stat-card .value { font-size: 1.4rem; }
       .chart-container { height: 180px; min-height: 180px; }
+      .modal-card { max-width: 100%; border-radius: 20px; }
+      .modal-header { padding: 16px 20px 10px 20px; }
+      .modal-body { padding: 12px 20px 20px 20px; }
+    }
+
+    /* Lista de categorías clickeable */
+    .cat-item {
+      cursor: pointer;
+      transition: background 0.15s;
+      border-radius: 8px;
+      padding: 4px 8px;
+      margin: 2px 0;
+    }
+    .cat-item:hover {
+      background: #f0f4ff;
+    }
+    .cat-item .cat-name {
+      font-weight: 500;
+    }
+    .cat-item .cat-amount {
+      font-weight: 700;
     }
   </style>
   <script id="tailwind-config">
@@ -55,14 +223,14 @@
             "primary": "#004831",
             "tertiary": "#752200",
             "electronica-primary": "#1E3A8A",
-            "surface": "#f8f9ff",
+            "surface": "#f4f6fb",
             "on-surface": "#0b1c30",
             "surface-container-low": "#eff4ff",
-            "outline-variant": "#bfc9c1",
+            "outline-variant": "#e0e4ea",
             "primary-fixed": "#a6f2cc",
             "on-primary-fixed": "#005138",
             "secondary": "#455f88",
-            "on-surface-variant": "#3f4943",
+            "on-surface-variant": "#4a5568",
             "primary-container": "#0e6245",
             "on-primary": "#ffffff",
             "on-tertiary": "#ffffff"
@@ -76,10 +244,25 @@
 
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
+  <!-- MODAL -->
+  <div id="modalOverlay" class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modalTitle"><span class="material-symbols-outlined">receipt_long</span> Detalle</h2>
+        <button class="modal-close" onclick="cerrarModal()">
+          <span class="material-symbols-outlined" style="font-size:20px">close</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Contenido dinámico -->
+      </div>
+    </div>
+  </div>
+
   <!-- HEADER -->
-  <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 w-full flex justify-between items-center px-3 h-12 shadow-sm">
+  <header class="bg-white/80 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 w-full flex justify-between items-center px-3 h-12 shadow-sm">
     <div class="flex items-center gap-2">
-      <div class="w-7 h-7 rounded-full bg-secondary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+      <div class="w-7 h-7 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
         <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH1O4D8wU5EtEDaBEpNBwRCH7vQ3WS9GvJBzpjUd8J3BoLn2STmJYTgvXHyBxPN6LK3qtOA834UyLWqHziQo0IkuuaQ2ecc-cgIaOUx2mEg7BJwfSefAlhGoqbcSdfTCmP49Fa6gONrxvvM3ru8_3kTuqIMN0PfFgNLdBxxgPCTt06oDL0wzfkdTf_NntTX-bdLMV5kSUMtfS08Nu3E34mhbDsIDn2IiAMzY1YmmKeQBPU_P6jEcabn0CoNO5FZ35M4mQizBs9L85C" alt="Avatar"/>
       </div>
       <h1 class="text-base font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
@@ -96,23 +279,20 @@
   <!-- MAIN -->
   <main class="pt-16 px-3 py-4 space-y-4 max-w-6xl mx-auto">
 
-    <!-- FILTROS (afectan a todos los totales, gráficos y tabla) -->
-    <section class="filter-card border border-outline-variant">
+    <!-- FILTROS -->
+    <section class="filter-card">
       <div class="flex flex-wrap items-end gap-3">
-        <!-- Desde -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
-          <input type="date" id="fechaInicio" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm" />
+          <input type="date" id="fechaInicio" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm" />
         </div>
-        <!-- Hasta -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
-          <input type="date" id="fechaFin" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm" />
+          <input type="date" id="fechaFin" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm" />
         </div>
-        <!-- Rubro -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro</label>
-          <select id="rubroFilter" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+          <select id="rubroFilter" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm">
             <option value="all">Todos</option>
             <option value="transporte">🚖 Transporte</option>
             <option value="electronica">🤖 Electrónica</option>
@@ -120,95 +300,95 @@
             <option value="general">🏠 General</option>
           </select>
         </div>
-        <!-- Categoría (gastos) -->
         <div class="flex-1 min-w-[120px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría (gastos)</label>
-          <select id="categoriaFilter" class="w-full border border-outline-variant rounded-lg px-3 py-2 text-sm">
+          <select id="categoriaFilter" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm">
             <option value="all">Todas</option>
           </select>
         </div>
-        <!-- Botones -->
         <div class="flex gap-2 flex-wrap">
-          <button id="applyFiltersBtn" class="bg-primary text-white px-5 py-2 rounded-lg font-bold text-sm flex items-center gap-1 shadow-sm">
+          <button id="applyFiltersBtn" class="bg-primary text-white px-5 py-2 rounded-xl font-bold text-sm flex items-center gap-1 shadow-sm">
             <span class="material-symbols-outlined text-[18px]">filter_alt</span> Aplicar
           </button>
-          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm font-bold">Limpiar</button>
+          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold">Limpiar</button>
         </div>
       </div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO (TOTALES SEGÚN FILTROS) -->
+    <!-- RESUMEN EJECUTIVO -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Ingresos Totales</p>
-        <p class="text-2xl font-bold text-primary" id="totalIngresos">$0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Ingresos Totales</p>
+        <p class="value text-primary" id="totalIngresos">$0</p>
       </div>
-      <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Gastos Totales</p>
-        <p class="text-2xl font-bold text-tertiary" id="totalGastos">$0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Gastos Totales</p>
+        <p class="value text-tertiary" id="totalGastos">$0</p>
       </div>
-      <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Ganancia Neta</p>
-        <p class="text-2xl font-bold text-primary" id="gananciaNeta">$0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Ganancia Neta</p>
+        <p class="value text-primary" id="gananciaNeta">$0</p>
       </div>
-      <div class="stat-card bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Margen</p>
-        <p class="text-2xl font-bold text-secondary" id="margen">0%</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Margen</p>
+        <p class="value text-secondary" id="margen">0%</p>
       </div>
     </section>
 
-    <!-- GRÁFICOS PRINCIPALES (con datos filtrados) -->
+    <!-- GRÁFICOS -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">📈 Evolución diaria (Ingresos vs Gastos)</h3>
+      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+        <h3 class="font-bold text-sm mb-2">📈 Evolución diaria</h3>
         <div class="chart-container">
           <canvas id="ingresosGastosChart"></canvas>
         </div>
       </div>
-      <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">🧩 Distribución de Gastos por Categoría</h3>
+      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+        <h3 class="font-bold text-sm mb-2">🧩 Distribución de Gastos</h3>
         <div class="chart-container">
           <canvas id="gastosPieChart"></canvas>
         </div>
+        <p class="text-xs text-center text-gray-400 mt-1">Haz clic en una porción para ver el detalle</p>
       </div>
     </div>
 
     <!-- ANÁLISIS POR PLATAFORMA Y CATEGORÍA -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="bg-white border border-outline-variant rounded-xl p-4">
+      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
         <h3 class="font-bold text-sm mb-2">🚖 Ingresos por Plataforma</h3>
         <div class="chart-container">
           <canvas id="platformChart"></canvas>
         </div>
       </div>
-      <div class="bg-white border border-outline-variant rounded-xl p-4">
-        <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos por Categoría</h3>
-        <div id="categoriaGastosList" class="space-y-2 max-h-[200px] overflow-y-auto"></div>
+      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+        <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos</h3>
+        <div id="categoriaGastosList" class="space-y-1 max-h-[200px] overflow-y-auto"></div>
+        <p class="text-xs text-center text-gray-400 mt-1">Haz clic en una categoría para ver el detalle</p>
       </div>
     </div>
 
-    <!-- KPIs AVANZADOS (sobre datos filtrados) -->
+    <!-- KPIs -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-      <div class="bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Ganancia / Hora</p>
-        <p class="text-xl font-bold text-primary" id="gananciaHora">$0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Ganancia / Hora</p>
+        <p class="value text-primary" id="gananciaHora">$0</p>
       </div>
-      <div class="bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Ganancia / Km</p>
-        <p class="text-xl font-bold text-primary" id="gananciaKm">$0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Ganancia / Km</p>
+        <p class="value text-primary" id="gananciaKm">$0</p>
       </div>
-      <div class="bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Total Viajes</p>
-        <p class="text-xl font-bold text-secondary" id="totalViajes">0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Total Viajes</p>
+        <p class="value text-secondary" id="totalViajes">0</p>
       </div>
-      <div class="bg-white border border-outline-variant rounded-xl p-3">
-        <p class="text-xs text-on-surface-variant uppercase font-bold">Total Km</p>
-        <p class="text-xl font-bold text-secondary" id="totalKm">0</p>
+      <div class="stat-card">
+        <p class="label uppercase text-on-surface-variant">Total Km</p>
+        <p class="value text-secondary" id="totalKm">0</p>
       </div>
     </div>
 
-    <!-- TABLA DETALLADA (con datos filtrados) -->
-    <div class="bg-white border border-outline-variant rounded-xl p-4">
+    <!-- TABLA -->
+    <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
       <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
       <div class="overflow-x-auto">
         <table class="w-full text-sm">
@@ -230,8 +410,8 @@
     </div>
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR -->
-  <nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t py-1 z-50">
+  <!-- NAVEGACIÓN INFERIOR (igual) -->
+  <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t py-1 z-50">
     <div class="grid grid-cols-5 gap-0.5 text-center">
       <a href="./Dashboard.html" class="flex flex-col items-center py-1 text-on-surface-variant">
         <span class="material-symbols-outlined" style="font-size:18px">dashboard</span>
@@ -262,9 +442,10 @@
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMu5NkDxrTJb8Cvnnzh5ESs2Ndq4FW-ro5VmscGHRWjOut6zFFEEYT0hEEsk51TcLvDA/exec';
 
-    let datosCompletos = null;      // todos los datos sin filtrar
-    let datosFiltrados = null;      // datos filtrados según fecha, rubro y categoría
+    let datosCompletos = null;
+    let datosFiltrados = null;
     let charts = {};
+    let categoriasDisponibles = [];
 
     // ============================================================
     // TOAST
@@ -279,6 +460,54 @@
       t.classList.add('show');
       clearTimeout(t._hide);
       t._hide = setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    // ============================================================
+    // MODAL
+    // ============================================================
+    function abrirModal(categoria, gastosFiltrados) {
+      const overlay = document.getElementById('modalOverlay');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+
+      const gastosCategoria = gastosFiltrados.filter(g => {
+        const cat = (g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros').toLowerCase();
+        return cat === categoria.toLowerCase();
+      });
+
+      if (gastosCategoria.length === 0) {
+        showToast('No hay gastos en esta categoría', 'info', 2000);
+        return;
+      }
+
+      const total = gastosCategoria.reduce((s, g) => s + g.monto, 0);
+      const icono = categoria === 'combustible' ? '⛽' : categoria === 'alimentación' ? '🍔' : '📂';
+      title.innerHTML = `<span class="material-symbols-outlined">receipt_long</span> ${icono} ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
+
+      let html = `
+        <table>
+          <thead><tr><th>Fecha</th><th>Descripción</th><th class="text-right">Monto</th></tr></thead>
+          <tbody>
+      `;
+      gastosCategoria.sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+      gastosCategoria.forEach(g => {
+        html += `<tr>
+          <td>${g.fecha || ''}</td>
+          <td>${g.descripcion || ''}</td>
+          <td class="text-right font-semibold">$${g.monto.toFixed(2)}</td>
+        </tr>`;
+      });
+      html += `
+          </tbody>
+        </table>
+        <div class="modal-total">Total: $${total.toFixed(2)}</div>
+      `;
+      body.innerHTML = html;
+      overlay.classList.add('active');
+    }
+
+    function cerrarModal() {
+      document.getElementById('modalOverlay').classList.remove('active');
     }
 
     // ============================================================
@@ -304,68 +533,55 @@
     }
 
     // ============================================================
-    // CARGAR DATOS REALES DESDE EL SCRIPT
+    // CARGAR DATOS
     // ============================================================
     async function cargarDatos() {
       try {
-        console.log('🔍 Intentando cargar datos desde:', SCRIPT_URL);
+        console.log('🔍 Cargando datos desde:', SCRIPT_URL);
         const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
         if (!resStats.ok) throw new Error(`Error en getStats: ${resStats.status}`);
         const stats = await resStats.json();
-        console.log('📊 Estadísticas recibidas:', stats);
+        console.log('📊 Stats:', stats);
 
         const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
         if (!resAct.ok) throw new Error(`Error en getRecentActivity: ${resAct.status}`);
         const actividad = await resAct.json();
-        console.log('📋 Actividad recibida:', actividad.length, 'registros');
-        if (actividad.length > 0) console.log('Ejemplo de actividad:', actividad.slice(0,3));
+        console.log('📋 Actividad:', actividad.length);
 
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
         const recorridos = actividad.filter(a => a.tipo === 'recorrido');
 
         datosCompletos = { ingresos, gastos, recorridos };
-        console.log('✅ Datos globales cargados');
 
-        // Poblar el selector de categorías con las categorías únicas de los gastos
-        poblarCategorias(gastos);
+        // Extraer categorías únicas
+        const cats = new Set();
+        gastos.forEach(g => {
+          const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
+          if (cat) cats.add(cat);
+        });
+        categoriasDisponibles = Array.from(cats);
 
-        if (gastos.length === 0) {
-          showToast('No se encontraron gastos en la hoja', 'info', 4000);
-        }
-        if (ingresos.length === 0) {
-          showToast('No se encontraron ingresos en la hoja', 'info', 4000);
-        }
+        // Poblar selector de categorías
+        const select = document.getElementById('categoriaFilter');
+        select.innerHTML = '<option value="all">Todas</option>';
+        categoriasDisponibles.forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c;
+          opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
+          select.appendChild(opt);
+        });
 
+        console.log('✅ Datos cargados');
       } catch (e) {
-        console.error('❌ Error cargando datos:', e);
-        showToast('Error al cargar datos reales. Verifica la URL del script.', 'error', 5000);
+        console.error('❌ Error:', e);
+        showToast('Error al cargar datos', 'error', 5000);
         datosCompletos = { ingresos: [], gastos: [], recorridos: [] };
       }
     }
 
     // ============================================================
-    // POBLAR SELECTOR DE CATEGORÍAS
-    // ============================================================
-    function poblarCategorias(gastos) {
-      const select = document.getElementById('categoriaFilter');
-      const cats = new Set();
-      gastos.forEach(g => {
-        const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
-        if (cat) cats.add(cat);
-      });
-      select.innerHTML = '<option value="all">Todas</option>';
-      cats.forEach(c => {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-        select.appendChild(opt);
-      });
-      console.log('Categorías disponibles:', Array.from(cats));
-    }
-
-    // ============================================================
-    // FILTRADO (afecta a totales, gráficos y tabla)
+    // FILTRADO
     // ============================================================
     function filtrarDatos(fechaInicio, fechaFin, rubro, categoria) {
       if (!datosCompletos) return null;
@@ -403,13 +619,12 @@
     }
 
     // ============================================================
-    // RENDERIZADO COMPLETO (totales, gráficos, tabla, KPIs)
+    // RENDERIZADO COMPLETO
     // ============================================================
     function renderizarTodo(datos) {
       if (!datos) return;
       const { ingresos, gastos, recorridos } = datos;
 
-      // ----- TOTALES (calculados sobre los datos filtrados) -----
       const totalIngresos = ingresos.reduce((s, i) => s + i.monto, 0);
       const totalGastos = gastos.reduce((s, g) => s + g.monto, 0);
       const ganancia = totalIngresos - totalGastos;
@@ -420,10 +635,9 @@
       document.getElementById('gananciaNeta').textContent = '$' + ganancia.toFixed(2);
       document.getElementById('margen').textContent = margen.toFixed(1) + '%';
 
-      // ----- KPIs (sobre datos filtrados) -----
       const totalKm = recorridos.reduce((s, r) => s + (r.km || 0), 0);
       const totalViajes = ingresos.filter(i => i.rubro === 'transporte').length;
-      const horas = recorridos.length * 0.5; // asumiendo 0.5h por recorrido (ajustable)
+      const horas = recorridos.length * 0.5;
       const gananciaHora = horas > 0 ? ganancia / horas : 0;
       const gananciaKm = totalKm > 0 ? ganancia / totalKm : 0;
 
@@ -432,7 +646,6 @@
       document.getElementById('totalViajes').textContent = totalViajes;
       document.getElementById('totalKm').textContent = totalKm.toFixed(1);
 
-      // ----- GRÁFICOS y TABLA -----
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
@@ -441,7 +654,7 @@
     }
 
     // ============================================================
-    // GRÁFICOS (versiones optimizadas)
+    // GRÁFICOS CON CLICK PARA MODAL
     // ============================================================
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
@@ -534,7 +747,7 @@
 
       const labels = Object.keys(cats);
       const data = Object.values(cats);
-      const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280','#f97316', '#10B981', '#8B5CF6'];
+      const colores = ['#004831','#752200','#1E3A8A','#D97706','#6B7280','#f97316', '#10B981', '#8B5CF6', '#EC4899', '#14B8A6'];
 
       if (labels.length === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -561,6 +774,15 @@
           maintainAspectRatio: false,
           plugins: {
             legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } }
+          },
+          onClick: (e, elements) => {
+            if (elements.length > 0) {
+              const index = elements[0].index;
+              const categoria = labels[index];
+              if (categoria && datosFiltrados) {
+                abrirModal(categoria, datosFiltrados.gastos);
+              }
+            }
           }
         }
       });
@@ -607,6 +829,9 @@
       });
     }
 
+    // ============================================================
+    // LISTA DE CATEGORÍAS CLICKEABLE
+    // ============================================================
     function renderListaCategorias(gastos) {
       const container = document.getElementById('categoriaGastosList');
       const cats = {};
@@ -616,19 +841,34 @@
       });
       const total = gastos.reduce((s,g) => s + g.monto, 0);
       const sorted = Object.entries(cats).sort((a,b) => b[1] - a[1]);
+
       if (sorted.length === 0) {
         container.innerHTML = '<p class="text-sm text-gray-500">Sin gastos</p>';
         return;
       }
+
       container.innerHTML = sorted.map(([cat, monto]) => {
         const pct = total > 0 ? (monto/total)*100 : 0;
-        return `<div class="flex justify-between items-center border-b border-gray-100 py-1">
-                  <span class="text-sm capitalize">${cat}</span>
-                  <span class="text-sm font-bold">$${monto.toFixed(2)} <span class="text-xs text-gray-500">(${pct.toFixed(1)}%)</span></span>
+        return `<div class="cat-item flex justify-between items-center py-1 px-2 hover:bg-surface-container-low rounded-lg" data-categoria="${cat}">
+                  <span class="cat-name capitalize">${cat}</span>
+                  <span class="cat-amount">$${monto.toFixed(2)} <span class="text-xs text-gray-400">(${pct.toFixed(1)}%)</span></span>
                 </div>`;
       }).join('');
+
+      // Añadir event listeners a cada elemento
+      container.querySelectorAll('.cat-item').forEach(el => {
+        el.addEventListener('click', function() {
+          const categoria = this.dataset.categoria;
+          if (categoria && datosFiltrados) {
+            abrirModal(categoria, datosFiltrados.gastos);
+          }
+        });
+      });
     }
 
+    // ============================================================
+    // TABLA
+    // ============================================================
     function renderTabla(ingresos, gastos) {
       const tbody = document.getElementById('tablaBody');
       const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
@@ -653,7 +893,7 @@
     }
 
     // ============================================================
-    // EXPORTAR CSV (sobre datos filtrados)
+    // EXPORTAR CSV
     // ============================================================
     function exportarCSV(datos) {
       if (!datos) return;
@@ -671,11 +911,11 @@
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
-      showToast('✅ CSV exportado correctamente', 'success');
+      showToast('✅ CSV exportado', 'success');
     }
 
     // ============================================================
-    // APLICAR FILTROS Y ACTUALIZAR TODO
+    // APLICAR FILTROS
     // ============================================================
     function aplicarFiltros() {
       const inicio = document.getElementById('fechaInicio').value;
@@ -703,11 +943,8 @@
 
       await cargarDatos();
       await verificarConexion();
-
-      // Aplicar filtros por defecto (últimos 30 días, todos los rubros, todas las categorías)
       aplicarFiltros();
 
-      // Event listeners
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
       document.getElementById('clearFiltersBtn').addEventListener('click', () => {
         document.getElementById('fechaInicio').value = '';
@@ -723,7 +960,7 @@
       });
       document.getElementById('exportCsvBtn').addEventListener('click', () => {
         if (datosFiltrados) exportarCSV(datosFiltrados);
-        else showToast('No hay datos filtrados para exportar', 'error');
+        else showToast('No hay datos para exportar', 'error');
       });
     });
   </script>
