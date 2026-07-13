@@ -160,12 +160,113 @@
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
+
+        /* Modales */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .modal-card {
+            background: #102034;
+            border-radius: 24px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.active .modal-card {
+            transform: translateY(0) scale(1);
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h2 {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .modal-close {
+            background: rgba(255,255,255,0.05);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: #d3e4fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .modal-close:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .modal-body {
+            padding: 16px 20px 20px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-body .detalle-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-size: 0.9rem;
+        }
+        .modal-body .detalle-total {
+            font-weight: 700;
+            border-top: 2px solid rgba(255,255,255,0.1);
+            padding-top: 10px;
+            margin-top: 6px;
+            text-align: right;
+        }
+
+        .clickeable {
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .clickeable:hover {
+            background: rgba(255,255,255,0.03);
+        }
     </style>
 </head>
 <body>
 
 <!-- TOAST -->
 <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl glass-card text-sm font-medium text-on-surface pointer-events-none opacity-0 transition-opacity duration-300" style="background: rgba(3, 20, 39, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);"></div>
+
+<!-- MODALES -->
+<div id="modalDetalle" class="modal-overlay" onclick="if(event.target===this) cerrarModal()">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h2 id="modalTitle">Detalle</h2>
+            <button class="modal-close" onclick="cerrarModal()">✕</button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
 
 <!-- HEADER -->
 <header class="fixed top-0 w-full z-50 bg-surface-container border-b border-outline-variant flex justify-between items-center px-margin-mobile h-16">
@@ -218,26 +319,26 @@
         <div id="filtroTexto" class="text-[10px] text-on-surface-variant/60 text-center hidden"></div>
     </section>
 
-    <!-- RESUMEN EJECUTIVO GLOBAL -->
+    <!-- RESUMEN EJECUTIVO GLOBAL (clickeable) -->
     <section class="grid grid-cols-2 gap-4">
-        <div class="glass-card rounded-2xl p-4 border-l-4 border-primary">
+        <div class="glass-card rounded-2xl p-4 border-l-4 border-primary clickeable" id="cardIngresos" title="Haz clic para ver detalle de ingresos">
             <p class="text-[10px] font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Ingresos Totales</p>
             <h3 class="font-data-display text-2xl text-primary font-bold" id="totalIngresos">$0</h3>
             <div class="mt-1 flex items-center text-[10px] text-primary/60">
                 <span class="material-symbols-outlined text-[12px] mr-1">monitoring</span> Consolidado
             </div>
         </div>
-        <div class="glass-card rounded-2xl p-4">
+        <div class="glass-card rounded-2xl p-4 clickeable" id="cardGastos" title="Haz clic para ver detalle de gastos">
             <p class="text-[10px] font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Gastos Totales</p>
             <h3 class="font-data-display text-2xl text-error font-bold" id="totalGastos">$0</h3>
             <div class="mt-1 flex items-center text-[10px] text-error/60">
                 <span class="material-symbols-outlined text-[12px] mr-1">payments</span> Costos Op.
             </div>
         </div>
-        <div class="glass-card rounded-2xl p-4">
+        <div class="glass-card rounded-2xl p-4" id="cardResultado">
             <p class="text-[10px] font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Resultado Neto</p>
-            <h3 class="font-data-display text-2xl text-tertiary font-bold" id="netProfit">$0</h3>
-            <div class="mt-1 flex items-center text-[10px] text-tertiary/60">
+            <h3 class="font-data-display text-2xl font-bold" id="netProfit">$0</h3>
+            <div class="mt-1 flex items-center text-[10px] text-on-surface-variant/60" id="resultadoLabel">
                 <span class="material-symbols-outlined text-[12px] mr-1">account_balance_wallet</span> Beneficio real
             </div>
         </div>
@@ -320,7 +421,7 @@
             <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mb-2">
                 <span class="material-symbols-outlined text-primary text-xl">timer</span>
             </div>
-            <p class="text-[10px] font-label-caps text-on-surface-variant uppercase mb-0.5">Ingreso/H</p>
+            <p class="text-[10px] font-label-caps text-on-surface-variant uppercase mb-0.5">Ganancia/H</p>
             <h4 class="font-bold text-lg text-on-surface" id="earnPerHour">$0</h4>
         </div>
         <div class="glass-card rounded-2xl p-4 flex flex-col items-center text-center">
@@ -401,6 +502,18 @@
     }
 
     // ============================================================
+    // MODALES
+    // ============================================================
+    function abrirModal(titulo, contenidoHTML) {
+        document.getElementById('modalTitle').textContent = titulo;
+        document.getElementById('modalBody').innerHTML = contenidoHTML;
+        document.getElementById('modalDetalle').classList.add('active');
+    }
+    function cerrarModal() {
+        document.getElementById('modalDetalle').classList.remove('active');
+    }
+
+    // ============================================================
     // CARGAR DATOS DESDE EL SCRIPT
     // ============================================================
     async function cargarDatos() {
@@ -415,7 +528,6 @@
             activityData = await resAct.json();
             console.log('Actividad:', activityData.length);
 
-            // Poblar categorías (si se necesita)
             return true;
         } catch (e) {
             console.error('Error al cargar datos:', e);
@@ -433,13 +545,11 @@
         const sector = document.getElementById('categoryFilter').value;
 
         let filtered = activityData.filter(item => {
-            // Fecha
             if (item.fecha) {
                 const d = new Date(item.fecha);
                 if (start && d < new Date(start)) return false;
                 if (end && d > new Date(end)) return false;
             }
-            // Sector (rubro)
             if (sector !== 'all') {
                 const rubro = (item.rubro || '').toLowerCase();
                 if (sector === 'transporte' && rubro !== 'transporte') return false;
@@ -465,7 +575,6 @@
         const ganancia = totalIngresos - totalGastos;
         const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
 
-        // Por sector
         const sectores = ['transporte', 'electronica', 'km0', 'general'];
         const sectorData = {};
         sectores.forEach(sec => {
@@ -478,10 +587,10 @@
             sectorData[sec] = { revenue: rev, expenses: exp, profit: prof, margin: marg };
         });
 
-        // KPIs
         const horas = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
         const viajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
-        const earnPerHour = horas > 0 ? totalIngresos / horas : 0;
+        // Ganancia por hora (neto)
+        const earnPerHour = horas > 0 ? ganancia / horas : 0;
         const avgTicket = viajes > 0 ? totalIngresos / viajes : 0;
 
         return {
@@ -516,6 +625,23 @@
         document.getElementById('totalGastos').textContent = '$' + metrics.totalGastos.toFixed(2);
         document.getElementById('netProfit').textContent = '$' + metrics.ganancia.toFixed(2);
         document.getElementById('margin').textContent = metrics.margen.toFixed(1) + '%';
+
+        // Resultado Neto: cambiar color y alerta si es negativo
+        const netElement = document.getElementById('netProfit');
+        const resultadoLabel = document.getElementById('resultadoLabel');
+        if (metrics.ganancia < 0) {
+            netElement.className = 'font-data-display text-2xl text-error font-bold';
+            resultadoLabel.innerHTML = '<span class="material-symbols-outlined text-[12px] mr-1">warning</span> Pérdida real';
+            // Mostrar toast de alerta si es la primera vez que se ve negativo
+            if (!window._negativoMostrado) {
+                showToast('⚠️ Resultado Neto Negativo', 'error');
+                window._negativoMostrado = true;
+            }
+        } else {
+            netElement.className = 'font-data-display text-2xl text-tertiary font-bold';
+            resultadoLabel.innerHTML = '<span class="material-symbols-outlined text-[12px] mr-1">account_balance_wallet</span> Beneficio real';
+            window._negativoMostrado = false;
+        }
 
         // Sector Cards
         renderSectorCards(metrics.sectorData);
@@ -577,6 +703,14 @@
                     <span class="font-bold text-sm">${sec.label}</span>
                 </div>
                 <div class="space-y-1">
+                    <div class="flex justify-between text-[11px]">
+                        <span class="text-on-surface-variant">Ingresos:</span>
+                        <span class="text-primary font-bold">$${data.revenue.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between text-[11px]">
+                        <span class="text-on-surface-variant">Gastos:</span>
+                        <span class="text-error font-bold">$${data.expenses.toFixed(2)}</span>
+                    </div>
                     <div class="flex justify-between text-[11px]">
                         <span class="text-on-surface-variant">Ganancia:</span>
                         <span class="${profitColor} font-bold">$${data.profit.toFixed(2)}</span>
@@ -679,7 +813,7 @@
             }
         });
 
-        // Distribución de gastos (pastel)
+        // Distribución de gastos (pastel) con categorías reales
         const gastosPorCategoria = {};
         gastos.forEach(g => {
             const cat = g.categoria || 'Otros';
@@ -758,7 +892,13 @@
         }
         container.innerHTML = '';
         all.slice(0, 30).forEach(item => {
-            const date = new Date(item.fecha + 'T00:00:00');
+            let date;
+            try {
+                date = new Date(item.fecha);
+                if (isNaN(date.getTime())) throw new Error('Fecha inválida');
+            } catch (e) {
+                date = null;
+            }
             const card = document.createElement('div');
             card.className = 'glass-card rounded-2xl p-4 flex items-center justify-between active:scale-[0.98] transition-all cursor-pointer border border-white/5';
 
@@ -773,11 +913,17 @@
             const signo = item.tipo === 'ingreso' ? '+' : '-';
             const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-error';
 
+            let fechaStr = '';
+            if (date) {
+                fechaStr = date.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit' });
+            } else {
+                fechaStr = item.fecha || '---';
+            }
+
             card.innerHTML = `
                 <div class="flex items-center gap-4">
                     <div class="bg-white/5 w-12 h-12 rounded-xl flex flex-col items-center justify-center border border-white/5">
-                        <span class="text-[10px] font-bold text-on-surface-variant uppercase leading-none mb-1">${date.toLocaleDateString('es-ES', { weekday: 'short' })}</span>
-                        <span class="text-lg font-bold text-on-surface leading-none">${date.getDate()}</span>
+                        <span class="text-[10px] font-bold text-on-surface-variant uppercase leading-none mb-1">${fechaStr}</span>
                     </div>
                     <div>
                         <div class="flex items-center gap-2 mb-0.5">
@@ -797,6 +943,60 @@
             `;
             container.appendChild(card);
         });
+    }
+
+    // ============================================================
+    // DETALLES DE INGRESOS Y GASTOS (MODAL)
+    // ============================================================
+    function mostrarDetalleIngresos() {
+        const { ingresos } = filtrarDatosLocal();
+        if (!ingresos.length) {
+            showToast('No hay ingresos en este período', 'error');
+            return;
+        }
+        // Agrupar por rubro y plataforma
+        const grupos = {};
+        ingresos.forEach(i => {
+            const key = (i.plataforma || 'Otros') + ' - ' + (i.rubro || 'General');
+            if (!grupos[key]) grupos[key] = { total: 0, items: [] };
+            grupos[key].total += (i.monto || 0);
+            grupos[key].items.push(i);
+        });
+        let html = '<div class="space-y-3">';
+        Object.keys(grupos).forEach(key => {
+            const g = grupos[key];
+            html += `<div style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px; margin-bottom:8px;">
+                        <div class="flex justify-between font-bold text-sm"><span>${key}</span><span class="text-primary">$${g.total.toFixed(2)}</span></div>
+                        <div class="text-xs text-on-surface-variant/60">${g.items.length} transacciones</div>
+                    </div>`;
+        });
+        html += '</div>';
+        abrirModal('Detalle de Ingresos', html);
+    }
+
+    function mostrarDetalleGastos() {
+        const { gastos } = filtrarDatosLocal();
+        if (!gastos.length) {
+            showToast('No hay gastos en este período', 'error');
+            return;
+        }
+        const grupos = {};
+        gastos.forEach(g => {
+            const key = g.categoria || 'Otros';
+            if (!grupos[key]) grupos[key] = { total: 0, items: [] };
+            grupos[key].total += (g.monto || 0);
+            grupos[key].items.push(g);
+        });
+        let html = '<div class="space-y-3">';
+        Object.keys(grupos).forEach(key => {
+            const g = grupos[key];
+            html += `<div style="border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:8px; margin-bottom:8px;">
+                        <div class="flex justify-between font-bold text-sm"><span>${key}</span><span class="text-error">$${g.total.toFixed(2)}</span></div>
+                        <div class="text-xs text-on-surface-variant/60">${g.items.length} transacciones</div>
+                    </div>`;
+        });
+        html += '</div>';
+        abrirModal('Detalle de Gastos', html);
     }
 
     // ============================================================
@@ -833,18 +1033,19 @@
     // INICIO
     // ============================================================
     document.addEventListener('DOMContentLoaded', async () => {
-        // Fechas por defecto (últimos 30 días)
         const hoy = new Date();
         const hace30 = new Date(hoy);
         hace30.setDate(hace30.getDate() - 30);
         document.getElementById('startDate').value = hace30.toISOString().split('T')[0];
         document.getElementById('endDate').value = hoy.toISOString().split('T')[0];
 
-        // Cargar datos desde el script
         await cargarDatos();
         renderizar();
 
-        // Eventos
+        // Eventos de clic en tarjetas
+        document.getElementById('cardIngresos').addEventListener('click', mostrarDetalleIngresos);
+        document.getElementById('cardGastos').addEventListener('click', mostrarDetalleGastos);
+
         document.getElementById('applyFilters').addEventListener('click', renderizar);
         document.getElementById('refreshBtn').addEventListener('click', async () => {
             await cargarDatos();
@@ -852,9 +1053,6 @@
             showToast('✅ Datos recargados', 'success');
         });
         document.getElementById('exportCSVBtn').addEventListener('click', exportarCSV);
-
-        // Al cambiar fechas/rubro, aplicar filtro automáticamente? No, solo con el botón.
-        // Opcional: podrías añadir un listener para que al cambiar fecha se aplique solo si se desea.
     });
 </script>
 </body>
