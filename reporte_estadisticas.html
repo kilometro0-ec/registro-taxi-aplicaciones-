@@ -250,6 +250,16 @@
         .clickeable:hover {
             background: rgba(255,255,255,0.03);
         }
+        .dia-bueno {
+            border-left: 3px solid #96d4b4;
+        }
+        .dia-malo {
+            border-left: 3px solid #ffb4ab;
+        }
+        .punto-equilibrio-card {
+            background: linear-gradient(135deg, rgba(150, 212, 180, 0.08) 0%, rgba(78, 222, 163, 0.03) 100%);
+            border: 1px solid rgba(150, 212, 180, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -342,10 +352,10 @@
                 <span class="material-symbols-outlined text-[12px] mr-1">account_balance_wallet</span> Beneficio real
             </div>
         </div>
-        <div class="glass-card rounded-2xl p-4">
+        <div class="glass-card rounded-2xl p-4" id="cardEficiencia">
             <p class="text-[10px] font-label-caps text-on-surface-variant mb-1 uppercase tracking-wider">Eficiencia Global</p>
-            <h3 class="font-data-display text-2xl text-on-primary-container font-bold" id="margin">0%</h3>
-            <div class="mt-1 flex items-center text-[10px] text-on-primary-container/60">
+            <h3 class="font-data-display text-2xl font-bold" id="margin">0%</h3>
+            <div class="mt-1 flex items-center text-[10px] text-on-surface-variant/60" id="eficienciaLabel">
                 <span class="material-symbols-outlined text-[12px] mr-1">pie_chart</span> Margen medio
             </div>
         </div>
@@ -369,7 +379,7 @@
                 <h2 class="text-sm font-bold text-on-surface">Evolución Diaria</h2>
                 <div class="flex gap-3">
                     <div class="flex items-center gap-1.5 text-[10px] text-primary/80"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Ingresos</div>
-                    <div class="flex items-center gap-1.5 text-[10px] text-error/80"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Gastos</div>
+                    <div class="flex items-center gap-1.5 text-[10px] text-error/80"><span class="w-1.5 h-1.5 rounded-full bg-error"></span> Gastos Operativos</div>
                 </div>
             </div>
             <div class="relative h-48 w-full">
@@ -377,7 +387,7 @@
             </div>
         </div>
 
-        <!-- RECOMENDACIÓN IA -->
+        <!-- RECOMENDACIÓN IA + PUNTO DE EQUILIBRIO -->
         <section class="ai-recommendation-gradient rounded-2xl p-5 space-y-4">
             <div class="flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary">auto_awesome</span>
@@ -386,6 +396,15 @@
             <p class="text-xs text-on-surface-variant leading-relaxed" id="iaRecomendacion">
                 Cargando recomendación...
             </p>
+            <!-- Punto de Equilibrio -->
+            <div class="punto-equilibrio-card rounded-xl p-3 space-y-1">
+                <p class="text-[10px] font-bold text-primary uppercase tracking-wider">🎯 Punto de Equilibrio</p>
+                <p class="text-xs text-on-surface-variant" id="equilibrioTexto">Calculando...</p>
+                <div class="flex justify-between text-[10px] text-on-surface-variant/60">
+                    <span>Viajes necesarios: <strong class="text-primary" id="viajesNecesarios">0</strong></span>
+                    <span>Meta diaria: <strong class="text-primary" id="metaDiaria">$0</strong></span>
+                </div>
+            </div>
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-white/5 rounded-xl p-3 border border-white/5">
                     <p class="text-[9px] font-label-caps text-on-surface-variant uppercase mb-1">Mejor Sector</p>
@@ -430,6 +449,38 @@
             </div>
             <p class="text-[10px] font-label-caps text-on-surface-variant uppercase mb-0.5">Ticket Medio</p>
             <h4 class="font-bold text-lg text-on-surface" id="avgTicket">$0</h4>
+        </div>
+    </section>
+
+    <!-- ANÁLISIS DE DÍAS BUENOS Y MALOS -->
+    <section class="glass-card rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold text-on-surface">📊 Análisis de Días</h2>
+            <span class="text-[10px] text-on-surface-variant/60">Basado en gastos operativos</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+            <div class="bg-primary/5 rounded-xl p-2 text-center border border-primary/10">
+                <p class="text-[10px] text-on-surface-variant uppercase">Mejor Día</p>
+                <p class="text-sm font-bold text-primary" id="mejorDia">--</p>
+                <p class="text-xs text-primary/60" id="mejorDiaGanancia">$0</p>
+            </div>
+            <div class="bg-error/5 rounded-xl p-2 text-center border border-error/10">
+                <p class="text-[10px] text-on-surface-variant uppercase">Peor Día</p>
+                <p class="text-sm font-bold text-error" id="peorDia">--</p>
+                <p class="text-xs text-error/60" id="peorDiaGanancia">$0</p>
+            </div>
+        </div>
+        <div>
+            <p class="text-[10px] font-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Días Buenos (ganancia positiva)</p>
+            <div id="diasBuenos" class="text-xs text-on-surface-variant/80 space-y-1 max-h-24 overflow-y-auto">
+                <span class="text-on-surface-variant/40">Cargando...</span>
+            </div>
+        </div>
+        <div>
+            <p class="text-[10px] font-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Días Malos (pérdida)</p>
+            <div id="diasMalos" class="text-xs text-on-surface-variant/80 space-y-1 max-h-24 overflow-y-auto">
+                <span class="text-on-surface-variant/40">Cargando...</span>
+            </div>
         </div>
     </section>
 
@@ -480,7 +531,6 @@
 
     let activityData = [];
     let statsData = null;
-    let filteredData = [];
     let charts = {};
 
     // ============================================================
@@ -567,14 +617,30 @@
     }
 
     // ============================================================
-    // CALCULAR MÉTRICAS
+    // CALCULAR MÉTRICAS (incluye gastos operativos)
     // ============================================================
     function calcularMetricas(ingresos, gastos) {
+        // Totales generales
         const totalIngresos = ingresos.reduce((s, i) => s + (i.monto || 0), 0);
         const totalGastos = gastos.reduce((s, g) => s + (g.monto || 0), 0);
         const ganancia = totalIngresos - totalGastos;
         const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
 
+        // Gastos operativos: solo Combustible, Mantenimiento, Comisiones
+        const gastosOperativos = gastos.filter(g => {
+            const cat = (g.categoria || '').toLowerCase();
+            return cat === 'combustible' ||
+                   cat === 'mantenimiento' ||
+                   cat === 'aceite' ||
+                   cat === 'frenos' ||
+                   cat === 'neumaticos' ||
+                   cat === 'transmision' ||
+                   cat.includes('comisión') ||
+                   cat.includes('comision');
+        });
+        const totalGastosOperativos = gastosOperativos.reduce((s, g) => s + (g.monto || 0), 0);
+
+        // Por sector (incluyendo todos los rubros)
         const sectores = ['transporte', 'electronica', 'km0', 'general'];
         const sectorData = {};
         sectores.forEach(sec => {
@@ -587,25 +653,100 @@
             sectorData[sec] = { revenue: rev, expenses: exp, profit: prof, margin: marg };
         });
 
+        // KPIs
         const horas = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
         const viajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
-        // Ganancia por hora (neto)
         const earnPerHour = horas > 0 ? ganancia / horas : 0;
         const avgTicket = viajes > 0 ? totalIngresos / viajes : 0;
+
+        // Análisis de días (basado en gastos operativos)
+        const diasMap = {};
+        ingresos.forEach(i => {
+            const f = i.fecha || '';
+            if (!f) return;
+            if (!diasMap[f]) diasMap[f] = { ingresos: 0, gastosOp: 0, items: [] };
+            diasMap[f].ingresos += (i.monto || 0);
+            diasMap[f].items.push({ tipo: 'ingreso', ...i });
+        });
+        gastosOperativos.forEach(g => {
+            const f = g.fecha || '';
+            if (!f) return;
+            if (!diasMap[f]) diasMap[f] = { ingresos: 0, gastosOp: 0, items: [] };
+            diasMap[f].gastosOp += (g.monto || 0);
+            diasMap[f].items.push({ tipo: 'gasto', ...g });
+        });
+
+        const fechas = Object.keys(diasMap).sort();
+        const dias = fechas.map(f => {
+            const d = diasMap[f];
+            const gananciaDia = d.ingresos - d.gastosOp;
+            return { fecha: f, ingresos: d.ingresos, gastosOp: d.gastosOp, ganancia: gananciaDia, items: d.items };
+        });
+
+        // Días buenos y malos
+        const diasBuenos = dias.filter(d => d.ganancia > 0).sort((a,b) => b.ganancia - a.ganancia);
+        const diasMalos = dias.filter(d => d.ganancia < 0).sort((a,b) => a.ganancia - b.ganancia);
+
+        // Punto de equilibrio basado en transporte (más común)
+        const ingresosTransp = ingresos.filter(i => (i.rubro || '').toLowerCase() === 'transporte');
+        const gastosTransp = gastos.filter(g => (g.rubro || '').toLowerCase() === 'transporte');
+        const gastosOpTransp = gastosTransp.filter(g => {
+            const cat = (g.categoria || '').toLowerCase();
+            return cat === 'combustible' || cat === 'mantenimiento' || cat === 'aceite' ||
+                   cat === 'frenos' || cat === 'neumaticos' || cat === 'transmision' ||
+                   cat.includes('comisión') || cat.includes('comision');
+        });
+        const totalIngTransp = ingresosTransp.reduce((s, i) => s + (i.monto || 0), 0);
+        const totalGastosOpTransp = gastosOpTransp.reduce((s, g) => s + (g.monto || 0), 0);
+        const viajesTransp = ingresosTransp.reduce((s, i) => s + (i.orden || 0), 0);
+        const gananciaPromedioPorViaje = viajesTransp > 0 ? totalIngTransp / viajesTransp : 0;
+        const kmPromedioPorViaje = viajesTransp > 0 ?
+            ingresosTransp.reduce((s, i) => s + (i.kmTotal || 0), 0) / viajesTransp : 0;
+        const costoVariablePorViaje = viajesTransp > 0 ? totalGastosOpTransp / viajesTransp : 0;
+        const margenPorViaje = gananciaPromedioPorViaje - costoVariablePorViaje;
+
+        // Costos fijos (desde localStorage o default)
+        const fijos = cargarFijosLocal();
+        const costoFijoDiario = fijos.diario || 17.33;
+        const viajesNecesarios = margenPorViaje > 0 ? Math.ceil(costoFijoDiario / margenPorViaje) : 0;
+        const metaDiaria = viajesNecesarios * gananciaPromedioPorViaje;
 
         return {
             totalIngresos,
             totalGastos,
             ganancia,
             margen,
+            totalGastosOperativos,
             sectorData,
             earnPerHour,
             avgTicket,
             horas,
             viajes,
             ingresos,
-            gastos
+            gastos,
+            dias,
+            diasBuenos,
+            diasMalos,
+            equilibrio: {
+                viajesNecesarios,
+                metaDiaria,
+                costoFijoDiario,
+                gananciaPromedioPorViaje,
+                costoVariablePorViaje,
+                margenPorViaje
+            }
         };
+    }
+
+    // ============================================================
+    // COSTOS FIJOS (localStorage)
+    // ============================================================
+    function cargarFijosLocal() {
+        try {
+            const saved = localStorage.getItem('fijos_driver');
+            if (saved) return JSON.parse(saved);
+        } catch(e) {}
+        return { total: 520, diario: 17.33 };
     }
 
     // ============================================================
@@ -626,21 +767,26 @@
         document.getElementById('netProfit').textContent = '$' + metrics.ganancia.toFixed(2);
         document.getElementById('margin').textContent = metrics.margen.toFixed(1) + '%';
 
-        // Resultado Neto: cambiar color y alerta si es negativo
+        // Resultado Neto: color y alerta
         const netElement = document.getElementById('netProfit');
         const resultadoLabel = document.getElementById('resultadoLabel');
         if (metrics.ganancia < 0) {
             netElement.className = 'font-data-display text-2xl text-error font-bold';
             resultadoLabel.innerHTML = '<span class="material-symbols-outlined text-[12px] mr-1">warning</span> Pérdida real';
-            // Mostrar toast de alerta si es la primera vez que se ve negativo
-            if (!window._negativoMostrado) {
-                showToast('⚠️ Resultado Neto Negativo', 'error');
-                window._negativoMostrado = true;
-            }
         } else {
             netElement.className = 'font-data-display text-2xl text-tertiary font-bold';
             resultadoLabel.innerHTML = '<span class="material-symbols-outlined text-[12px] mr-1">account_balance_wallet</span> Beneficio real';
-            window._negativoMostrado = false;
+        }
+
+        // Eficiencia Global: color rojo si es negativa
+        const marginElement = document.getElementById('margin');
+        const eficienciaLabel = document.getElementById('eficienciaLabel');
+        if (metrics.margen < 0) {
+            marginElement.className = 'font-data-display text-2xl text-error font-bold';
+            eficienciaLabel.innerHTML = '<span class="material-symbols-outlined text-[12px] mr-1">warning</span> Margen negativo';
+        } else {
+            marginElement.className = 'font-data-display text-2xl text-on-primary-container font-bold';
+            eficienciaLabel.innerHTML = '<span class="material-symbols-outlined text-[12px] mr-1">pie_chart</span> Margen medio';
         }
 
         // Sector Cards
@@ -650,8 +796,45 @@
         document.getElementById('earnPerHour').textContent = '$' + metrics.earnPerHour.toFixed(2);
         document.getElementById('avgTicket').textContent = '$' + metrics.avgTicket.toFixed(2);
 
+        // Punto de equilibrio
+        const eq = metrics.equilibrio;
+        document.getElementById('viajesNecesarios').textContent = eq.viajesNecesarios || 0;
+        document.getElementById('metaDiaria').textContent = '$' + (eq.metaDiaria || 0).toFixed(2);
+        document.getElementById('equilibrioTexto').textContent =
+            `Necesitas ${eq.viajesNecesarios} viajes/día ($${eq.gananciaPromedioPorViaje.toFixed(2)} promedio) para cubrir costos fijos de $${eq.costoFijoDiario.toFixed(2)}/día.`;
+
         // Recomendación IA
-        generarRecomendacion(metrics.sectorData);
+        generarRecomendacion(metrics.sectorData, metrics.diasBuenos, eq);
+
+        // Mejor y peor día
+        const mejorDia = metrics.diasBuenos.length ? metrics.diasBuenos[0] : null;
+        const peorDia = metrics.diasMalos.length ? metrics.diasMalos[0] : null;
+        if (mejorDia) {
+            document.getElementById('mejorDia').textContent = mejorDia.fecha;
+            document.getElementById('mejorDiaGanancia').textContent = '$' + mejorDia.ganancia.toFixed(2);
+            // Al hacer clic en mejor día, mostrar detalle
+            document.getElementById('mejorDia').style.cursor = 'pointer';
+            document.getElementById('mejorDia').onclick = () => {
+                mostrarDetalleDia(mejorDia);
+            };
+        } else {
+            document.getElementById('mejorDia').textContent = '--';
+            document.getElementById('mejorDiaGanancia').textContent = '$0';
+        }
+        if (peorDia) {
+            document.getElementById('peorDia').textContent = peorDia.fecha;
+            document.getElementById('peorDiaGanancia').textContent = '$' + peorDia.ganancia.toFixed(2);
+            document.getElementById('peorDia').style.cursor = 'pointer';
+            document.getElementById('peorDia').onclick = () => {
+                mostrarDetalleDia(peorDia);
+            };
+        } else {
+            document.getElementById('peorDia').textContent = '--';
+            document.getElementById('peorDiaGanancia').textContent = '$0';
+        }
+
+        // Lista de días buenos y malos
+        renderDiasLista(metrics.diasBuenos, metrics.diasMalos);
 
         // Gráficos
         renderGraficos(metrics);
@@ -677,7 +860,7 @@
     }
 
     // ============================================================
-    // RENDER SECTOR CARDS
+    // RENDER SECTOR CARDS (incluye todos los rubros)
     // ============================================================
     function renderSectorCards(sectorData) {
         const container = document.getElementById('sectorCards');
@@ -729,9 +912,62 @@
     }
 
     // ============================================================
+    // RENDER DÍAS BUENOS Y MALOS
+    // ============================================================
+    function renderDiasLista(diasBuenos, diasMalos) {
+        const containerBuenos = document.getElementById('diasBuenos');
+        const containerMalos = document.getElementById('diasMalos');
+
+        if (diasBuenos.length) {
+            containerBuenos.innerHTML = diasBuenos.map(d =>
+                `<div class="dia-bueno pl-2 py-0.5 flex justify-between clickeable" onclick="mostrarDetalleDia(${JSON.stringify(d).replace(/"/g, '&quot;')})">
+                    <span>${d.fecha}</span>
+                    <span class="text-primary">+$${d.ganancia.toFixed(2)}</span>
+                </div>`
+            ).join('');
+        } else {
+            containerBuenos.innerHTML = '<span class="text-on-surface-variant/40">No hay días buenos</span>';
+        }
+
+        if (diasMalos.length) {
+            containerMalos.innerHTML = diasMalos.map(d =>
+                `<div class="dia-malo pl-2 py-0.5 flex justify-between clickeable" onclick="mostrarDetalleDia(${JSON.stringify(d).replace(/"/g, '&quot;')})">
+                    <span>${d.fecha}</span>
+                    <span class="text-error">-$${Math.abs(d.ganancia).toFixed(2)}</span>
+                </div>`
+            ).join('');
+        } else {
+            containerMalos.innerHTML = '<span class="text-on-surface-variant/40">No hay días malos</span>';
+        }
+    }
+
+    // ============================================================
+    // MOSTRAR DETALLE DE UN DÍA (modal)
+    // ============================================================
+    function mostrarDetalleDia(dia) {
+        let html = `
+            <div class="detalle-item"><span>Fecha</span><strong>${dia.fecha}</strong></div>
+            <div class="detalle-item"><span>Ingresos</span><strong class="text-primary">$${dia.ingresos.toFixed(2)}</strong></div>
+            <div class="detalle-item"><span>Gastos Operativos</span><strong class="text-error">$${dia.gastosOp.toFixed(2)}</strong></div>
+            <div class="detalle-total">Ganancia: <strong class="${dia.ganancia >= 0 ? 'text-primary' : 'text-error'}">$${dia.ganancia.toFixed(2)}</strong></div>
+            <hr style="border-color:rgba(255,255,255,0.05);margin:8px 0;">
+            <p class="text-xs text-on-surface-variant/60">Detalle de transacciones:</p>
+        `;
+        dia.items.forEach(item => {
+            const signo = item.tipo === 'ingreso' ? '+' : '-';
+            const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-error';
+            html += `<div class="detalle-item" style="font-size:0.75rem;padding:2px 0;">
+                <span>${item.plataforma || item.categoria || 'N/A'}</span>
+                <span class="${color}">${signo}$${(item.monto || 0).toFixed(2)}</span>
+            </div>`;
+        });
+        abrirModal('Detalle del día ' + dia.fecha, html);
+    }
+
+    // ============================================================
     // RECOMENDACIÓN IA
     // ============================================================
-    function generarRecomendacion(sectorData) {
+    function generarRecomendacion(sectorData, diasBuenos, eq) {
         const sectores = ['transporte', 'electronica', 'km0', 'general'];
         let mejor = { key: '', margin: -Infinity };
         sectores.forEach(sec => {
@@ -753,27 +989,53 @@
         } else {
             recomendacion = `Todos los sectores tienen margen bajo. Revisa gastos operativos y busca aumentar ingresos.`;
         }
+
+        // Agregar recomendación de punto de equilibrio
+        if (eq.viajesNecesarios > 0) {
+            recomendacion += ` 🎯 Necesitas ${eq.viajesNecesarios} viajes/día (prom. $${eq.gananciaPromedioPorViaje.toFixed(2)}) para cubrir costos fijos de $${eq.costoFijoDiario.toFixed(2)}/día.`;
+        }
+
+        // Si hay días buenos, recomendar patrones
+        if (diasBuenos.length >= 3) {
+            recomendacion += ` 📈 Has tenido ${diasBuenos.length} días buenos. Analiza qué hiciste diferente y repítelo.`;
+        } else if (diasBuenos.length === 0) {
+            recomendacion += ` ⚠️ No has tenido días rentables. Revisa urgentemente tus costos operativos y precios.`;
+        }
+
         document.getElementById('iaRecomendacion').innerHTML = recomendacion;
     }
 
     // ============================================================
-    // GRÁFICOS
+    // GRÁFICOS (con gastos operativos en lugar de todos los gastos)
     // ============================================================
     function renderGraficos(metrics) {
         const ingresos = metrics.ingresos;
         const gastos = metrics.gastos;
+        // Filtrar gastos operativos
+        const gastosOp = gastos.filter(g => {
+            const cat = (g.categoria || '').toLowerCase();
+            return cat === 'combustible' ||
+                   cat === 'mantenimiento' ||
+                   cat === 'aceite' ||
+                   cat === 'frenos' ||
+                   cat === 'neumaticos' ||
+                   cat === 'transmision' ||
+                   cat.includes('comisión') ||
+                   cat.includes('comision');
+        });
+
         const fechasMap = {};
         ingresos.forEach(i => {
             const f = i.fecha || '';
             if (!f) return;
-            if (!fechasMap[f]) fechasMap[f] = { ing: 0, gas: 0 };
+            if (!fechasMap[f]) fechasMap[f] = { ing: 0, gasOp: 0 };
             fechasMap[f].ing += (i.monto || 0);
         });
-        gastos.forEach(g => {
+        gastosOp.forEach(g => {
             const f = g.fecha || '';
             if (!f) return;
-            if (!fechasMap[f]) fechasMap[f] = { ing: 0, gas: 0 };
-            fechasMap[f].gas += (g.monto || 0);
+            if (!fechasMap[f]) fechasMap[f] = { ing: 0, gasOp: 0 };
+            fechasMap[f].gasOp += (g.monto || 0);
         });
         const fechas = Object.keys(fechasMap).sort();
         const labels = fechas.map(f => {
@@ -781,7 +1043,7 @@
             return (d.getDate()).toString().padStart(2, '0') + '/' + (d.getMonth() + 1).toString().padStart(2, '0');
         });
         const dataIng = fechas.map(f => fechasMap[f].ing);
-        const dataGas = fechas.map(f => fechasMap[f].gas);
+        const dataGasOp = fechas.map(f => fechasMap[f].gasOp);
 
         // Line chart
         const ctxLine = document.getElementById('ingresosGastosChart').getContext('2d');
@@ -799,7 +1061,7 @@
                 labels: labels,
                 datasets: [
                     { label: 'Ingresos', data: dataIng, borderColor: '#96d4b4', backgroundColor: gradRev, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 },
-                    { label: 'Gastos', data: dataGas, borderColor: '#ffb4ab', backgroundColor: gradExp, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }
+                    { label: 'Gastos Operativos', data: dataGasOp, borderColor: '#ffb4ab', backgroundColor: gradExp, fill: true, tension: 0.4, borderWidth: 2, pointRadius: 2 }
                 ]
             },
             options: {
@@ -813,7 +1075,7 @@
             }
         });
 
-        // Distribución de gastos (pastel) con categorías reales
+        // Distribución de gastos (todas las categorías, no solo operativos)
         const gastosPorCategoria = {};
         gastos.forEach(g => {
             const cat = g.categoria || 'Otros';
@@ -844,7 +1106,7 @@
             }
         });
 
-        // Peso por sector (doughnut)
+        // Peso por sector (ingresos)
         const sectorData = metrics.sectorData;
         const sectorLabels = ['Transporte', 'Electrónica', 'KM0', 'General'];
         const sectorValues = [
@@ -954,7 +1216,6 @@
             showToast('No hay ingresos en este período', 'error');
             return;
         }
-        // Agrupar por rubro y plataforma
         const grupos = {};
         ingresos.forEach(i => {
             const key = (i.plataforma || 'Otros') + ' - ' + (i.rubro || 'General');
