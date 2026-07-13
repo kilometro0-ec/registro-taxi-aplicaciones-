@@ -26,11 +26,9 @@
       transition: background 0.3s ease, color 0.3s ease;
     }
 
-    /* ===== TEMA CLARO (default) ===== */
     :root {
       --bg-page: #f4f7fc;
       --bg-card: #ffffff;
-      --bg-card-hover: #f8faff;
       --border-color: #e2e8f0;
       --text-primary: #0f172a;
       --text-secondary: #475569;
@@ -43,11 +41,9 @@
       --radius: 16px;
     }
 
-    /* ===== TEMA OSCURO ===== */
     html.dark {
       --bg-page: #0a0f1a;
       --bg-card: #172031;
-      --bg-card-hover: #1e2a3f;
       --border-color: #2a3448;
       --text-primary: #e8edf5;
       --text-secondary: #94a3b8;
@@ -61,7 +57,6 @@
 
     body { background: var(--bg-page); color: var(--text-primary); }
 
-    /* ===== TARJETAS ===== */
     .stat-card {
       background: var(--bg-card);
       border-radius: var(--radius);
@@ -129,7 +124,6 @@
     }
     .equilibrio-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-    /* ===== ANIMACIONES ===== */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
@@ -139,7 +133,6 @@
     .stat-card:nth-child(3) { animation-delay: 0.15s; }
     .stat-card:nth-child(4) { animation-delay: 0.20s; }
 
-    /* ===== FILTROS ===== */
     .filtros-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -164,7 +157,6 @@
       .grid-cols-2.md\:grid-cols-4 { grid-template-columns: 1fr 1fr; }
     }
 
-    /* ===== BOTONES ===== */
     .btn-primary {
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
@@ -203,7 +195,6 @@
     }
     .btn-gray:active { transform: scale(0.97); }
 
-    /* ===== INPUTS ===== */
     input, select {
       background: var(--bg-card);
       color: var(--text-primary);
@@ -223,7 +214,6 @@
       box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15);
     }
 
-    /* ===== CHART ===== */
     .chart-container {
       height: 220px;
       min-height: 220px;
@@ -231,7 +221,6 @@
       position: relative;
     }
 
-    /* ===== MODAL ===== */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -301,7 +290,6 @@
       text-align: right;
     }
 
-    /* ===== NAVEGACIÓN INFERIOR ===== */
     .nav-bottom {
       position: fixed;
       bottom: 0;
@@ -342,18 +330,15 @@
       .nav-item { font-size: 0.5rem; padding: 2px 6px; }
     }
 
-    /* ===== BADGES ===== */
     .badge-success { background: #dcfce7; color: #166534; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
     .badge-danger { background: #fee2e2; color: #991b1b; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
     .badge-warning { background: #fef3c7; color: #92400e; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
     .badge-info { background: #dbeafe; color: #1e40af; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
-
     html.dark .badge-success { background: #065f46; color: #86efac; }
     html.dark .badge-danger { background: #7f1d1d; color: #fca5a5; }
     html.dark .badge-warning { background: #78350f; color: #fcd34d; }
     html.dark .badge-info { background: #1e3a5f; color: #93c5fd; }
 
-    /* ===== TOAST ===== */
     .toast {
       position: fixed;
       bottom: 90px;
@@ -375,7 +360,6 @@
     .toast.error { background: #dc2626; color: white; border: none; }
     .toast.success { background: #16a34a; color: white; border: none; }
 
-    /* ===== STATUS ===== */
     .status {
       display: inline-flex;
       align-items: center;
@@ -392,7 +376,6 @@
     .status.loading { background: #fef3c7; color: #92400e; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
-    /* ===== UTILITARIOS ===== */
     .text-primary { color: var(--primary) !important; }
     .text-tertiary { color: #b91c1c !important; }
     html.dark .text-tertiary { color: #fca5a5 !important; }
@@ -482,10 +465,8 @@
     <div id="filtroInfo" class="mt-3 text-xs text-center text-gray-500 dark:text-gray-400 hidden">✅ Filtro aplicado: <span id="filtroTexto" class="font-medium text-primary"></span></div>
   </section>
 
-  <!-- RESUMEN POR RUBRO (TODOS LOS RUBROS) -->
-  <div id="resumenRubros" class="grid grid-cols-2 md:grid-cols-4 gap-3">
-    <!-- Se llena dinámicamente -->
-  </div>
+  <!-- RESUMEN POR RUBRO -->
+  <div id="resumenRubros" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
 
   <!-- COSTO POR KM Y COSTOS FIJOS -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -524,7 +505,7 @@
     </div>
   </div>
 
-  <!-- GENERAL (totales globales) -->
+  <!-- GENERAL -->
   <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="stat-card"><p class="label">💰 Ingresos Totales</p><p class="value text-primary" id="totIngresos">$0</p></div>
     <div class="stat-card"><p class="label">💸 Gastos Totales</p><p class="value text-tertiary" id="totGastos">$0</p></div>
@@ -553,7 +534,7 @@
     <span class="text-xs text-gray-500 dark:text-gray-400">Días en el rango seleccionado sin actividad</span>
   </div>
 
-  <!-- GRÁFICO RENTABILIDAD -->
+  <!-- GRÁFICO RENTABILIDAD (con datos filtrados) -->
   <div class="stat-card">
     <div class="flex justify-between items-center flex-wrap gap-3 mb-3">
       <span class="font-bold text-sm">📊 Rentabilidad Diaria</span>
@@ -572,7 +553,7 @@
     </div>
   </div>
 
-  <!-- DESGLOSE -->
+  <!-- DESGLOSE (con datos filtrados) -->
   <div class="stat-card">
     <p class="font-bold text-sm mb-3">📊 Desglose Ingresos vs Costos (Transporte)</p>
     <div class="chart-container"><canvas id="desgloseChart"></canvas></div>
@@ -585,7 +566,7 @@
     <div id="recomendacion" class="mt-3 text-center text-sm p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl font-medium"></div>
   </div>
 
-  <!-- RECOMENDACIÓN "IA" -->
+  <!-- RECOMENDACIÓN "IA" (con fechas formateadas) -->
   <div class="stat-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: none;">
     <p class="font-bold text-sm text-gray-800">💡 Recomendación inteligente</p>
     <p id="iaRecomendacion" class="text-sm text-gray-700 font-medium">Cargando...</p>
@@ -624,7 +605,7 @@
 
 </main>
 
-<!-- NAVEGACIÓN INFERIOR -->
+<!-- NAVEGACIÓN INFERIOR (con enlaces correctos y estilos) -->
 <nav class="nav-bottom">
   <a href="Dashboard.html" class="nav-item"><span class="icon">📊</span><span>Panel</span></a>
   <a href="registro_ingreso.html" class="nav-item"><span class="icon">💰</span><span>Ingresos</span></a>
@@ -655,10 +636,7 @@ function loadTheme() {
   if (localStorage.getItem('darkMode') === 'true') {
     document.documentElement.classList.add('dark');
   }
-  // Actualizar gráficos si existen
-  setTimeout(() => {
-    if (statsData) renderizar();
-  }, 100);
+  setTimeout(() => { if (statsData) renderizar(); }, 100);
 }
 
 // ============================================================
@@ -788,9 +766,10 @@ function filtrarDatos() {
 }
 
 // ============================================================
-// CALCULAR MÉTRICAS POR RUBRO
+// CALCULAR MÉTRICAS FILTRADAS
 // ============================================================
-function calcularMetricasPorRubro(ingresos, gastos) {
+function calcularMetricasFiltradas(ingresos, gastos) {
+  // Rubros
   const rubros = {};
   ingresos.forEach(i => {
     const r = i.rubro || 'General';
@@ -811,62 +790,18 @@ function calcularMetricasPorRubro(ingresos, gastos) {
     d.margen = d.ingresos > 0 ? (d.ganancia / d.ingresos) * 100 : 0;
     d.gananciaHora = d.horas > 0 ? d.ganancia / d.horas : 0;
   });
-  return rubros;
-}
 
-// ============================================================
-// RENDERIZAR
-// ============================================================
-function renderizar() {
-  if (!statsData || !activityData.length) return;
-
-  const datos = filtrarDatos();
-  const ingresos = datos.ingresos;
-  const gastos = datos.gastos;
-
-  const rubros = calcularMetricasPorRubro(ingresos, gastos);
-  const rubrosKeys = Object.keys(rubros);
-
-  const contenedorRubros = document.getElementById('resumenRubros');
-  if (rubrosKeys.length) {
-    contenedorRubros.innerHTML = rubrosKeys.map(r => {
-      const d = rubros[r];
-      const icon = r === 'Transporte' ? '🚖' : r === 'Electrónica' ? '🤖' : r === 'General' ? '🏠' : '📦';
-      const badge = d.ganancia >= 0 ? 'badge-success' : 'badge-danger';
-      return `<div class="stat-card">
-        <p class="label">${icon} ${r}</p>
-        <p class="value text-primary">$${d.ganancia.toFixed(2)}</p>
-        <span class="sub">Ingresos: $${d.ingresos.toFixed(2)} | Gastos: $${d.gastos.toFixed(2)}</span>
-        <span class="sub mt-1">Margen: ${d.margen.toFixed(1)}% <span class="${badge}">${d.ganancia >= 0 ? '✅' : '❌'}</span></span>
-      </div>`;
-    }).join('');
-  } else {
-    contenedorRubros.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-6">📭 No hay datos para mostrar</div>';
-  }
-
+  // Totales generales
   const totalIngresos = ingresos.reduce((s, i) => s + (i.monto || 0), 0);
   const totalGastos = gastos.reduce((s, g) => s + (g.monto || 0), 0);
   const gananciaNeta = totalIngresos - totalGastos;
   const margen = totalIngresos > 0 ? (gananciaNeta / totalIngresos) * 100 : 0;
-  document.getElementById('totIngresos').textContent = '$' + totalIngresos.toFixed(2);
-  document.getElementById('totGastos').textContent = '$' + totalGastos.toFixed(2);
-  document.getElementById('gananciaNeta').textContent = '$' + gananciaNeta.toFixed(2);
-  document.getElementById('margen').textContent = margen.toFixed(1) + '%';
-  const mg = margen;
-  const mgBadge = document.getElementById('margenBadge');
-  if (mg >= 15) mgBadge.innerHTML = '<span class="badge-success">✅ Excelente</span>';
-  else if (mg >= 5) mgBadge.innerHTML = '<span class="badge-warning">📊 Regular</span>';
-  else mgBadge.innerHTML = '<span class="badge-danger">⚠️ Mejorable</span>';
-
   const totalViajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
   const totalKm = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
   const totalHoras = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
   const gananciaHora = totalHoras > 0 ? gananciaNeta / totalHoras : 0;
-  document.getElementById('viajes').textContent = totalViajes;
-  document.getElementById('kmTotales').textContent = totalKm.toFixed(1);
-  document.getElementById('horas').textContent = totalHoras.toFixed(1);
-  document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
 
+  // Días sin trabajo
   const fechasActividad = new Set();
   ingresos.forEach(i => { if (i.fecha) fechasActividad.add(i.fecha); });
   gastos.forEach(g => { if (g.fecha) fechasActividad.add(g.fecha); });
@@ -881,18 +816,160 @@ function renderizar() {
       current.setDate(current.getDate() + 1);
     }
   }
-  document.getElementById('diasSinTrabajo').textContent = diasSinTrabajo;
 
+  // Rentabilidad diaria (a partir de ingresos y gastos filtrados)
+  const dias = {};
+  ingresos.forEach(i => {
+    const f = i.fecha || '';
+    if (!f) return;
+    if (!dias[f]) dias[f] = { ingresos: 0, gastos: 0 };
+    dias[f].ingresos += (i.monto || 0);
+  });
+  gastos.forEach(g => {
+    const f = g.fecha || '';
+    if (!f) return;
+    if (!dias[f]) dias[f] = { ingresos: 0, gastos: 0 };
+    dias[f].gastos += (g.monto || 0);
+  });
+  const fechas = Object.keys(dias).sort();
+  const gananciasDiarias = fechas.map(f => {
+    const ing = dias[f].ingresos;
+    const gas = dias[f].gastos;
+    return ing - gas;
+  });
+  const umbral = parseFloat(document.getElementById('umbral').value) || 40;
+  const diasRentables = gananciasDiarias.filter(g => g >= umbral).length;
+  const diasNoRentables = gananciasDiarias.filter(g => g < umbral && g >= 0).length;
+  const pctRentabilidad = fechas.length > 0 ? (diasRentables / fechas.length) * 100 : 0;
+  const promRentable = diasRentables > 0 ? gananciasDiarias.filter(g => g >= umbral).reduce((s, g) => s + g, 0) / diasRentables : 0;
+
+  // Desglose de transporte (combustible, mantenimiento, comisiones) a partir de gastos filtrados
+  const gastosTransp = gastos.filter(g => (g.rubro || '').toLowerCase() === 'transporte');
+  const desglose = {
+    combustible: gastosTransp.filter(g => (g.categoria || '').toLowerCase() === 'combustible').reduce((s, g) => s + (g.monto || 0), 0),
+    mantenimiento: gastosTransp.filter(g => {
+      const cat = (g.categoria || '').toLowerCase();
+      return ['mantenimiento', 'aceite', 'frenos', 'neumaticos', 'transmision'].some(c => cat.includes(c));
+    }).reduce((s, g) => s + (g.monto || 0), 0),
+    comisiones: gastosTransp.filter(g => {
+      const cat = (g.categoria || '').toLowerCase();
+      return cat.includes('comisión') || cat.includes('comision');
+    }).reduce((s, g) => s + (g.monto || 0), 0)
+  };
+  // Para el gráfico de desglose diario, necesitamos los valores por día
+  const desgloseDiario = {};
+  gastosTransp.forEach(g => {
+    const f = g.fecha || '';
+    if (!f) return;
+    if (!desgloseDiario[f]) desgloseDiario[f] = { combustible: 0, mantenimiento: 0, comisiones: 0 };
+    const monto = g.monto || 0;
+    const cat = (g.categoria || '').toLowerCase();
+    if (cat === 'combustible') desgloseDiario[f].combustible += monto;
+    else if (['mantenimiento', 'aceite', 'frenos', 'neumaticos', 'transmision'].some(c => cat.includes(c))) desgloseDiario[f].mantenimiento += monto;
+    else if (cat.includes('comisión') || cat.includes('comision')) desgloseDiario[f].comisiones += monto;
+  });
+  // También necesitamos los ingresos diarios de transporte para el desglose
+  const ingresosTransp = ingresos.filter(i => (i.rubro || '').toLowerCase() === 'transporte');
+  ingresosTransp.forEach(i => {
+    const f = i.fecha || '';
+    if (!f) return;
+    if (!desgloseDiario[f]) desgloseDiario[f] = { combustible: 0, mantenimiento: 0, comisiones: 0, ingresos: 0 };
+    desgloseDiario[f].ingresos = (desgloseDiario[f].ingresos || 0) + (i.monto || 0);
+  });
+  const fechasDesg = Object.keys(desgloseDiario).sort();
+  const dataDesg = {
+    fechas: fechasDesg,
+    ingresos: fechasDesg.map(f => desgloseDiario[f].ingresos || 0),
+    combustible: fechasDesg.map(f => desgloseDiario[f].combustible || 0),
+    mantenimiento: fechasDesg.map(f => desgloseDiario[f].mantenimiento || 0),
+    comisiones: fechasDesg.map(f => desgloseDiario[f].comisiones || 0)
+  };
+
+  return {
+    rubros,
+    totalIngresos,
+    totalGastos,
+    gananciaNeta,
+    margen,
+    totalViajes,
+    totalKm,
+    totalHoras,
+    gananciaHora,
+    diasSinTrabajo,
+    rentabilidadDiaria: {
+      fechas,
+      ganancias: gananciasDiarias,
+      diasRentables,
+      diasNoRentables,
+      pctRentabilidad,
+      promRentable,
+      umbral
+    },
+    desgloseDiario: dataDesg,
+    desgloseTotales: desglose
+  };
+}
+
+// ============================================================
+// RENDERIZAR (todo con datos filtrados)
+// ============================================================
+function renderizar() {
+  if (!statsData || !activityData.length) return;
+
+  const datos = filtrarDatos();
+  const ingresos = datos.ingresos;
+  const gastos = datos.gastos;
+  const metricas = calcularMetricasFiltradas(ingresos, gastos);
+
+  // 1. Resumen por rubro
+  const contenedorRubros = document.getElementById('resumenRubros');
+  const rubrosKeys = Object.keys(metricas.rubros);
+  if (rubrosKeys.length) {
+    contenedorRubros.innerHTML = rubrosKeys.map(r => {
+      const d = metricas.rubros[r];
+      const icon = r === 'Transporte' ? '🚖' : r === 'Electrónica' ? '🤖' : r === 'General' ? '🏠' : '📦';
+      const badge = d.ganancia >= 0 ? 'badge-success' : 'badge-danger';
+      return `<div class="stat-card">
+        <p class="label">${icon} ${r}</p>
+        <p class="value text-primary">$${d.ganancia.toFixed(2)}</p>
+        <span class="sub">Ingresos: $${d.ingresos.toFixed(2)} | Gastos: $${d.gastos.toFixed(2)}</span>
+        <span class="sub mt-1">Margen: ${d.margen.toFixed(1)}% <span class="${badge}">${d.ganancia >= 0 ? '✅' : '❌'}</span></span>
+      </div>`;
+    }).join('');
+  } else {
+    contenedorRubros.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-6">📭 No hay datos para mostrar</div>';
+  }
+
+  // 2. Generales
+  document.getElementById('totIngresos').textContent = '$' + metricas.totalIngresos.toFixed(2);
+  document.getElementById('totGastos').textContent = '$' + metricas.totalGastos.toFixed(2);
+  document.getElementById('gananciaNeta').textContent = '$' + metricas.gananciaNeta.toFixed(2);
+  document.getElementById('margen').textContent = metricas.margen.toFixed(1) + '%';
+  const mg = metricas.margen;
+  const mgBadge = document.getElementById('margenBadge');
+  if (mg >= 15) mgBadge.innerHTML = '<span class="badge-success">✅ Excelente</span>';
+  else if (mg >= 5) mgBadge.innerHTML = '<span class="badge-warning">📊 Regular</span>';
+  else mgBadge.innerHTML = '<span class="badge-danger">⚠️ Mejorable</span>';
+
+  document.getElementById('viajes').textContent = metricas.totalViajes;
+  document.getElementById('kmTotales').textContent = metricas.totalKm.toFixed(1);
+  document.getElementById('horas').textContent = metricas.totalHoras.toFixed(1);
+  document.getElementById('gananciaHora').textContent = '$' + metricas.gananciaHora.toFixed(2);
+  document.getElementById('diasSinTrabajo').textContent = metricas.diasSinTrabajo;
+
+  // 3. Costo por km (usamos datos del servidor como base, pero se podría recalcular con filtrados)
   const t = statsData.transporte || {};
   const ckm = t.costoPorKm || {};
   document.getElementById('costoCombustible').textContent = '$' + (ckm.combustible || 0).toFixed(3);
   document.getElementById('costoMantenimiento').textContent = '$' + (ckm.mantenimiento || 0).toFixed(3);
   document.getElementById('costoTotalKm').textContent = '$' + (ckm.total || 0).toFixed(3);
 
+  // Costos fijos (localStorage)
   const fijos = cargarFijosLocal();
   document.getElementById('totalFijos').textContent = '$' + (fijos.total || 0).toFixed(2);
   document.getElementById('costoFijoDiario').textContent = '$' + (fijos.diario || 0).toFixed(2);
 
+  // 4. Punto de equilibrio
   const eq = statsData.equilibrio || {};
   const meta = parseFloat(document.getElementById('metaDiaria').value) || 40;
   const viajesMeta = eq.margenPorViaje > 0 ? Math.ceil(meta / eq.margenPorViaje) : 0;
@@ -900,24 +977,34 @@ function renderizar() {
   document.getElementById('viajesNecesarios').textContent = viajesMeta || 0;
   document.getElementById('kmNecesarios').textContent = (kmMeta || 0).toFixed(1);
 
-  const rd = statsData.rentabilidadDiaria || {};
+  // 5. Rentabilidad diaria (filtrada)
+  const rd = metricas.rentabilidadDiaria;
   document.getElementById('diasRentables').textContent = rd.diasRentables || 0;
   document.getElementById('diasNoRentables').textContent = rd.diasNoRentables || 0;
-  document.getElementById('pctRentabilidad').textContent = (rd.porcentajeRentabilidad || 0).toFixed(1) + '%';
-  document.getElementById('promRentable').textContent = '$' + (rd.gananciaPromedioDiasRentables || 0).toFixed(2);
+  document.getElementById('pctRentabilidad').textContent = (rd.pctRentabilidad || 0).toFixed(1) + '%';
+  document.getElementById('promRentable').textContent = '$' + (rd.promRentable || 0).toFixed(2);
 
+  // 6. ROI (usamos datos del servidor, pero se podría recalcular)
   const roi = statsData.roi || {};
   document.getElementById('roiHora').textContent = '$' + (roi.gananciaPorHora || 0).toFixed(2);
   document.getElementById('roiVs').textContent = ((roi.comparativa || 0) > 0 ? '+' : '') + (roi.comparativa || 0).toFixed(2);
   document.getElementById('roiPct').textContent = (roi.roi || 0).toFixed(1) + '%';
   document.getElementById('roiEstado').textContent = roi.estado || '-';
 
-  generarRecomendacionIA(rd, {});
-  renderAnalisisRubros(statsData.analisisRubros || []);
+  // 7. Recomendación IA (con fechas formateadas)
+  generarRecomendacionIA(rd);
+
+  // 8. Análisis por rubro
+  renderAnalisisRubros(ingresos, gastos, metricas.desgloseTotales);
+
+  // 9. Gráficos
   renderGraficoRentabilidad(rd);
-  renderGraficoDesglose(statsData.desgloseDiario || {});
+  renderGraficoDesglose(metricas.desgloseDiario);
+
+  // 10. Tabla
   renderTablaFiltrada(ingresos, gastos);
 
+  // 11. Indicador de filtro
   const filtroInfo = document.getElementById('filtroInfo');
   const filtroTexto = document.getElementById('filtroTexto');
   const inicio = document.getElementById('fechaInicio').value;
@@ -933,7 +1020,7 @@ function renderizar() {
 }
 
 // ============================================================
-// GRÁFICOS (con mejora de colores)
+// GRÁFICOS (con datos filtrados)
 // ============================================================
 function renderGraficoRentabilidad(rd) {
   const canvas = document.getElementById('rentabilidadChart');
@@ -941,7 +1028,7 @@ function renderGraficoRentabilidad(rd) {
   if (charts.rent) { charts.rent.destroy(); charts.rent = null; }
   const fechas = rd.fechas || [];
   const ganancias = rd.ganancias || [];
-  const umbral = parseFloat(document.getElementById('umbral').value) || 40;
+  const umbral = rd.umbral || 40;
   if (!fechas.length) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#94a3b8'; ctx.font = '14px Inter'; ctx.textAlign = 'center';
@@ -1010,15 +1097,15 @@ function renderGraficoRentabilidad(rd) {
   });
 }
 
-function renderGraficoDesglose(desg) {
+function renderGraficoDesglose(data) {
   const canvas = document.getElementById('desgloseChart');
   const ctx = canvas.getContext('2d');
   if (charts.desg) { charts.desg.destroy(); charts.desg = null; }
-  const fechas = desg.fechas || [];
-  const ingresos = desg.ingresos || [];
-  const comb = desg.combustible || [];
-  const mant = desg.mantenimiento || [];
-  const comis = desg.comisiones || [];
+  const fechas = data.fechas || [];
+  const ingresos = data.ingresos || [];
+  const comb = data.combustible || [];
+  const mant = data.mantenimiento || [];
+  const comis = data.comisiones || [];
   if (!fechas.length) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#94a3b8'; ctx.font = '14px Inter'; ctx.textAlign = 'center';
@@ -1052,27 +1139,77 @@ function renderGraficoDesglose(desg) {
   });
 }
 
-function renderAnalisisRubros(analisis) {
+// ============================================================
+// ANÁLISIS POR RUBRO
+// ============================================================
+function renderAnalisisRubros(ingresos, gastos, desglose) {
   const container = document.getElementById('rubrosContainer');
-  if (!analisis || !analisis.length) {
+  const rubros = {};
+  ingresos.forEach(i => {
+    const r = i.rubro || 'General';
+    if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
+    rubros[r].ingresos += (i.monto || 0);
+    rubros[r].viajes += (i.orden || 0);
+    rubros[r].km += (i.kmTotal || 0);
+    rubros[r].horas += (i.horas || 0);
+  });
+  gastos.forEach(g => {
+    const r = g.rubro || 'General';
+    if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
+    rubros[r].gastos += (g.monto || 0);
+  });
+
+  const analisis = Object.keys(rubros).map(r => {
+    const d = rubros[r];
+    // Para transporte, usamos el desglose calculado
+    let gastosTotales = d.gastos;
+    let comisiones = 0, mantenimiento = 0, combustible = 0;
+    if (r === 'Transporte') {
+      comisiones = desglose.comisiones || 0;
+      mantenimiento = desglose.mantenimiento || 0;
+      combustible = desglose.combustible || 0;
+      gastosTotales = d.gastos + comisiones + mantenimiento + combustible;
+    }
+    const ganancia = d.ingresos - gastosTotales;
+    const margen = d.ingresos > 0 ? (ganancia / d.ingresos) * 100 : 0;
+    const gananciaHora = d.horas > 0 ? ganancia / d.horas : 0;
+    return {
+      rubro: r,
+      ingresos: d.ingresos,
+      gastos: d.gastos,
+      viajes: d.viajes,
+      km: d.km,
+      horas: d.horas,
+      gastosTotales,
+      comisiones,
+      mantenimiento,
+      combustible,
+      ganancia,
+      margen,
+      gananciaHora
+    };
+  }).sort((a,b) => b.ganancia - a.ganancia);
+
+  if (!analisis.length) {
     container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">Sin datos</div>';
     document.getElementById('recomendacion').textContent = 'Sin recomendación';
     return;
   }
+
   container.innerHTML = analisis.slice(0, 4).map(r => {
     const badge = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
     const icon = r.rubro === 'Transporte' ? '🚖' : r.rubro === 'Electrónica' ? '🤖' : r.rubro === 'General' ? '🏠' : '📦';
     const detalle = {
       ingresos: r.ingresos,
-      comisiones: r.gastosTotales * 0.1,
-      mantenimiento: r.gastosTotales * 0.05,
-      combustible: r.gastosTotales * 0.1,
-      otros: r.gastosTotales * 0.75,
+      comisiones: r.comisiones,
+      mantenimiento: r.mantenimiento,
+      combustible: r.combustible,
+      otros: r.gastos,
       gananciaReal: r.ganancia,
       horas: r.horas,
       gananciaHora: r.gananciaHora,
       margen: r.margen,
-      comisionPct: 10
+      comisionPct: r.ingresos > 0 ? (r.comisiones / r.ingresos) * 100 : 0
     };
     return `<div class="rubro-clickeable bg-gray-50 dark:bg-gray-800/40 rounded-xl p-3 text-center border dark:border-gray-700 shadow-sm" data-rubro="${r.rubro}" data-detalle='${JSON.stringify(detalle)}'>
       <p class="font-bold text-sm">${icon} ${r.rubro}</p>
@@ -1083,6 +1220,7 @@ function renderAnalisisRubros(analisis) {
       <span class="${badge} inline-block mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
     </div>`;
   }).join('');
+
   container.querySelectorAll('.rubro-clickeable').forEach(el => {
     el.addEventListener('click', function() {
       const rubro = this.dataset.rubro;
@@ -1090,6 +1228,7 @@ function renderAnalisisRubros(analisis) {
       abrirModal(rubro, detalle);
     });
   });
+
   const mejor = analisis[0];
   let rec = '';
   if (mejor && mejor.ganancia > 0) rec += `✅ ${mejor.rubro} es tu negocio más rentable ($${mejor.ganancia.toFixed(2)}). `;
@@ -1098,6 +1237,60 @@ function renderAnalisisRubros(analisis) {
   document.getElementById('recomendacion').textContent = rec || 'Todos los rubros son rentables. 🎉';
 }
 
+// ============================================================
+// RECOMENDACIÓN IA (con fechas formateadas)
+// ============================================================
+function generarRecomendacionIA(rd) {
+  const fechas = rd.fechas || [];
+  const ganancias = rd.ganancias || [];
+  if (!fechas.length) {
+    document.getElementById('iaRecomendacion').textContent = 'Sin datos suficientes.';
+    document.getElementById('mejorDia').textContent = '-';
+    document.getElementById('peorDia').textContent = '-';
+    document.getElementById('mejorDiaHora').textContent = '-';
+    return;
+  }
+  let mejorIdx = 0, peorIdx = 0;
+  for (let i = 1; i < ganancias.length; i++) {
+    if (ganancias[i] > ganancias[mejorIdx]) mejorIdx = i;
+    if (ganancias[i] < ganancias[peorIdx]) peorIdx = i;
+  }
+  // Formatear fechas a dd/mm/yyyy
+  const formatFecha = (f) => {
+    const d = new Date(f);
+    return (d.getDate()).toString().padStart(2,'0') + '/' + (d.getMonth()+1).toString().padStart(2,'0') + '/' + d.getFullYear();
+  };
+  document.getElementById('mejorDia').textContent = formatFecha(fechas[mejorIdx]) + ' ($' + ganancias[mejorIdx].toFixed(2) + ')';
+  document.getElementById('peorDia').textContent = formatFecha(fechas[peorIdx]) + ' ($' + ganancias[peorIdx].toFixed(2) + ')';
+
+  // Mejor ganancia/hora (simulado)
+  const dias = {};
+  activityData.forEach(a => {
+    if (a.fecha && a.tipo === 'ingreso') {
+      if (!dias[a.fecha]) dias[a.fecha] = { ingresos: 0, horas: 0 };
+      dias[a.fecha].ingresos += (a.monto || 0);
+      dias[a.fecha].horas += (a.horas || 0);
+    }
+  });
+  let mejorHora = { fecha: '', ratio: 0 };
+  Object.keys(dias).forEach(f => {
+    const d = dias[f];
+    const ratio = d.horas > 0 ? d.ingresos / d.horas : 0;
+    if (ratio > mejorHora.ratio) mejorHora = { fecha: f, ratio };
+  });
+  document.getElementById('mejorDiaHora').textContent = mejorHora.fecha ? formatFecha(mejorHora.fecha) + ' ($' + mejorHora.ratio.toFixed(2) + '/h)' : '-';
+
+  const promGanancia = ganancias.reduce((s, v) => s + v, 0) / ganancias.length;
+  let rec = '';
+  if (promGanancia > 40) rec = '✅ Tus días son en promedio rentables. Sigue así.';
+  else if (promGanancia > 0) rec = '📊 Tus días son moderados. Busca reducir costos o aumentar viajes.';
+  else rec = '⚠️ Estás perdiendo dinero en promedio. Revisa tus costos.';
+  document.getElementById('iaRecomendacion').textContent = rec;
+}
+
+// ============================================================
+// TABLA FILTRADA
+// ============================================================
 function renderTablaFiltrada(ingresos, gastos) {
   const tbody = document.getElementById('tablaBody');
   const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
@@ -1121,50 +1314,6 @@ function renderTablaFiltrada(ingresos, gastos) {
       <td class="p-2 text-right">${item.orden||0}</td>
     </tr>`;
   }).join('');
-}
-
-// ============================================================
-// RECOMENDACIÓN IA
-// ============================================================
-function generarRecomendacionIA(rd, g) {
-  const fechas = rd.fechas || [];
-  const ganancias = rd.ganancias || [];
-  if (!fechas.length) {
-    document.getElementById('iaRecomendacion').textContent = 'Sin datos suficientes.';
-    return;
-  }
-  let mejorIdx = 0, peorIdx = 0;
-  for (let i = 1; i < ganancias.length; i++) {
-    if (ganancias[i] > ganancias[mejorIdx]) mejorIdx = i;
-    if (ganancias[i] < ganancias[peorIdx]) peorIdx = i;
-  }
-  document.getElementById('mejorDia').textContent = fechas[mejorIdx] + ' ($' + ganancias[mejorIdx].toFixed(2) + ')';
-  document.getElementById('peorDia').textContent = fechas[peorIdx] + ' ($' + ganancias[peorIdx].toFixed(2) + ')';
-
-  const dias = {};
-  activityData.forEach(a => {
-    if (a.fecha) {
-      if (!dias[a.fecha]) dias[a.fecha] = { ingresos: 0, horas: 0 };
-      if (a.tipo === 'ingreso') {
-        dias[a.fecha].ingresos += (a.monto || 0);
-        dias[a.fecha].horas += (a.horas || 0);
-      }
-    }
-  });
-  let mejorHora = { fecha: '', ratio: 0 };
-  Object.keys(dias).forEach(f => {
-    const d = dias[f];
-    const ratio = d.horas > 0 ? d.ingresos / d.horas : 0;
-    if (ratio > mejorHora.ratio) mejorHora = { fecha: f, ratio };
-  });
-  document.getElementById('mejorDiaHora').textContent = mejorHora.fecha + ' ($' + mejorHora.ratio.toFixed(2) + '/h)';
-
-  const promGanancia = ganancias.reduce((s, v) => s + v, 0) / ganancias.length;
-  let rec = '';
-  if (promGanancia > 40) rec = '✅ Tus días son en promedio rentables. Sigue así.';
-  else if (promGanancia > 0) rec = '📊 Tus días son moderados. Busca reducir costos o aumentar viajes.';
-  else rec = '⚠️ Estás perdiendo dinero en promedio. Revisa tus costos.';
-  document.getElementById('iaRecomendacion').textContent = rec;
 }
 
 // ============================================================
