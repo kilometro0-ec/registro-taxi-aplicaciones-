@@ -36,7 +36,6 @@
     body.dark .bg-gray-200 { background: #2a3448 !important; }
     body.dark .text-gray-500 { color: #94a3b8 !important; }
     body.dark .text-gray-600 { color: #b0c4db !important; }
-    body.dark .text-gray-700 { color: #c8d6e5 !important; }
     body.dark .border-gray-100 { border-color: #2a3448 !important; }
     body.dark .border-gray-200 { border-color: #3a4559 !important; }
     body.dark .filter-card { background: #151e2f; border-color: #2a3448; }
@@ -317,9 +316,34 @@
     .modal-body td { padding: 6px 0; border-bottom: 1px solid #f3f4f6; }
     .modal-total { margin-top: 10px; font-weight: 700; text-align: right; font-size: 0.95rem; border-top: 2px solid #e5e7eb; padding-top: 10px; }
 
+    /* Estructura de filtros en 2 columnas */
+    .filtros-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .filtros-grid .full-width {
+      grid-column: 1 / -1;
+    }
+    .filtros-grid .btn-group {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
     @media (max-width: 640px) {
-      .filter-card .flex { flex-direction: column; align-items: stretch; }
-      .filter-card .flex > * { width: 100%; }
+      .filtros-grid {
+        grid-template-columns: 1fr;
+      }
+      .filtros-grid .full-width {
+        grid-column: 1;
+      }
+      .filtros-grid .btn-group {
+        justify-content: stretch;
+      }
+      .filtros-grid .btn-group button {
+        flex: 1;
+      }
       .filter-card input[type="date"] { font-size: 16px; padding: 10px 8px; }
       .stat-card .value { font-size: 1.2rem; }
       .chart-container { height: 180px; min-height: 180px; }
@@ -368,18 +392,18 @@
   <!-- MAIN -->
   <main class="pt-16 px-3 py-3 space-y-3 max-w-7xl mx-auto" id="dashboardContent">
 
-    <!-- FILTROS -->
+    <!-- FILTROS - ESTRUCTURA MEJORADA EN 2 COLUMNAS -->
     <section class="filter-card">
-      <div class="flex flex-wrap items-end gap-2">
-        <div class="flex-1 min-w-[110px]">
+      <div class="filtros-grid">
+        <div>
           <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
           <input type="date" id="fechaInicio" class="w-full border rounded-xl px-3 py-2 text-sm" />
         </div>
-        <div class="flex-1 min-w-[110px]">
+        <div>
           <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
           <input type="date" id="fechaFin" class="w-full border rounded-xl px-3 py-2 text-sm" />
         </div>
-        <div class="flex-1 min-w-[110px]">
+        <div>
           <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro</label>
           <select id="rubroFilter" class="w-full border rounded-xl px-3 py-2 text-sm">
             <option value="all">Todos</option>
@@ -389,17 +413,17 @@
             <option value="general">🏠 General</option>
           </select>
         </div>
-        <div class="flex-1 min-w-[110px]">
+        <div>
           <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría</label>
           <select id="categoriaFilter" class="w-full border rounded-xl px-3 py-2 text-sm">
             <option value="all">Todas</option>
           </select>
         </div>
-        <div class="flex gap-2 flex-wrap">
-          <button id="applyFiltersBtn" class="bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-1 shadow-sm">
+        <div class="full-width btn-group">
+          <button id="applyFiltersBtn" class="bg-primary text-white px-4 py-2 rounded-xl font-bold text-sm flex items-center gap-1 shadow-sm flex-1 justify-center">
             <span class="material-symbols-outlined text-[18px]">filter_alt</span> Aplicar
           </button>
-          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-sm font-bold">Limpiar</button>
+          <button id="clearFiltersBtn" class="bg-gray-200 text-gray-700 px-3 py-2 rounded-xl text-sm font-bold flex-1">Limpiar</button>
         </div>
       </div>
     </section>
@@ -424,15 +448,15 @@
       </div>
     </section>
 
-    <!-- COSTO POR KM -->
+    <!-- COSTO POR KM Y COSTOS FIJOS -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div class="costo-km-card">
         <div class="flex justify-between items-center flex-wrap gap-2">
           <span class="text-sm font-bold text-primary">🚗 Costo por km</span>
           <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-xs">Combustible: <strong id="costoCombustibleKm">$0.00</strong>/km</span>
-            <span class="text-xs">Mantenimiento: <strong id="costoMantenimientoKm">$0.00</strong>/km</span>
-            <span class="text-xs font-bold">Total: <strong id="costoTotalKm">$0.00</strong>/km</span>
+            <span class="text-xs">Combustible: <strong id="costoCombustibleKm">$0.000</strong>/km</span>
+            <span class="text-xs">Mantenimiento: <strong id="costoMantenimientoKm">$0.000</strong>/km</span>
+            <span class="text-xs font-bold">Total: <strong id="costoTotalKm">$0.000</strong>/km</span>
           </div>
         </div>
       </div>
@@ -447,14 +471,15 @@
       </div>
     </div>
 
-    <!-- PUNTO DE EQUILIBRIO -->
+    <!-- PUNTO DE EQUILIBRIO CON META CONFIGURABLE -->
     <div class="equilibrio-card">
       <div class="flex justify-between items-center flex-wrap gap-2">
         <span class="lbl">🎯 Punto de Equilibrio</span>
-        <div class="flex items-center gap-4 flex-wrap">
+        <div class="flex items-center gap-3 flex-wrap">
           <span class="text-sm">Viajes/día: <span class="num" id="viajesNecesarios">0</span></span>
-          <span class="text-sm">Km/día: <span class="num" id="kmNecesarios">0</span></span>
-          <span class="text-sm">Meta diaria: <span class="num" id="metaDiaria">$0</span></span>
+          <span class="text-sm">Km/día: <span class="num" id="kmNecesarios">0.0</span></span>
+          <span class="text-sm">Meta diaria: $<input type="number" id="metaDiariaInput" class="threshold-input" style="width:100px;display:inline-block;" value="40" step="5" min="0" /></span>
+          <button id="actualizarMeta" class="bg-primary text-white px-3 py-1 rounded-xl text-xs font-bold">Actualizar</button>
         </div>
       </div>
     </div>
@@ -487,15 +512,15 @@
       </div>
       <div class="stat-card">
         <p class="label">📏 Km Totales</p>
-        <p class="value text-secondary" id="totalKm">0</p>
+        <p class="value text-secondary" id="totalKm">0.0</p>
       </div>
       <div class="stat-card">
         <p class="label">⏱️ Horas</p>
-        <p class="value text-secondary" id="totalHoras">0</p>
+        <p class="value text-secondary" id="totalHoras">0.0</p>
       </div>
       <div class="stat-card">
         <p class="label">📊 Ganancia/Hora</p>
-        <p class="value text-primary" id="gananciaRealHora">$0</p>
+        <p class="value text-primary" id="gananciaRealHora">$0.00</p>
       </div>
     </section>
 
@@ -565,8 +590,8 @@
         <span class="text-xs" id="recomendacionROI">Cargando...</span>
       </div>
       <div id="roiDetalles" class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
-        <div><span class="text-gray-600">Ganancia/Hora:</span> <strong id="roiGananciaHora">$0</strong></div>
-        <div><span class="text-gray-600">vs Salario Mínimo:</span> <strong id="roiComparativa">$0</strong></div>
+        <div><span class="text-gray-600">Ganancia/Hora:</span> <strong id="roiGananciaHora">$0.00</strong></div>
+        <div><span class="text-gray-600">vs Salario Mínimo:</span> <strong id="roiComparativa">$0.00</strong></div>
         <div><span class="text-gray-600">ROI:</span> <strong id="roiPorcentaje">0%</strong></div>
         <div><span class="text-gray-600">Estado:</span> <strong id="roiEstado">-</strong></div>
       </div>
@@ -659,13 +684,14 @@
     // ============================================================
     // CONFIGURACIÓN
     // ============================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmlpfDWaV7KRHU50fwsylsK8EiaCVkR0edDfHd9MErD28AxqReGVYcjEiQZ9qj8hzJCA/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyikOP6qF6JwF1ByYueCmkn3o3Ps_sPNO-qerMXtOpE4pNgSGlTU688Zb5Pudh7K5Rj3A/exec';
 
-    let statsData = null;        // Datos de estadísticas del .gs
-    let activityData = [];       // Datos de actividad del .gs
-    let datosFiltrados = null;   // Datos filtrados localmente
+    let statsData = null;
+    let activityData = [];
+    let datosFiltrados = null;
     let charts = {};
     let umbralRentabilidad = 40;
+    let metaDiaria = 40;
 
     // ============================================================
     // NAVEGACIÓN
@@ -788,13 +814,11 @@
       try {
         console.log('🔍 Cargando datos desde:', SCRIPT_URL);
         
-        // Cargar estadísticas
         const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
         if (!resStats.ok) throw new Error(`Error en getStats: ${resStats.status}`);
         statsData = await resStats.json();
         console.log('📊 Stats recibidos:', statsData);
 
-        // Cargar actividad
         const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
         if (!resAct.ok) throw new Error(`Error en getRecentActivity: ${resAct.status}`);
         activityData = await resAct.json();
@@ -850,13 +874,11 @@
       if (fin) fin.setHours(23, 59, 59);
 
       const filtrados = activityData.filter(item => {
-        // Fecha
         if (item.fecha) {
           const d = new Date(item.fecha);
           if (inicio && d < inicio) return false;
           if (fin && d > fin) return false;
         }
-        // Rubro
         if (rubro !== 'all') {
           const r = (item.rubro || '').toLowerCase();
           if (rubro === 'transporte' && r !== 'transporte') return false;
@@ -864,7 +886,6 @@
           if (rubro === 'general' && r !== 'general') return false;
           if (rubro === 'otro' && r !== 'otro' && r !== 'km0') return false;
         }
-        // Categoría (solo para gastos)
         if (categoria !== 'all' && item.tipo === 'gasto') {
           const cat = (item.categoria || item.Categoría || item.rubro || 'otros').toLowerCase();
           if (cat !== categoria.toLowerCase()) return false;
@@ -880,7 +901,7 @@
     }
 
     // ============================================================
-    // RENDERIZADO COMPLETO (usando statsData del .gs)
+    // RENDERIZADO COMPLETO
     // ============================================================
     function renderizarTodo(datos) {
       if (!statsData) {
@@ -888,8 +909,9 @@
         return;
       }
 
-      // --- TRANSPORTE ---
       const t = statsData.transporte || {};
+      
+      // TRANSPORTE
       document.getElementById('totalIngresosTransporte').textContent = '$' + (t.totalIngresos || 0).toFixed(2);
       document.getElementById('totalCostoOperativo').textContent = '$' + (t.totalCostos || 0).toFixed(2);
       document.getElementById('gananciaRealTransporte').textContent = '$' + (t.gananciaReal || 0).toFixed(2);
@@ -906,13 +928,16 @@
       document.getElementById('totalFijos').textContent = '$' + (cf.total || 0).toFixed(2);
       document.getElementById('costoFijoDiario').textContent = '$' + (cf.diario || 0).toFixed(2);
 
-      // Punto de Equilibrio
+      // Punto de Equilibrio con meta configurable
       const eq = statsData.equilibrio || {};
-      document.getElementById('viajesNecesarios').textContent = (eq.viajesNecesarios || 0);
-      document.getElementById('kmNecesarios').textContent = (eq.kmNecesarios || 0).toFixed(1);
-      document.getElementById('metaDiaria').textContent = '$' + (eq.metaDiaria || 0).toFixed(2);
+      const metaVal = parseFloat(document.getElementById('metaDiariaInput').value) || 40;
+      const viajesMeta = eq.margenPorViaje > 0 ? Math.ceil(metaVal / eq.margenPorViaje) : 0;
+      const kmMeta = viajesMeta * (eq.kmPromedioPorViaje || 0);
+      
+      document.getElementById('viajesNecesarios').textContent = viajesMeta || 0;
+      document.getElementById('kmNecesarios').textContent = (kmMeta || 0).toFixed(1);
 
-      // --- GENERAL ---
+      // GENERAL
       const g = statsData.general || {};
       document.getElementById('totalIngresos').textContent = '$' + (g.totalIngresos || 0).toFixed(2);
       document.getElementById('totalGastos').textContent = '$' + (g.totalGastos || 0).toFixed(2);
@@ -923,7 +948,7 @@
       document.getElementById('totalHoras').textContent = (g.totalHoras || 0).toFixed(1);
       document.getElementById('gananciaRealHora').textContent = '$' + (t.gananciaRealHora || 0).toFixed(2);
 
-      // --- ROI ---
+      // ROI
       const roi = statsData.roi || {};
       document.getElementById('roiGananciaHora').textContent = '$' + (roi.gananciaPorHora || 0).toFixed(2);
       document.getElementById('roiComparativa').textContent = ((roi.comparativa || 0) > 0 ? '+' : '') + (roi.comparativa || 0).toFixed(2);
@@ -931,20 +956,20 @@
       document.getElementById('roiEstado').textContent = roi.estado || '-';
       document.getElementById('recomendacionROI').textContent = roi.estado || 'Cargando...';
 
-      // --- RENTABILIDAD DIARIA ---
+      // RENTABILIDAD DIARIA
       const rd = statsData.rentabilidadDiaria || {};
       document.getElementById('diasRentables').textContent = rd.diasRentables || 0;
       document.getElementById('diasNoRentables').textContent = rd.diasNoRentables || 0;
       document.getElementById('porcentajeRentabilidad').textContent = (rd.porcentajeRentabilidad || 0).toFixed(1) + '%';
       document.getElementById('gananciaPromedioDiasRentables').textContent = '$' + (rd.gananciaPromedioDiasRentables || 0).toFixed(2);
 
-      // --- RECOMENDACIÓN ---
+      // RECOMENDACIÓN
       document.getElementById('recomendacionRubros').innerHTML = statsData.recomendacion || 'Sin recomendación';
 
-      // --- ANÁLISIS POR RUBRO ---
+      // ANÁLISIS POR RUBRO
       renderAnalisisRubros(statsData.analisisRubros || []);
 
-      // --- GRÁFICOS ---
+      // GRÁFICOS
       renderGraficoRentabilidad(rd);
       renderGraficoDesglose(rd, t);
       renderGraficoIngresosGastos(datos.ingresos || [], datos.gastos || []);
@@ -955,30 +980,7 @@
     }
 
     // ============================================================
-    // ANÁLISIS POR RUBRO
-    // ============================================================
-    function renderAnalisisRubros(analisis) {
-      const container = document.getElementById('analisisRubros');
-      if (!analisis || analisis.length === 0) {
-        container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">Sin datos</div>';
-        return;
-      }
-
-      container.innerHTML = analisis.slice(0, 4).map(r => {
-        const badgeClass = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
-        const icon = r.rubro === 'Transporte' ? '🚖' : r.rubro === 'Electrónica' ? '🤖' : r.rubro === 'General' ? '🏠' : '📦';
-        return `<div class="bg-gray-50 rounded-xl p-2 text-center border">
-          <p class="font-bold text-sm">${icon} ${r.rubro}</p>
-          <p class="text-xs text-gray-600">Ganancia: <span class="font-bold text-primary">$${(r.ganancia || 0).toFixed(2)}</span></p>
-          <p class="text-xs text-gray-600">Margen: <span class="font-bold">${(r.margen || 0).toFixed(1)}%</span></p>
-          <p class="text-xs text-gray-600">Viajes: ${r.viajes || 0} | Km: ${(r.km || 0).toFixed(1)}</p>
-          <span class="badge ${badgeClass} mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
-        </div>`;
-      }).join('');
-    }
-
-    // ============================================================
-    // GRÁFICO RENTABILIDAD
+    // GRÁFICOS
     // ============================================================
     function renderGraficoRentabilidad(rd) {
       const canvas = document.getElementById('rentabilidadChart');
@@ -1069,9 +1071,6 @@
       });
     }
 
-    // ============================================================
-    // GRÁFICO DESGLOSE
-    // ============================================================
     function renderGraficoDesglose(rd, t) {
       const canvas = document.getElementById('desgloseChart');
       const ctx = canvas.getContext('2d');
@@ -1079,8 +1078,6 @@
 
       const fechas = rd.fechas || [];
       const ganancias = rd.ganancias || [];
-      const ckm = t.costoPorKm || {};
-      const costoTotalKm = ckm.total || 0;
 
       if (fechas.length === 0) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1091,10 +1088,12 @@
         return;
       }
 
-      // Simular datos de desglose (el .gs no envía el desglose por día)
-      const dataIngresos = ganancias.map(g => g + (costoTotalKm * 50)); // Estimación
-      const dataCombustible = ganancias.map(() => costoTotalKm * 20);
-      const dataMantenimiento = ganancias.map(() => costoTotalKm * 30);
+      // Usar datos reales del desglose si existen, si no estimar
+      const dd = statsData.desgloseDiario || {};
+      const dataIngresos = dd.ingresos || ganancias.map(g => g + (t.totalCostos || 0) / fechas.length);
+      const dataCombustible = dd.combustible || ganancias.map(() => (t.totalCombustible || 0) / fechas.length);
+      const dataMantenimiento = dd.mantenimiento || ganancias.map(() => (t.totalMantenimiento || 0) / fechas.length);
+      const dataComisiones = dd.comisiones || ganancias.map(() => (t.totalComisiones || 0) / fechas.length);
 
       charts.desg = new Chart(ctx, {
         type: 'bar',
@@ -1120,6 +1119,13 @@
               data: dataMantenimiento,
               backgroundColor: 'rgba(239, 68, 68, 0.5)',
               borderColor: '#DC2626',
+              borderWidth: 1
+            },
+            {
+              label: 'Comisiones',
+              data: dataComisiones,
+              backgroundColor: 'rgba(139, 92, 246, 0.5)',
+              borderColor: '#8B5CF6',
               borderWidth: 1
             },
             {
@@ -1155,9 +1161,26 @@
       });
     }
 
-    // ============================================================
-    // GRÁFICOS EXISTENTES
-    // ============================================================
+    function renderAnalisisRubros(analisis) {
+      const container = document.getElementById('analisisRubros');
+      if (!analisis || analisis.length === 0) {
+        container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">Sin datos</div>';
+        return;
+      }
+
+      container.innerHTML = analisis.slice(0, 4).map(r => {
+        const badgeClass = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
+        const icon = r.rubro === 'Transporte' ? '🚖' : r.rubro === 'Electrónica' ? '🤖' : r.rubro === 'General' ? '🏠' : '📦';
+        return `<div class="bg-gray-50 rounded-xl p-2 text-center border">
+          <p class="font-bold text-sm">${icon} ${r.rubro}</p>
+          <p class="text-xs text-gray-600">Ganancia: <span class="font-bold text-primary">$${(r.ganancia || 0).toFixed(2)}</span></p>
+          <p class="text-xs text-gray-600">Margen: <span class="font-bold">${(r.margen || 0).toFixed(1)}%</span></p>
+          <p class="text-xs text-gray-600">Viajes: ${r.viajes || 0} | Km: ${(r.km || 0).toFixed(1)}</p>
+          <span class="badge ${badgeClass} mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
+        </div>`;
+      }).join('');
+    }
+
     function renderGraficoIngresosGastos(ingresos, gastos) {
       const canvas = document.getElementById('ingresosGastosChart');
       const ctx = canvas.getContext('2d');
@@ -1429,6 +1452,7 @@
           rubro: document.getElementById('rubroFilter').value,
           categoria: document.getElementById('categoriaFilter').value,
           umbral: document.getElementById('umbralRentabilidad').value,
+          meta: document.getElementById('metaDiariaInput').value,
           darkMode: document.documentElement.classList.contains('dark')
         }));
       } catch(e) { /* ignore */ }
@@ -1446,6 +1470,10 @@
           if (filtros.umbral) {
             document.getElementById('umbralRentabilidad').value = filtros.umbral;
             umbralRentabilidad = parseFloat(filtros.umbral);
+          }
+          if (filtros.meta) {
+            document.getElementById('metaDiariaInput').value = filtros.meta;
+            metaDiaria = parseFloat(filtros.meta);
           }
           if (filtros.darkMode) {
             document.documentElement.classList.add('dark');
@@ -1498,7 +1526,7 @@
         aplicarFiltros();
       }
 
-      // Event listeners
+      // EVENT LISTENERS
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
       
       document.getElementById('clearFiltersBtn').addEventListener('click', () => {
@@ -1538,6 +1566,25 @@
       document.getElementById('umbralRentabilidad').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           document.getElementById('actualizarUmbral').click();
+        }
+      });
+
+      // Meta Diaria
+      document.getElementById('actualizarMeta').addEventListener('click', () => {
+        const val = parseFloat(document.getElementById('metaDiariaInput').value);
+        if (val >= 0) {
+          metaDiaria = val;
+          localStorage.setItem('metaDiaria', val);
+          aplicarFiltros();
+          showToast('✅ Meta diaria actualizada a $' + val, 'success');
+        } else {
+          showToast('⚠️ Ingresa un valor válido', 'error');
+        }
+      });
+
+      document.getElementById('metaDiariaInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          document.getElementById('actualizarMeta').click();
         }
       });
 
