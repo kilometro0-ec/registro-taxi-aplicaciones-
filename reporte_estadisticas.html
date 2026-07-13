@@ -4,99 +4,111 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
   <title>Driver Insights - Dashboard</title>
-  
-  <!-- Tailwind CSS -->
+
   <script src="https://cdn.tailwindcss.com"></script>
-  
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  
-  <!-- html2canvas + jsPDF para exportar PDF -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
-  
+
   <style>
     * { box-sizing: border-box; }
-    body { font-family: 'Inter', sans-serif; background: #f1f5f9; margin: 0; padding: 0; font-size: 14px; transition: background 0.3s, color 0.3s; }
-    
-    /* DARK MODE */
-    html.dark body { background: #0f172a; color: #e2e8f0; }
-    html.dark .stat-card { background: #1e293b; border-color: #334155; }
-    html.dark .stat-card .label { color: #94a3b8; }
-    html.dark .filter-card { background: #1e293b; border-color: #334155; }
-    html.dark .costo-card { background: #1e293b; border-color: #2a6b4a; }
-    html.dark .costo-card .text-[#004831] { color: #5eead4 !important; }
-    html.dark .equilibrio-card { background: #064e3b; border-color: #10b981; }
-    html.dark .equilibrio-card .text-[#065f46] { color: #86efac !important; }
-    html.dark .bg-white { background: #1e293b !important; }
-    html.dark .bg-gray-50 { background: #0f172a !important; }
-    html.dark .bg-gray-100 { background: #1e293b !important; }
-    html.dark .border { border-color: #334155 !important; }
-    html.dark .text-gray-500 { color: #94a3b8 !important; }
-    html.dark .text-gray-600 { color: #cbd5e1 !important; }
-    html.dark header { background: #1e293b !important; border-color: #334155 !important; }
-    html.dark nav { background: #1e293b !important; border-color: #334155 !important; }
-    html.dark .btn-gray { background: #334155; color: #e2e8f0; }
-    html.dark input, html.dark select { background: #0f172a; border-color: #334155; color: #e2e8f0; }
-    html.dark input:focus, html.dark select:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
-    html.dark .toast { background: #1e293b; border: 1px solid #334155; }
-    html.dark .text-[#004831] { color: #5eead4 !important; }
-    html.dark .text-[#752200] { color: #fca5a5 !important; }
-    html.dark .text-[#455f88] { color: #93c5fd !important; }
-    html.dark #recomendacion { background: #0f172a !important; }
-    html.dark .analysis-card[style*="background: #fef3c7"] { background: #451a03 !important; }
-    html.dark .analysis-card[style*="background: #fef3c7"] .text-gray-600 { color: #fcd34d !important; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f4f7fc;
+      margin: 0; padding: 0; font-size: 14px;
+      transition: background 0.3s, color 0.3s;
+    }
 
-    .stat-card { background: white; border-radius: 16px; padding: 12px 14px; border: 1px solid #e5e7eb; transition: background 0.3s, border-color 0.3s; }
-    .stat-card .label { font-size: 0.55rem; text-transform: uppercase; color: #6b7280; font-weight: 600; letter-spacing: 0.02em; }
-    .stat-card .value { font-size: 1.3rem; font-weight: 800; }
-    .stat-card .sub { font-size: 0.6rem; color: #6b7280; margin-top: 2px; display: block; }
-    html.dark .stat-card .sub { color: #94a3b8; }
-    
-    .filter-card { background: white; border-radius: 16px; padding: 16px; border: 1px solid #e5e7eb; transition: background 0.3s; }
-    .costo-card { background: white; border-radius: 12px; padding: 10px 14px; border: 2px solid #004831; transition: background 0.3s; }
-    .equilibrio-card { background: #f0fdf4; border-radius: 12px; padding: 10px 14px; border: 2px solid #10b981; transition: background 0.3s; }
+    /* ===== TEMA CLARO ===== */
+    :root {
+      --bg-page: #f4f7fc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --accent: #0b7e5c;
+      --accent-light: #e6f7f1;
+      --danger: #b91c1c;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    /* ===== TEMA OSCURO ===== */
+    html.dark {
+      --bg-page: #0a0f1a;
+      --bg-card: #172031;
+      --border-color: #2a3448;
+      --text-primary: #e8edf5;
+      --text-secondary: #94a3b8;
+      --accent: #34d399;
+      --accent-light: #1a2e3a;
+      --danger: #f87171;
+      --shadow: 0 1px 3px rgba(0,0,0,0.4);
+    }
+
+    body {
+      background: var(--bg-page);
+      color: var(--text-primary);
+    }
+
+    .stat-card, .filter-card, .costo-card, .bg-white {
+      background: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+      color: var(--text-primary);
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .text-gray-500, .text-gray-600, .label {
+      color: var(--text-secondary) !important;
+    }
+    .border { border-color: var(--border-color) !important; }
+    .bg-gray-50 { background: var(--bg-page) !important; }
+    .equilibrio-card {
+      background: var(--accent-light) !important;
+      border-color: var(--accent) !important;
+    }
+    .costo-card { border-color: var(--accent) !important; }
+
+    /* Colores de acento */
+    .text-primary { color: var(--accent) !important; }
+    .text-tertiary { color: var(--danger) !important; }
+    .text-secondary { color: var(--text-secondary) !important; }
+    .bg-primary { background: var(--accent) !important; }
+    .btn-primary { background: var(--accent); color: white; }
+    .btn-primary:hover { filter: brightness(0.9); }
+    .btn-gray { background: var(--border-color); color: var(--text-primary); }
+    .btn-gray:hover { filter: brightness(0.95); }
+
+    input, select {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15); }
+
+    header, nav {
+      background: var(--bg-card) !important;
+      border-color: var(--border-color) !important;
+      transition: background 0.3s;
+    }
+
+    .status.ok { background: #dcfce7; color: #166534; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+    .status.loading { background: #fef3c7; color: #92400e; }
+
+    .toast { background: var(--bg-card); color: var(--text-primary); border: 1px solid var(--border-color); }
+    .toast.error { background: #dc2626; color: white; }
+    .toast.success { background: #16a34a; color: white; }
+
     .chart-container { height: 220px; min-height: 220px; width: 100%; position: relative; }
-    .chart-placeholder { display: flex; align-items: center; justify-content: center; height: 100%; color: #9ca3af; font-size: 0.9rem; }
-    
-    .btn-primary { background: #004831; color: white; padding: 8px 20px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: opacity 0.2s; }
-    .btn-primary:hover { opacity: 0.9; }
-    .btn-gray { background: #e5e7eb; color: #374151; padding: 8px 16px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; transition: background 0.2s; }
-    .btn-gray:hover { background: #d1d5db; }
-    
     .filtros-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .filtros-grid .full { grid-column: 1 / -1; }
     .filtros-grid .btn-group { display: flex; gap: 8px; justify-content: flex-end; }
-    
-    input, select { padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 10px; width: 100%; font-size: 14px; background: white; transition: border-color 0.2s, box-shadow 0.2s; }
-    input:focus, select:focus { outline: none; border-color: #004831; box-shadow: 0 0 0 3px rgba(0,72,49,0.12); }
-    
+
+    .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 50%; }
+    .theme-toggle:hover { background: var(--border-color); }
+
     .badge-success { background: #dcfce7; color: #166534; padding: 2px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
     .badge-danger { background: #fee2e2; color: #991b1b; padding: 2px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
-    html.dark .badge-success { background: #065f46; color: #86efac; }
-    html.dark .badge-danger { background: #7f1d1d; color: #fca5a5; }
-    
-    .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1f2937; color: white; padding: 12px 24px; border-radius: 12px; z-index: 9999; opacity: 0; transition: opacity 0.3s; pointer-events: none; font-weight: 500; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2); }
-    .toast.show { opacity: 1; }
-    .toast.error { background: #dc2626; }
-    .toast.success { background: #16a34a; }
-    
-    .status { display: inline-flex; align-items: center; gap: 6px; padding: 2px 12px; border-radius: 20px; font-size: 0.6rem; background: #f1f5f9; font-weight: 600; }
-    .status.ok { background: #dcfce7; color: #166534; }
-    .status.error { background: #fee2e2; color: #991b1b; }
-    .status.loading { background: #fef3c7; color: #92400e; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-    
-    .nav-link { transition: all 0.2s; border-radius: 12px; padding: 4px 0; }
-    .nav-link.active { background: rgba(0,72,49,0.08); color: #004831 !important; }
-    html.dark .nav-link.active { background: rgba(16,185,129,0.15); color: #86efac !important; }
-    
-    .theme-toggle { background: none; border: none; cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 50%; transition: background 0.2s; }
-    .theme-toggle:hover { background: rgba(0,0,0,0.05); }
-    html.dark .theme-toggle:hover { background: rgba(255,255,255,0.05); }
-    
+    .badge-warning { background: #fef3c7; color: #92400e; padding: 2px 10px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
+
     @media (max-width: 640px) {
       .filtros-grid { grid-template-columns: 1fr; }
       .filtros-grid .btn-group { justify-content: stretch; }
@@ -108,19 +120,18 @@
 </head>
 <body>
 
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast fixed bottom-5 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg z-[9999] opacity-0 transition-opacity duration-300 pointer-events-none font-medium"></div>
 
 <!-- HEADER -->
-<header class="bg-white shadow-sm border-b fixed top-0 w-full z-50 px-4 py-2 flex justify-between items-center transition-colors">
+<header class="shadow-sm border-b fixed top-0 w-full z-50 px-4 py-2 flex justify-between items-center">
   <div class="flex items-center gap-2">
-    <div class="w-8 h-8 rounded-full bg-[#004831] flex items-center justify-center text-white font-bold text-sm">DI</div>
-    <span class="font-bold text-[#004831] dark:text-[#5eead4]">Driver Insights</span>
-    <span id="status" class="status error">🔴 Sin conexión</span>
+    <div class="w-8 h-8 rounded-full bg-[#0b7e5c] flex items-center justify-center text-white font-bold text-sm">DI</div>
+    <span class="font-bold text-primary">Driver Insights</span>
+    <span id="status" class="status error px-3 py-0.5 rounded-full text-xs font-semibold">🔴 Sin conexión</span>
   </div>
   <div class="flex gap-1 items-center">
-    <button id="themeToggle" class="theme-toggle" title="Cambiar tema">🌓</button>
-    <button onclick="recargarDatos()" class="px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Recargar datos">🔄</button>
-    <button onclick="exportarPDF()" class="px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Exportar PDF">📄</button>
+    <button id="themeToggle" class="theme-toggle px-2 py-1 rounded-lg" title="Cambiar tema">🌓</button>
+    <button onclick="recargarDatos()" class="px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Recargar">🔄</button>
     <button onclick="exportarCSV()" class="px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition" title="Exportar CSV">⬇️</button>
   </div>
 </header>
@@ -129,19 +140,19 @@
 <main id="dashboardContent" class="pt-20 px-3 pb-24 max-w-6xl mx-auto space-y-3">
 
   <!-- FILTROS -->
-  <section class="filter-card">
+  <section class="filter-card rounded-2xl p-4 border shadow-sm">
     <div class="filtros-grid">
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Desde</label>
-        <input type="date" id="fechaInicio" />
+        <label class="text-xs font-bold uppercase text-gray-500">Desde</label>
+        <input type="date" id="fechaInicio" class="w-full rounded-xl px-3 py-2 border" />
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Hasta</label>
-        <input type="date" id="fechaFin" />
+        <label class="text-xs font-bold uppercase text-gray-500">Hasta</label>
+        <input type="date" id="fechaFin" class="w-full rounded-xl px-3 py-2 border" />
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Rubro</label>
-        <select id="rubroFilter">
+        <label class="text-xs font-bold uppercase text-gray-500">Rubro</label>
+        <select id="rubroFilter" class="w-full rounded-xl px-3 py-2 border">
           <option value="all">Todos</option>
           <option value="transporte">🚖 Transporte</option>
           <option value="electronica">🤖 Electrónica</option>
@@ -150,45 +161,49 @@
         </select>
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Categoría</label>
-        <select id="categoriaFilter"><option value="all">Todas</option></select>
+        <label class="text-xs font-bold uppercase text-gray-500">Categoría</label>
+        <select id="categoriaFilter" class="w-full rounded-xl px-3 py-2 border"><option value="all">Todas</option></select>
       </div>
       <div class="full btn-group">
-        <button class="btn-primary" id="btnAplicar">📊 Aplicar</button>
-        <button class="btn-gray" id="btnLimpiar">Limpiar</button>
+        <button class="btn-primary px-5 py-2 rounded-xl font-bold text-sm flex items-center gap-1 shadow-sm" id="btnAplicar">
+          <span>📊</span> Aplicar Filtro
+        </button>
+        <button class="btn-gray px-4 py-2 rounded-xl font-bold text-sm" id="btnLimpiar">Limpiar</button>
       </div>
     </div>
+    <!-- Indicador de filtro aplicado -->
+    <div id="filtroInfo" class="mt-2 text-xs text-gray-500 text-center hidden">✅ Filtro aplicado: <span id="filtroTexto"></span></div>
   </section>
 
-  <!-- RESUMEN TRANSPORTE -->
+  <!-- RESUMEN TRANSPORTE (ACTUALIZADO POR FILTRO) -->
   <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
-    <div class="stat-card">
-      <p class="label">💰 Ingresos Transporte</p>
-      <p class="value text-[#004831] dark:text-[#5eead4]" id="ingresosTransporte">$0</p>
-      <span class="sub">Total facturado en viajes</span>
+    <div class="stat-card rounded-xl p-3 border shadow-sm">
+      <p class="label text-xs uppercase font-semibold">💰 Ingresos Transporte</p>
+      <p class="value text-2xl font-bold text-primary" id="ingresosTransporte">$0</p>
+      <span class="sub text-xs text-gray-500">Facturado en viajes</span>
     </div>
-    <div class="stat-card">
-      <p class="label">⛽ Costo Operativo</p>
-      <p class="value text-[#752200] dark:text-[#fca5a5]" id="costoOperativo">$0</p>
-      <span class="sub">Combustible + Mantenimiento + Comisiones</span>
+    <div class="stat-card rounded-xl p-3 border shadow-sm">
+      <p class="label text-xs uppercase font-semibold">⛽ Costo Operativo</p>
+      <p class="value text-2xl font-bold text-tertiary" id="costoOperativo">$0</p>
+      <span class="sub text-xs text-gray-500">Combustible + Mantenimiento + Comisiones</span>
     </div>
-    <div class="stat-card">
-      <p class="label">📊 Ganancia Real</p>
-      <p class="value text-[#004831] dark:text-[#5eead4]" id="gananciaReal">$0</p>
-      <span class="sub">Ingresos - Costos operativos</span>
+    <div class="stat-card rounded-xl p-3 border shadow-sm">
+      <p class="label text-xs uppercase font-semibold">📊 Ganancia Real</p>
+      <p class="value text-2xl font-bold text-primary" id="gananciaReal">$0</p>
+      <span class="sub text-xs text-gray-500">Ingresos - Costos</span>
     </div>
-    <div class="stat-card">
-      <p class="label">🎯 Margen Real</p>
-      <p class="value text-[#455f88] dark:text-[#93c5fd]" id="margenReal">0%</p>
-      <span class="sub">Ganancia / Ingresos × 100</span>
+    <div class="stat-card rounded-xl p-3 border shadow-sm">
+      <p class="label text-xs uppercase font-semibold">🎯 Margen Real</p>
+      <p class="value text-2xl font-bold text-secondary" id="margenReal">0%</p>
+      <span class="sub text-xs text-gray-500">Ganancia / Ingresos</span>
     </div>
   </section>
 
-  <!-- COSTO POR KM Y COSTOS FIJOS -->
+  <!-- COSTO POR KM Y COSTOS FIJOS (EDITABLES) -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-    <div class="costo-card">
+    <div class="costo-card rounded-xl p-3 border-2 shadow-sm">
       <div class="flex justify-between flex-wrap gap-1">
-        <span class="font-bold text-[#004831] dark:text-[#5eead4] text-sm">🚗 Costo por km</span>
+        <span class="font-bold text-primary text-sm">🚗 Costo por km</span>
         <div class="flex gap-3 text-xs flex-wrap">
           <span>Combustible: <strong id="costoCombustible">$0.000</strong>/km</span>
           <span>Mantenimiento: <strong id="costoMantenimiento">$0.000</strong>/km</span>
@@ -196,118 +211,115 @@
         </div>
       </div>
     </div>
-    <div class="costo-card" style="border-color:#8B5CF6;">
-      <div class="flex justify-between flex-wrap gap-1">
-        <span class="font-bold text-[#004831] dark:text-[#5eead4] text-sm">🏠 Costos Fijos</span>
-        <div class="flex gap-3 text-xs flex-wrap">
-          <span>Total: <strong id="totalFijos">$0.00</strong></span>
-          <span class="font-bold">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
+    <div class="costo-card rounded-xl p-3 border-2 shadow-sm" style="border-color: #8B5CF6;">
+      <div class="flex justify-between items-center flex-wrap gap-1">
+        <span class="font-bold text-primary text-sm">🏠 Costos Fijos</span>
+        <div class="flex items-center gap-2 flex-wrap">
+          <span class="text-xs">Total: <strong id="totalFijos">$0.00</strong></span>
+          <span class="text-xs font-bold">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
+          <button id="btnEditarFijos" class="text-xs bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-lg hover:bg-gray-300 transition" title="Editar costos fijos">✏️</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- PUNTO DE EQUILIBRIO CON META -->
-  <div class="equilibrio-card">
+  <!-- PUNTO DE EQUILIBRIO -->
+  <div class="equilibrio-card rounded-xl p-3 border-2 shadow-sm">
     <div class="flex justify-between items-center flex-wrap gap-2">
-      <span class="font-bold text-[#065f46] dark:text-[#86efac] text-sm">🎯 Punto de Equilibrio</span>
+      <span class="font-bold text-primary text-sm">🎯 Punto de Equilibrio</span>
       <div class="flex items-center gap-3 flex-wrap">
-        <span class="text-sm">Viajes/día: <strong class="text-[#065f46] dark:text-[#86efac] text-lg" id="viajesNecesarios">0</strong></span>
-        <span class="text-sm">Km/día: <strong class="text-[#065f46] dark:text-[#86efac] text-lg" id="kmNecesarios">0.0</strong></span>
-        <span class="text-sm">Meta diaria: $<input type="number" id="metaDiaria" class="w-20 px-2 py-1 border rounded-lg text-center font-bold" value="40" /></span>
-        <button class="bg-[#10b981] text-white px-3 py-1 rounded-lg text-sm font-bold hover:bg-[#059669] transition" id="btnMeta">Actualizar</button>
+        <span class="text-sm">Viajes/día: <strong class="text-primary text-lg" id="viajesNecesarios">0</strong></span>
+        <span class="text-sm">Km/día: <strong class="text-primary text-lg" id="kmNecesarios">0.0</strong></span>
+        <span class="text-sm">Meta diaria: $<input type="number" id="metaDiaria" class="w-20 px-2 py-1 border rounded-lg text-center font-bold bg-transparent" value="40" /></span>
+        <button class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnMeta">Actualizar</button>
       </div>
     </div>
   </div>
 
   <!-- GENERAL -->
   <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
-    <div class="stat-card"><p class="label">💰 Ingresos Totales</p><p class="value text-[#004831] dark:text-[#5eead4]" id="totIngresos">$0</p></div>
-    <div class="stat-card"><p class="label">💸 Gastos Totales</p><p class="value text-[#752200] dark:text-[#fca5a5]" id="totGastos">$0</p></div>
-    <div class="stat-card"><p class="label">📈 Ganancia Neta</p><p class="value text-[#004831] dark:text-[#5eead4]" id="gananciaNeta">$0</p></div>
-    <div class="stat-card"><p class="label">🎯 Margen</p><p class="value text-[#455f88] dark:text-[#93c5fd]" id="margen">0%</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">💰 Ingresos Totales</p><p class="value text-2xl font-bold text-primary" id="totIngresos">$0</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">💸 Gastos Totales</p><p class="value text-2xl font-bold text-tertiary" id="totGastos">$0</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">📈 Ganancia Neta</p><p class="value text-2xl font-bold text-primary" id="gananciaNeta">$0</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">🎯 Margen</p><p class="value text-2xl font-bold text-secondary" id="margen">0%</p></div>
   </section>
 
   <!-- KPIs -->
   <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
-    <div class="stat-card"><p class="label">🚗 Viajes</p><p class="value text-[#455f88] dark:text-[#93c5fd]" id="viajes">0</p></div>
-    <div class="stat-card"><p class="label">📏 Km Totales</p><p class="value text-[#455f88] dark:text-[#93c5fd]" id="kmTotales">0.0</p></div>
-    <div class="stat-card"><p class="label">⏱️ Horas</p><p class="value text-[#455f88] dark:text-[#93c5fd]" id="horas">0.0</p></div>
-    <div class="stat-card"><p class="label">📊 Ganancia/Hora</p><p class="value text-[#004831] dark:text-[#5eead4]" id="gananciaHora">$0.00</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">🚗 Viajes</p><p class="value text-2xl font-bold text-secondary" id="viajes">0</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">📏 Km Totales</p><p class="value text-2xl font-bold text-secondary" id="kmTotales">0.0</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">⏱️ Horas</p><p class="value text-2xl font-bold text-secondary" id="horas">0.0</p></div>
+    <div class="stat-card rounded-xl p-3 border shadow-sm"><p class="label text-xs uppercase font-semibold">📊 Ganancia/Hora</p><p class="value text-2xl font-bold text-primary" id="gananciaHora">$0.00</p></div>
   </section>
 
   <!-- GRÁFICO RENTABILIDAD -->
-  <div class="bg-white dark:bg-[#1e293b] rounded-xl p-3 border dark:border-[#334155] transition-colors">
+  <div class="stat-card rounded-xl p-3 border shadow-sm">
     <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
       <span class="font-bold text-sm">📊 Rentabilidad Diaria</span>
       <div class="flex items-center gap-2">
-        <span class="text-xs text-gray-600 dark:text-gray-400">Umbral: $</span>
-        <input type="number" id="umbral" class="w-16 px-2 py-1 border rounded-lg text-center font-bold" value="40" />
-        <button class="bg-[#004831] dark:bg-[#0e6245] text-white px-3 py-1 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnUmbral">OK</button>
+        <span class="text-xs text-gray-500">Umbral: $</span>
+        <input type="number" id="umbral" class="w-16 px-2 py-1 border rounded-lg text-center font-bold bg-transparent" value="40" />
+        <button class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnUmbral">OK</button>
       </div>
     </div>
-    <div class="chart-container">
-      <canvas id="rentabilidadChart"></canvas>
-    </div>
+    <div class="chart-container"><canvas id="rentabilidadChart"></canvas></div>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-center">
-      <div class="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-2"><span class="text-green-600 dark:text-green-400 text-xl font-bold" id="diasRentables">0</span><br><span class="text-xs text-gray-500 dark:text-gray-400">Días Rentables</span></div>
-      <div class="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-2"><span class="text-red-600 dark:text-red-400 text-xl font-bold" id="diasNoRentables">0</span><br><span class="text-xs text-gray-500 dark:text-gray-400">Días No Rentables</span></div>
-      <div class="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-2"><span class="text-blue-600 dark:text-blue-400 text-xl font-bold" id="pctRentabilidad">0%</span><br><span class="text-xs text-gray-500 dark:text-gray-400">% Rentabilidad</span></div>
-      <div class="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-2"><span class="text-[#004831] dark:text-[#5eead4] text-xl font-bold" id="promRentable">$0</span><br><span class="text-xs text-gray-500 dark:text-gray-400">Promedio días rentables</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-2"><span class="text-green-600 dark:text-green-400 text-xl font-bold" id="diasRentables">0</span><br><span class="text-xs text-gray-500">Días Rentables</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-2"><span class="text-red-600 dark:text-red-400 text-xl font-bold" id="diasNoRentables">0</span><br><span class="text-xs text-gray-500">Días No Rentables</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-2"><span class="text-blue-600 dark:text-blue-400 text-xl font-bold" id="pctRentabilidad">0%</span><br><span class="text-xs text-gray-500">% Rentabilidad</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-2"><span class="text-primary text-xl font-bold" id="promRentable">$0</span><br><span class="text-xs text-gray-500">Promedio días rentables</span></div>
     </div>
   </div>
 
   <!-- DESGLOSE -->
-  <div class="bg-white dark:bg-[#1e293b] rounded-xl p-3 border dark:border-[#334155] transition-colors">
+  <div class="stat-card rounded-xl p-3 border shadow-sm">
     <p class="font-bold text-sm mb-2">📊 Desglose Ingresos vs Costos</p>
-    <div class="chart-container">
-      <canvas id="desgloseChart"></canvas>
-    </div>
+    <div class="chart-container"><canvas id="desgloseChart"></canvas></div>
   </div>
 
   <!-- ANÁLISIS POR RUBRO -->
-  <div class="bg-white dark:bg-[#1e293b] rounded-xl p-3 border dark:border-[#334155] transition-colors">
+  <div class="stat-card rounded-xl p-3 border shadow-sm">
     <p class="font-bold text-sm mb-2">🏢 Análisis por Rubro</p>
     <div id="rubrosContainer" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
-    <div id="recomendacion" class="mt-2 text-center text-sm p-2 bg-gray-50 dark:bg-[#0f172a] rounded-lg transition-colors"></div>
+    <div id="recomendacion" class="mt-2 text-center text-sm p-2 bg-gray-50 dark:bg-gray-800/30 rounded-lg"></div>
   </div>
 
   <!-- RECOMENDACIÓN ROI -->
-  <div class="bg-white dark:bg-[#1e293b] rounded-xl p-3 border dark:border-[#334155] transition-colors" style="background: #fef3c7; dark:background: #451a03;">
+  <div class="stat-card rounded-xl p-3 border shadow-sm" style="background: var(--accent-light) !important;">
     <p class="font-bold text-sm">💡 Recomendación</p>
     <p id="roiTexto" class="text-sm">Cargando...</p>
     <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm">
-      <div><span class="text-gray-600 dark:text-yellow-200/70">Ganancia/Hora:</span> <strong id="roiHora">$0.00</strong></div>
-      <div><span class="text-gray-600 dark:text-yellow-200/70">vs Salario Mínimo:</span> <strong id="roiVs">$0.00</strong></div>
-      <div><span class="text-gray-600 dark:text-yellow-200/70">ROI:</span> <strong id="roiPct">0%</strong></div>
-      <div><span class="text-gray-600 dark:text-yellow-200/70">Estado:</span> <strong id="roiEstado">-</strong></div>
+      <div><span class="text-gray-600">Ganancia/Hora:</span> <strong id="roiHora">$0.00</strong></div>
+      <div><span class="text-gray-600">vs Salario Mínimo:</span> <strong id="roiVs">$0.00</strong></div>
+      <div><span class="text-gray-600">ROI:</span> <strong id="roiPct">0%</strong></div>
+      <div><span class="text-gray-600">Estado:</span> <strong id="roiEstado">-</strong></div>
     </div>
   </div>
 
   <!-- TABLA -->
-  <div class="bg-white dark:bg-[#1e293b] rounded-xl p-3 border dark:border-[#334155] overflow-x-auto transition-colors">
+  <div class="stat-card rounded-xl p-3 border shadow-sm overflow-x-auto">
     <p class="font-bold text-sm mb-2">📋 Actividad Filtrada</p>
     <table class="w-full text-sm">
-      <thead class="bg-gray-50 dark:bg-[#0f172a] text-left text-xs uppercase dark:text-gray-400">
+      <thead class="text-left text-xs uppercase text-gray-500 border-b">
         <tr>
           <th class="p-2">Fecha</th><th class="p-2">Tipo</th><th class="p-2">Rubro</th>
           <th class="p-2">Categoría</th><th class="p-2 text-right">Monto</th>
           <th class="p-2 text-right">Km</th><th class="p-2 text-right">Horas</th><th class="p-2 text-right">Orden</th>
         </tr>
       </thead>
-      <tbody id="tablaBody" class="divide-y dark:divide-[#334155]"><tr><td colspan="8" class="text-center py-4 text-gray-500">Cargando...</td></tr></tbody>
+      <tbody id="tablaBody" class="divide-y"><tr><td colspan="8" class="text-center py-4 text-gray-500">Cargando...</td></tr></tbody>
     </table>
   </div>
 
 </main>
 
 <!-- NAVEGACIÓN -->
-<nav class="fixed bottom-0 w-full bg-white dark:bg-[#1e293b] border-t dark:border-[#334155] py-1 flex justify-around text-center transition-colors z-40">
-  <a href="#" class="nav-link active flex flex-col items-center py-1 text-[#004831] dark:text-[#5eead4]"><span class="text-lg">📊</span><span class="text-[9px]">Panel</span></a>
-  <a href="#" class="nav-link flex flex-col items-center py-1 text-gray-400 dark:text-gray-500"><span class="text-lg">💰</span><span class="text-[9px]">Ingresos</span></a>
-  <a href="#" class="nav-link flex flex-col items-center py-1 text-gray-400 dark:text-gray-500"><span class="text-lg">📋</span><span class="text-[9px]">Gastos</span></a>
-  <a href="#" class="nav-link flex flex-col items-center py-1 text-gray-400 dark:text-gray-500"><span class="text-lg">🚗</span><span class="text-[9px]">Vehículo</span></a>
-  <a href="#" class="nav-link flex flex-col items-center py-1 text-gray-400 dark:text-gray-500"><span class="text-lg">📈</span><span class="text-[9px]">Análisis</span></a>
+<nav class="fixed bottom-0 w-full border-t py-1 flex justify-around text-center shadow-inner">
+  <a href="#" class="flex flex-col items-center py-1 text-primary font-semibold"><span class="text-lg">📊</span><span class="text-[9px]">Panel</span></a>
+  <a href="#" class="flex flex-col items-center py-1 text-gray-400"><span class="text-lg">💰</span><span class="text-[9px]">Ingresos</span></a>
+  <a href="#" class="flex flex-col items-center py-1 text-gray-400"><span class="text-lg">📋</span><span class="text-[9px]">Gastos</span></a>
+  <a href="#" class="flex flex-col items-center py-1 text-gray-400"><span class="text-lg">🚗</span><span class="text-[9px]">Vehículo</span></a>
+  <a href="#" class="flex flex-col items-center py-1 text-gray-400"><span class="text-lg">📈</span><span class="text-[9px]">Análisis</span></a>
 </nav>
 
 <script>
@@ -316,8 +328,8 @@
 // ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBYF7kAakxzSOYyEP_xENM6-NgYYsIVb-qPewtknEx_sR2Fx3n-lBA_rCb2HBrS7YBrw/exec';
 
-let statsData = null;
-let activityData = [];
+let activityData = [];          // Datos sin filtrar (maestros)
+let datosFiltrados = null;      // Datos después de aplicar filtros
 let charts = {};
 
 // ============================================================
@@ -326,12 +338,14 @@ let charts = {};
 function toast(msg, type='info') {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'toast show';
-  if (type === 'error') t.classList.add('error');
-  else if (type === 'success') t.classList.add('success');
-  else t.style.background = '#1f2937';
+  t.className = 'toast fixed bottom-5 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl shadow-lg z-[9999] transition-opacity duration-300 font-medium';
+  if (type === 'error') { t.classList.add('error'); t.style.background = '#dc2626'; t.style.color = 'white'; }
+  else if (type === 'success') { t.classList.add('success'); t.style.background = '#16a34a'; t.style.color = 'white'; }
+  else { t.style.background = 'var(--bg-card)'; t.style.color = 'var(--text-primary)'; t.style.border = '1px solid var(--border-color)'; }
+  t.classList.add('opacity-100');
+  t.classList.remove('opacity-0');
   clearTimeout(t._hide);
-  t._hide = setTimeout(() => t.classList.remove('show'), 3000);
+  t._hide = setTimeout(() => { t.classList.remove('opacity-100'); t.classList.add('opacity-0'); }, 3000);
 }
 
 // ============================================================
@@ -340,39 +354,38 @@ function toast(msg, type='info') {
 function setStatus(estado, texto) {
   const s = document.getElementById('status');
   s.textContent = texto;
-  s.className = 'status ' + estado;
+  s.className = 'status px-3 py-0.5 rounded-full text-xs font-semibold ' + estado;
 }
 
 // ============================================================
 // TEMA OSCURO
 // ============================================================
 function toggleTheme() {
-  const html = document.documentElement;
-  html.classList.toggle('dark');
-  localStorage.setItem('darkMode', html.classList.contains('dark'));
+  document.documentElement.classList.toggle('dark');
+  localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
 }
-
 function loadTheme() {
-  const dark = localStorage.getItem('darkMode') === 'true';
-  if (dark) document.documentElement.classList.add('dark');
+  if (localStorage.getItem('darkMode') === 'true') document.documentElement.classList.add('dark');
 }
 
 // ============================================================
-// CARGAR DATOS
+// CARGAR DATOS DESDE EL SCRIPT
 // ============================================================
 async function cargarDatos() {
   setStatus('loading', '🔄 Cargando...');
   try {
-    const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
-    if (!resStats.ok) throw new Error('Error en getStats');
-    statsData = await resStats.json();
-    console.log('Stats:', statsData);
-
     const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
     if (!resAct.ok) throw new Error('Error en getRecentActivity');
     activityData = await resAct.json();
-    console.log('Actividad:', activityData.length);
+    console.log('📋 Actividad cargada:', activityData.length);
 
+    if (!activityData.length) {
+      toast('⚠️ No se encontraron datos', 'error');
+      setStatus('error', '❌ Sin datos');
+      return false;
+    }
+
+    // Poblar categorías
     const cats = new Set();
     activityData.filter(a => a.tipo === 'gasto').forEach(g => {
       const cat = g.categoria || g.Categoría || g.rubro || 'otros';
@@ -399,38 +412,7 @@ async function cargarDatos() {
 }
 
 // ============================================================
-// GUARDAR / CARGAR FILTROS (PERSISTENCIA)
-// ============================================================
-function guardarFiltros() {
-  try {
-    localStorage.setItem('filtros_driver', JSON.stringify({
-      fechaInicio: document.getElementById('fechaInicio').value,
-      fechaFin: document.getElementById('fechaFin').value,
-      rubro: document.getElementById('rubroFilter').value,
-      categoria: document.getElementById('categoriaFilter').value,
-      umbral: document.getElementById('umbral').value,
-      meta: document.getElementById('metaDiaria').value
-    }));
-  } catch(e) {}
-}
-
-function cargarFiltros() {
-  try {
-    const saved = localStorage.getItem('filtros_driver');
-    if (saved) {
-      const f = JSON.parse(saved);
-      if (f.fechaInicio) document.getElementById('fechaInicio').value = f.fechaInicio;
-      if (f.fechaFin) document.getElementById('fechaFin').value = f.fechaFin;
-      if (f.rubro) document.getElementById('rubroFilter').value = f.rubro;
-      if (f.categoria) document.getElementById('categoriaFilter').value = f.categoria;
-      if (f.umbral) document.getElementById('umbral').value = f.umbral;
-      if (f.meta) document.getElementById('metaDiaria').value = f.meta;
-    }
-  } catch(e) {}
-}
-
-// ============================================================
-// FILTRAR
+// FILTRAR DATOS (por fecha, rubro, categoría)
 // ============================================================
 function filtrarDatos() {
   if (!activityData.length) return { ingresos: [], gastos: [] };
@@ -442,14 +424,16 @@ function filtrarDatos() {
   
   const ini = inicio ? new Date(inicio) : null;
   const f = fin ? new Date(fin) : null;
-  if (f) f.setHours(23,59,59);
+  if (f) f.setHours(23, 59, 59);
 
   const filtrados = activityData.filter(item => {
+    // Filtro de fecha
     if (item.fecha) {
       const d = new Date(item.fecha);
       if (ini && d < ini) return false;
       if (f && d > f) return false;
     }
+    // Filtro de rubro
     if (rubro !== 'all') {
       const r = (item.rubro || '').toLowerCase();
       if (rubro === 'transporte' && r !== 'transporte') return false;
@@ -457,6 +441,7 @@ function filtrarDatos() {
       if (rubro === 'general' && r !== 'general') return false;
       if (rubro === 'otro' && r !== 'otro' && r !== 'km0') return false;
     }
+    // Filtro de categoría (solo para gastos)
     if (categoria !== 'all' && item.tipo === 'gasto') {
       const cat = (item.categoria || item.Categoría || item.rubro || 'otros').toLowerCase();
       if (cat !== categoria.toLowerCase()) return false;
@@ -471,43 +456,149 @@ function filtrarDatos() {
 }
 
 // ============================================================
-// RENDERIZAR
+// CALCULAR MÉTRICAS DESDE DATOS FILTRADOS (CLIENT-SIDE)
+// ============================================================
+function calcularMetricas(ingresos, gastos) {
+  // --- Transporte ---
+  const ingresosTransp = ingresos.filter(i => (i.rubro || '').toLowerCase() === 'transporte');
+  const gastosTransp = gastos.filter(g => (g.rubro || '').toLowerCase() === 'transporte');
+  
+  const totalIngresosTransp = ingresosTransp.reduce((s, i) => s + (i.monto || 0), 0);
+  const kmTransp = ingresosTransp.reduce((s, i) => s + (i.kmTotal || 0), 0);
+  const horasTransp = ingresosTransp.reduce((s, i) => s + (i.horas || 0), 0);
+  const viajesTransp = ingresosTransp.reduce((s, i) => s + (i.orden || 0), 0);
+
+  // Gastos operativos
+  const comb = gastosTransp.filter(g => (g.categoria || '').toLowerCase() === 'combustible').reduce((s, g) => s + (g.monto || 0), 0);
+  const mant = gastosTransp.filter(g => {
+    const cat = (g.categoria || '').toLowerCase();
+    return ['mantenimiento', 'aceite', 'frenos', 'neumaticos', 'transmision'].some(c => cat.includes(c));
+  }).reduce((s, g) => s + (g.monto || 0), 0);
+  const comis = gastosTransp.filter(g => {
+    const cat = (g.categoria || '').toLowerCase();
+    return cat.includes('comisión') || cat.includes('comision');
+  }).reduce((s, g) => s + (g.monto || 0), 0);
+  const otros = gastosTransp.reduce((s, g) => s + (g.monto || 0), 0) - comb - mant - comis;
+
+  const totalCostos = comb + mant + comis + otros;
+  const costoKm = kmTransp > 0 ? totalCostos / kmTransp : 0;
+  const costoCombKm = kmTransp > 0 ? comb / kmTransp : 0;
+  const costoMantKm = kmTransp > 0 ? (mant + comis + otros) / kmTransp : 0;
+
+  const gananciaReal = totalIngresosTransp - totalCostos;
+  const margenReal = totalIngresosTransp > 0 ? (gananciaReal / totalIngresosTransp) * 100 : 0;
+  const gananciaHora = horasTransp > 0 ? gananciaReal / horasTransp : 0;
+
+  // --- Generales ---
+  const totalIngresos = ingresos.reduce((s, i) => s + (i.monto || 0), 0);
+  const totalGastos = gastos.reduce((s, g) => s + (g.monto || 0), 0);
+  const gananciaNeta = totalIngresos - totalGastos;
+  const margen = totalIngresos > 0 ? (gananciaNeta / totalIngresos) * 100 : 0;
+  const totalKm = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
+  const totalHoras = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
+  const totalViajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
+
+  // --- Rentabilidad Diaria (para gráfico) ---
+  const diasMap = {};
+  ingresosTransp.forEach(i => {
+    const f = i.fecha || '';
+    if (!f) return;
+    if (!diasMap[f]) diasMap[f] = { ingresos: 0, km: 0 };
+    diasMap[f].ingresos += (i.monto || 0);
+    diasMap[f].km += (i.kmTotal || 0);
+  });
+  const fechas = Object.keys(diasMap).sort();
+  const gananciasDiarias = fechas.map(f => {
+    const ing = diasMap[f].ingresos;
+    const km = diasMap[f].km;
+    return ing - (km * costoKm);
+  });
+
+  const umbral = parseFloat(document.getElementById('umbral').value) || 40;
+  const diasRentables = gananciasDiarias.filter(g => g >= umbral).length;
+  const diasNoRentables = gananciasDiarias.filter(g => g < umbral && g >= 0).length;
+  const pctRentabilidad = fechas.length > 0 ? (diasRentables / fechas.length) * 100 : 0;
+  const promRentable = diasRentables > 0 ? gananciasDiarias.filter(g => g >= umbral).reduce((s, g) => s + g, 0) / diasRentables : 0;
+
+  return {
+    transporte: {
+      totalIngresos: totalIngresosTransp,
+      totalCostos: totalCostos,
+      gananciaReal: gananciaReal,
+      margenReal: margenReal,
+      gananciaHora: gananciaHora,
+      km: kmTransp,
+      viajes: viajesTransp,
+      horas: horasTransp,
+      costoPorKm: { combustible: costoCombKm, mantenimiento: costoMantKm, total: costoKm }
+    },
+    general: {
+      totalIngresos, totalGastos, gananciaNeta, margen,
+      totalKm, totalHoras, totalViajes
+    },
+    rentabilidadDiaria: {
+      fechas, ganancias: gananciasDiarias,
+      diasRentables, diasNoRentables, pctRentabilidad, promRentable, umbral
+    },
+    // Para el desglose
+    desglose: { comb, mant, comis, otros }
+  };
+}
+
+// ============================================================
+// RENDERIZAR COMPLETO
 // ============================================================
 function renderizar() {
-  if (!statsData) return;
-  
-  const datos = filtrarDatos();
-  const t = statsData.transporte || {};
-  const g = statsData.general || {};
-  const cf = statsData.costosFijos || {};
-  const eq = statsData.equilibrio || {};
-  const rd = statsData.rentabilidadDiaria || {};
-  const roi = statsData.roi || {};
+  if (!activityData.length) return;
 
-  // Transporte
+  // 1. Obtener datos filtrados
+  const datos = filtrarDatos();
+  datosFiltrados = datos;
+  const ingresos = datos.ingresos;
+  const gastos = datos.gastos;
+
+  // 2. Calcular métricas de los datos filtrados
+  const metricas = calcularMetricas(ingresos, gastos);
+  const t = metricas.transporte;
+  const g = metricas.general;
+  const rd = metricas.rentabilidadDiaria;
+
+  // 3. Mostrar información del filtro
+  const filtroInfo = document.getElementById('filtroInfo');
+  const filtroTexto = document.getElementById('filtroTexto');
+  const inicio = document.getElementById('fechaInicio').value;
+  const fin = document.getElementById('fechaFin').value;
+  if (inicio || fin) {
+    filtroInfo.classList.remove('hidden');
+    filtroTexto.textContent = `Desde ${inicio || 'inicio'} hasta ${fin || 'hoy'}`;
+  } else {
+    filtroInfo.classList.add('hidden');
+  }
+
+  // 4. Actualizar TARJETAS
   document.getElementById('ingresosTransporte').textContent = '$' + (t.totalIngresos || 0).toFixed(2);
   document.getElementById('costoOperativo').textContent = '$' + (t.totalCostos || 0).toFixed(2);
   document.getElementById('gananciaReal').textContent = '$' + (t.gananciaReal || 0).toFixed(2);
   document.getElementById('margenReal').textContent = (t.margenReal || 0).toFixed(1) + '%';
 
-  // Costo por km
   const ckm = t.costoPorKm || {};
   document.getElementById('costoCombustible').textContent = '$' + (ckm.combustible || 0).toFixed(3);
   document.getElementById('costoMantenimiento').textContent = '$' + (ckm.mantenimiento || 0).toFixed(3);
   document.getElementById('costoTotalKm').textContent = '$' + (ckm.total || 0).toFixed(3);
 
-  // Costos Fijos
-  document.getElementById('totalFijos').textContent = '$' + (cf.total || 0).toFixed(2);
-  document.getElementById('costoFijoDiario').textContent = '$' + (cf.diario || 0).toFixed(2);
+  // Costos Fijos (con override de localStorage)
+  const fijos = cargarFijosLocal();
+  document.getElementById('totalFijos').textContent = '$' + (fijos.total || 0).toFixed(2);
+  document.getElementById('costoFijoDiario').textContent = '$' + (fijos.diario || 0).toFixed(2);
 
   // Punto de Equilibrio
   const meta = parseFloat(document.getElementById('metaDiaria').value) || 40;
-  const viajesMeta = eq.margenPorViaje > 0 ? Math.ceil(meta / eq.margenPorViaje) : 0;
-  const kmMeta = viajesMeta * (eq.kmPromedioPorViaje || 0);
+  const margenPorViaje = (t.viajes > 0) ? (t.totalIngresos / t.viajes) - ((t.viajes > 0 && t.km > 0) ? (t.costoPorKm.total * (t.km / t.viajes)) : 0) : 0;
+  const viajesMeta = margenPorViaje > 0 ? Math.ceil(meta / margenPorViaje) : 0;
+  const kmMeta = viajesMeta * (t.viajes > 0 ? t.km / t.viajes : 0);
   document.getElementById('viajesNecesarios').textContent = viajesMeta || 0;
   document.getElementById('kmNecesarios').textContent = (kmMeta || 0).toFixed(1);
 
-  // General
   document.getElementById('totIngresos').textContent = '$' + (g.totalIngresos || 0).toFixed(2);
   document.getElementById('totGastos').textContent = '$' + (g.totalGastos || 0).toFixed(2);
   document.getElementById('gananciaNeta').textContent = '$' + (g.gananciaNeta || 0).toFixed(2);
@@ -515,28 +606,73 @@ function renderizar() {
   document.getElementById('viajes').textContent = g.totalViajes || 0;
   document.getElementById('kmTotales').textContent = (g.totalKm || 0).toFixed(1);
   document.getElementById('horas').textContent = (g.totalHoras || 0).toFixed(1);
-  document.getElementById('gananciaHora').textContent = '$' + (t.gananciaRealHora || 0).toFixed(2);
+  document.getElementById('gananciaHora').textContent = '$' + (t.gananciaHora || 0).toFixed(2);
 
-  // ROI
-  document.getElementById('roiHora').textContent = '$' + (roi.gananciaPorHora || 0).toFixed(2);
-  document.getElementById('roiVs').textContent = ((roi.comparativa || 0) > 0 ? '+' : '') + (roi.comparativa || 0).toFixed(2);
-  document.getElementById('roiPct').textContent = (roi.roi || 0).toFixed(1) + '%';
-  document.getElementById('roiEstado').textContent = roi.estado || '-';
-  document.getElementById('roiTexto').textContent = roi.estado || 'Cargando...';
+  // ROI (simulado desde métricas)
+  const salarioMin = 2.32;
+  const roiObj = {
+    gananciaPorHora: t.gananciaHora,
+    comparativa: t.gananciaHora - salarioMin,
+    roi: t.totalIngresos > 0 ? (t.gananciaReal / t.totalIngresos) * 100 : 0,
+    estado: t.gananciaHora >= salarioMin ? '✅ Ganas más que el salario mínimo' : '⚠️ Ganas menos que el salario mínimo'
+  };
+  document.getElementById('roiHora').textContent = '$' + (roiObj.gananciaPorHora || 0).toFixed(2);
+  document.getElementById('roiVs').textContent = ((roiObj.comparativa || 0) > 0 ? '+' : '') + (roiObj.comparativa || 0).toFixed(2);
+  document.getElementById('roiPct').textContent = (roiObj.roi || 0).toFixed(1) + '%';
+  document.getElementById('roiEstado').textContent = roiObj.estado || '-';
+  document.getElementById('roiTexto').textContent = roiObj.estado || 'Cargando...';
 
-  // Rentabilidad
+  // Rentabilidad Diaria
   document.getElementById('diasRentables').textContent = rd.diasRentables || 0;
   document.getElementById('diasNoRentables').textContent = rd.diasNoRentables || 0;
-  document.getElementById('pctRentabilidad').textContent = (rd.porcentajeRentabilidad || 0).toFixed(1) + '%';
-  document.getElementById('promRentable').textContent = '$' + (rd.gananciaPromedioDiasRentables || 0).toFixed(2);
+  document.getElementById('pctRentabilidad').textContent = (rd.pctRentabilidad || 0).toFixed(1) + '%';
+  document.getElementById('promRentable').textContent = '$' + (rd.promRentable || 0).toFixed(2);
+
+  // Análisis por Rubro (simulado)
+  renderAnalisisRubros(ingresos, gastos, t.costoPorKm.total);
 
   // Gráficos
   renderGraficoRentabilidad(rd);
-  renderGraficoDesglose(rd, t);
-  renderAnalisisRubros(statsData.analisisRubros || []);
-  renderTabla(datos.ingresos, datos.gastos);
-  
-  guardarFiltros();
+  renderGraficoDesglose(rd, metricas.desglose);
+  renderTabla(ingresos, gastos);
+
+  toast('✅ Filtro aplicado correctamente', 'success');
+}
+
+// ============================================================
+// COSTOS FIJOS (LOCAL STORAGE)
+// ============================================================
+function cargarFijosLocal() {
+  try {
+    const saved = localStorage.getItem('fijos_driver');
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return { total: 520, diario: 17.33 }; // Valores por defecto
+}
+
+function guardarFijosLocal(total, diario) {
+  localStorage.setItem('fijos_driver', JSON.stringify({ total, diario }));
+}
+
+// ============================================================
+// EDITAR COSTOS FIJOS
+// ============================================================
+function editarFijos() {
+  const actual = cargarFijosLocal();
+  const total = prompt('Ingresa el TOTAL de costos fijos mensuales:', actual.total);
+  if (total === null) return;
+  const dias = prompt('Ingresa el número de días laborales al mes:', '30');
+  if (dias === null) return;
+  const t = parseFloat(total);
+  const d = parseInt(dias);
+  if (isNaN(t) || isNaN(d) || d <= 0) {
+    toast('⚠️ Valores inválidos', 'error');
+    return;
+  }
+  const diario = t / d;
+  guardarFijosLocal(t, diario);
+  toast('✅ Costos fijos actualizados', 'success');
+  renderizar();
 }
 
 // ============================================================
@@ -553,7 +689,7 @@ function renderGraficoRentabilidad(rd) {
 
   if (!fechas.length) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#9ca3af'; ctx.font = '14px Inter'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#94a3b8'; ctx.font = '14px Inter'; ctx.textAlign = 'center';
     ctx.fillText('Sin datos de rentabilidad', canvas.width/2, canvas.height/2);
     return;
   }
@@ -578,14 +714,7 @@ function renderGraficoRentabilidad(rd) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(ctx) {
-              const v = ctx.parsed.y;
-              return `Ganancia: $${v.toFixed(2)} (${v >= umbral ? '✅ Rentable' : '❌ No rentable'})`;
-            }
-          }
-        }
+        tooltip: { callbacks: { label: (ctx) => `Ganancia: $${ctx.parsed.y.toFixed(2)} (${ctx.parsed.y >= umbral ? '✅ Rentable' : '❌ No rentable'})` } }
       },
       scales: {
         y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } } },
@@ -602,13 +731,13 @@ function renderGraficoRentabilidad(rd) {
           const ctx2 = chart.ctx;
           ctx2.save();
           ctx2.setLineDash([6, 4]);
-          ctx2.strokeStyle = '#004831';
+          ctx2.strokeStyle = '#0b7e5c';
           ctx2.lineWidth = 2;
           ctx2.beginPath();
           ctx2.moveTo(xScale.left, yPos);
           ctx2.lineTo(xScale.right, yPos);
           ctx2.stroke();
-          ctx2.fillStyle = '#004831';
+          ctx2.fillStyle = '#0b7e5c';
           ctx2.font = 'bold 9px Inter';
           ctx2.textAlign = 'right';
           ctx2.fillText('Umbral: $' + umbral, xScale.right - 5, yPos - 5);
@@ -622,7 +751,7 @@ function renderGraficoRentabilidad(rd) {
 // ============================================================
 // GRÁFICO DESGLOSE
 // ============================================================
-function renderGraficoDesglose(rd, t) {
+function renderGraficoDesglose(rd, desg) {
   const canvas = document.getElementById('desgloseChart');
   const ctx = canvas.getContext('2d');
   if (charts.desg) { charts.desg.destroy(); charts.desg = null; }
@@ -632,23 +761,23 @@ function renderGraficoDesglose(rd, t) {
 
   if (!fechas.length) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = '#9ca3af'; ctx.font = '14px Inter'; ctx.textAlign = 'center';
+    ctx.fillStyle = '#94a3b8'; ctx.font = '14px Inter'; ctx.textAlign = 'center';
     ctx.fillText('Sin datos para desglose', canvas.width/2, canvas.height/2);
     return;
   }
 
-  const dd = statsData.desgloseDiario || {};
-  const dataIngresos = dd.ingresos || ganancias.map(g => g + (t.totalCostos || 0) / fechas.length);
-  const dataCombustible = dd.combustible || ganancias.map(() => (t.totalCombustible || 0) / fechas.length);
-  const dataMantenimiento = dd.mantenimiento || ganancias.map(() => (t.totalMantenimiento || 0) / fechas.length);
-  const dataComisiones = dd.comisiones || ganancias.map(() => (t.totalComisiones || 0) / fechas.length);
+  const promIngreso = ganancias.reduce((s, g) => s + g, 0) / fechas.length + (desg.comb + desg.mant + desg.comis) / fechas.length;
+  const dataIngresos = ganancias.map(() => promIngreso);
+  const dataCombustible = ganancias.map(() => (desg.comb || 0) / fechas.length);
+  const dataMantenimiento = ganancias.map(() => (desg.mant || 0) / fechas.length);
+  const dataComisiones = ganancias.map(() => (desg.comis || 0) / fechas.length);
 
   charts.desg = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: fechas,
       datasets: [
-        { label: 'Ingresos', data: dataIngresos, backgroundColor: 'rgba(0,72,49,0.6)', borderColor: '#004831', borderWidth: 1 },
+        { label: 'Ingresos', data: dataIngresos, backgroundColor: 'rgba(11,126,92,0.6)', borderColor: '#0b7e5c', borderWidth: 1 },
         { label: 'Combustible', data: dataCombustible, backgroundColor: 'rgba(245,158,11,0.6)', borderColor: '#D97706', borderWidth: 1 },
         { label: 'Mantenimiento', data: dataMantenimiento, backgroundColor: 'rgba(239,68,68,0.6)', borderColor: '#DC2626', borderWidth: 1 },
         { label: 'Comisiones', data: dataComisiones, backgroundColor: 'rgba(139,92,246,0.6)', borderColor: '#8B5CF6', borderWidth: 1 },
@@ -658,9 +787,7 @@ function renderGraficoDesglose(rd, t) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'top', labels: { boxWidth: 12, font: { size: 9 } } }
-      },
+      plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 9 } } } },
       scales: {
         y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } } },
         x: { ticks: { maxTicksLimit: 15, font: { size: 8 } } }
@@ -670,28 +797,59 @@ function renderGraficoDesglose(rd, t) {
 }
 
 // ============================================================
-// ANÁLISIS RUBROS
+// ANÁLISIS POR RUBRO
 // ============================================================
-function renderAnalisisRubros(analisis) {
+function renderAnalisisRubros(ingresos, gastos, costoKm) {
   const container = document.getElementById('rubrosContainer');
-  if (!analisis || !analisis.length) {
+  const rubros = {};
+  
+  ingresos.forEach(i => {
+    const r = i.rubro || 'General';
+    if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
+    rubros[r].ingresos += (i.monto || 0);
+    rubros[r].viajes += (i.orden || 0);
+    rubros[r].km += (i.kmTotal || 0);
+    rubros[r].horas += (i.horas || 0);
+  });
+  gastos.forEach(g => {
+    const r = g.rubro || 'General';
+    if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
+    rubros[r].gastos += (g.monto || 0);
+  });
+
+  const analisis = Object.keys(rubros).map(r => {
+    const data = rubros[r];
+    const costoOp = (r === 'Transporte') ? data.km * costoKm : 0;
+    const gastosTot = data.gastos + costoOp;
+    const ganancia = data.ingresos - gastosTot;
+    const margen = data.ingresos > 0 ? (ganancia / data.ingresos) * 100 : 0;
+    return { rubro: r, ...data, gastosTot, ganancia, margen };
+  }).sort((a,b) => b.ganancia - a.ganancia);
+
+  if (!analisis.length) {
     container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-2">Sin datos</div>';
+    document.getElementById('recomendacion').textContent = 'Sin recomendación';
     return;
   }
 
   container.innerHTML = analisis.slice(0, 4).map(r => {
     const badge = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
     const icon = r.rubro === 'Transporte' ? '🚖' : r.rubro === 'Electrónica' ? '🤖' : r.rubro === 'General' ? '🏠' : '📦';
-    return `<div class="bg-gray-50 dark:bg-[#0f172a] rounded-lg p-2 text-center border dark:border-[#334155] transition-colors">
+    return `<div class="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-2 text-center border dark:border-gray-700">
       <p class="font-bold text-sm">${icon} ${r.rubro}</p>
-      <p class="text-xs text-gray-600 dark:text-gray-300">Ganancia: <strong class="text-[#004831] dark:text-[#5eead4]">$${(r.ganancia || 0).toFixed(2)}</strong></p>
-      <p class="text-xs text-gray-600 dark:text-gray-300">Margen: <strong>${(r.margen || 0).toFixed(1)}%</strong></p>
-      <p class="text-xs text-gray-600 dark:text-gray-300">Viajes: ${r.viajes || 0} | Km: ${(r.km || 0).toFixed(1)}</p>
+      <p class="text-xs text-gray-600 dark:text-gray-400">Ganancia: <strong class="text-primary">$${(r.ganancia || 0).toFixed(2)}</strong></p>
+      <p class="text-xs text-gray-600 dark:text-gray-400">Margen: <strong>${(r.margen || 0).toFixed(1)}%</strong></p>
+      <p class="text-xs text-gray-600 dark:text-gray-400">Viajes: ${r.viajes || 0} | Km: ${(r.km || 0).toFixed(1)}</p>
       <span class="${badge}">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
     </div>`;
   }).join('');
 
-  document.getElementById('recomendacion').textContent = statsData.recomendacion || 'Sin recomendación';
+  const mejor = analisis[0];
+  let rec = '';
+  if (mejor && mejor.ganancia > 0) rec += `✅ ${mejor.rubro} es tu negocio más rentable ($${mejor.ganancia.toFixed(2)}). `;
+  const peor = analisis[analisis.length - 1];
+  if (peor && peor.ganancia < 0 && peor.rubro !== mejor.rubro) rec += `⚠️ ${peor.rubro} genera pérdidas.`;
+  document.getElementById('recomendacion').textContent = rec || 'Todos los rubros son rentables. 🎉';
 }
 
 // ============================================================
@@ -707,9 +865,9 @@ function renderTabla(ingresos, gastos) {
   }
   tbody.innerHTML = all.slice(0, 50).map(item => {
     const signo = item.tipo === 'ingreso' ? '+' : '-';
-    const color = item.tipo === 'ingreso' ? 'text-[#004831] dark:text-[#5eead4]' : 'text-[#752200] dark:text-[#fca5a5]';
+    const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary';
     const cat = item.plataforma || item.categoria || '';
-    return `<tr class="dark:border-[#334155]">
+    return `<tr class="border-t dark:border-gray-700">
       <td class="p-1">${item.fecha || ''}</td>
       <td class="p-1 capitalize">${item.tipo}</td>
       <td class="p-1 capitalize">${item.rubro || ''}</td>
@@ -742,40 +900,6 @@ function exportarCSV() {
 }
 
 // ============================================================
-// EXPORTAR PDF
-// ============================================================
-function exportarPDF() {
-  toast('📄 Generando PDF...', 'info');
-  const element = document.getElementById('dashboardContent');
-  html2canvas(element, {
-    scale: 2,
-    backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#f1f5f9',
-    useCORS: true,
-    logging: false
-  }).then(canvas => {
-    const imgData = canvas.toDataURL('image/png');
-    const { jsPDF } = window.jspdf;
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    let heightLeft = pdfHeight;
-    let position = 0;
-    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-    heightLeft -= pdf.internal.pageSize.getHeight();
-    while (heightLeft >= 0) {
-      position = heightLeft - pdfHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-      heightLeft -= pdf.internal.pageSize.getHeight();
-    }
-    pdf.save('dashboard.pdf');
-    toast('✅ PDF exportado', 'success');
-  }).catch(() => {
-    toast('❌ Error al exportar PDF', 'error');
-  });
-}
-
-// ============================================================
 // RECARGAR
 // ============================================================
 async function recargarDatos() {
@@ -784,61 +908,80 @@ async function recargarDatos() {
 }
 
 // ============================================================
-// EVENTOS
+// GUARDAR FILTROS
+// ============================================================
+function guardarFiltros() {
+  try {
+    localStorage.setItem('filtros_driver', JSON.stringify({
+      fechaInicio: document.getElementById('fechaInicio').value,
+      fechaFin: document.getElementById('fechaFin').value,
+      rubro: document.getElementById('rubroFilter').value,
+      categoria: document.getElementById('categoriaFilter').value,
+      umbral: document.getElementById('umbral').value,
+      meta: document.getElementById('metaDiaria').value
+    }));
+  } catch(e) {}
+}
+
+function cargarFiltros() {
+  try {
+    const saved = localStorage.getItem('filtros_driver');
+    if (saved) {
+      const f = JSON.parse(saved);
+      if (f.fechaInicio) document.getElementById('fechaInicio').value = f.fechaInicio;
+      if (f.fechaFin) document.getElementById('fechaFin').value = f.fechaFin;
+      if (f.rubro) document.getElementById('rubroFilter').value = f.rubro;
+      if (f.categoria) document.getElementById('categoriaFilter').value = f.categoria;
+      if (f.umbral) document.getElementById('umbral').value = f.umbral;
+      if (f.meta) document.getElementById('metaDiaria').value = f.meta;
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+// EVENTOS E INICIO
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
-  // Cargar tema
   loadTheme();
   
-  // Fechas por defecto
   const hoy = new Date();
   const hace30 = new Date(hoy);
   hace30.setDate(hace30.getDate() - 30);
   
-  // Cargar filtros guardados o valores por defecto
   cargarFiltros();
-  
-  // Si no hay fechas guardadas, poner las de los últimos 30 días
-  if (!document.getElementById('fechaInicio').value) {
-    document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
-  }
-  if (!document.getElementById('fechaFin').value) {
-    document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
-  }
+  if (!document.getElementById('fechaInicio').value) document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
+  if (!document.getElementById('fechaFin').value) document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
 
   await cargarDatos();
   renderizar();
 
   // Eventos
-  document.getElementById('btnAplicar').addEventListener('click', renderizar);
+  document.getElementById('btnAplicar').addEventListener('click', () => { renderizar(); guardarFiltros(); });
   document.getElementById('btnLimpiar').addEventListener('click', () => {
     document.getElementById('fechaInicio').value = '';
     document.getElementById('fechaFin').value = '';
     document.getElementById('rubroFilter').value = 'all';
     document.getElementById('categoriaFilter').value = 'all';
     renderizar();
+    guardarFiltros();
   });
   document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+  document.getElementById('btnEditarFijos').addEventListener('click', editarFijos);
 
   document.getElementById('btnUmbral').addEventListener('click', () => {
     const val = parseFloat(document.getElementById('umbral').value);
-    if (val >= 0) { renderizar(); toast('✅ Umbral actualizado', 'success'); }
+    if (val >= 0) { renderizar(); guardarFiltros(); toast('✅ Umbral actualizado', 'success'); }
     else toast('⚠️ Valor inválido', 'error');
   });
 
   document.getElementById('btnMeta').addEventListener('click', () => {
     const val = parseFloat(document.getElementById('metaDiaria').value);
-    if (val >= 0) { renderizar(); toast('✅ Meta actualizada', 'success'); }
+    if (val >= 0) { renderizar(); guardarFiltros(); toast('✅ Meta actualizada', 'success'); }
     else toast('⚠️ Valor inválido', 'error');
   });
 
-  // Enter key para inputs
-  document.getElementById('umbral').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') document.getElementById('btnUmbral').click();
-  });
-  document.getElementById('metaDiaria').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') document.getElementById('btnMeta').click();
-  });
+  document.getElementById('umbral').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('btnUmbral').click(); });
+  document.getElementById('metaDiaria').addEventListener('keypress', (e) => { if (e.key === 'Enter') document.getElementById('btnMeta').click(); });
 });
 </script>
 </body>
