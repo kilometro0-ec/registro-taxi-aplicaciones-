@@ -3,15 +3,13 @@
 <head>
   <meta charset="utf-8"/>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" name="viewport"/>
-  <title>Driver Insights - Dashboard Profesional</title>
+  <title>Driver Insights - Dashboard</title>
   <link rel="manifest" href="./manifest.json" />
   <meta name="theme-color" content="#004831" />
   <meta name="mobile-web-app-capable" content="yes" />
 
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
@@ -19,48 +17,72 @@
     * { box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
-      background: #f4f6fb;
+      background: #f1f5f9;
       touch-action: manipulation;
       font-size: 14px;
       transition: background 0.3s, color 0.3s;
+      margin: 0;
+      padding: 0;
     }
+    
+    /* ===== DARK MODE MEJORADO ===== */
     body.dark {
-      background: #0f172a;
-      color: #e2e8f0;
+      background: #0a0f1a;
+      color: #e8edf5;
     }
-    body.dark .bg-white { background: #1e293b !important; }
-    body.dark .bg-gray-200 { background: #334155 !important; }
+    body.dark .bg-white { background: #151e2f !important; }
+    body.dark .bg-gray-50 { background: #0f172a !important; }
+    body.dark .bg-gray-100 { background: #1a2335 !important; }
+    body.dark .bg-gray-200 { background: #2a3448 !important; }
     body.dark .text-gray-500 { color: #94a3b8 !important; }
-    body.dark .text-gray-600 { color: #cbd5e1 !important; }
-    body.dark .text-gray-400 { color: #94a3b8 !important; }
-    body.dark .border-gray-100 { border-color: #334155 !important; }
-    body.dark .filter-card { background: #1e293b; border-color: #334155; }
-    body.dark .stat-card { background: #1e293b; border-color: #334155; }
-    body.dark .analysis-card { background: #1e293b; border-color: #334155; }
-    body.dark .costo-km-card { background: #1e293b; border-color: #004831; }
-    body.dark .modal-card { background: #1e293b; }
-    body.dark .modal-header { border-color: #334155; }
-    body.dark .modal-close { background: #334155; color: #e2e8f0; }
-    body.dark .modal-body td { border-color: #334155; }
+    body.dark .text-gray-600 { color: #b0c4db !important; }
+    body.dark .text-gray-700 { color: #c8d6e5 !important; }
+    body.dark .text-gray-800 { color: #e8edf5 !important; }
+    body.dark .text-gray-900 { color: #f0f4fa !important; }
+    body.dark .border-gray-100 { border-color: #2a3448 !important; }
+    body.dark .border-gray-200 { border-color: #3a4559 !important; }
+    body.dark .border-gray-300 { border-color: #4a5568 !important; }
+    body.dark .filter-card { background: #151e2f; border-color: #2a3448; }
+    body.dark .stat-card { background: #151e2f; border-color: #2a3448; }
+    body.dark .analysis-card { background: #151e2f; border-color: #2a3448; }
+    body.dark .costo-km-card { background: #151e2f; border-color: #2a6b4a; }
+    body.dark .modal-card { background: #151e2f; border-color: #2a3448; }
+    body.dark .modal-header { border-color: #2a3448; }
+    body.dark .modal-close { background: #2a3448; color: #e8edf5; }
+    body.dark .modal-close:hover { background: #3a4559; }
+    body.dark .modal-body td { border-color: #2a3448; }
     body.dark .modal-body th { color: #94a3b8; }
-    body.dark .rentabilidad-stats .item { background: #1e293b; border-color: #334155; }
-    body.dark .cat-item:hover { background: #334155; }
-    body.dark .bg-surface-container-low { background: #334155; }
-    body.dark header { background: rgba(30, 41, 59, 0.9) !important; border-color: #334155; }
-    body.dark .threshold-input { background: #1e293b; border-color: #334155; color: #e2e8f0; }
-    body.dark .table-scroll table { color: #e2e8f0; }
-    body.dark nav { background: rgba(30, 41, 59, 0.9) !important; border-color: #334155; }
+    body.dark .rentabilidad-stats .item { background: #151e2f; border-color: #2a3448; }
+    body.dark .cat-item:hover { background: #2a3448; }
+    body.dark .bg-surface-container-low { background: #1a2335; }
+    body.dark header { background: rgba(21, 30, 47, 0.95) !important; border-color: #2a3448; }
+    body.dark .threshold-input { background: #0f172a; border-color: #2a3448; color: #e8edf5; }
+    body.dark .threshold-input:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+    body.dark .table-scroll table { color: #e8edf5; }
+    body.dark nav { background: rgba(21, 30, 47, 0.95) !important; border-color: #2a3448; }
     body.dark .equilibrio-card { background: #064e3b; border-color: #10b981; }
     body.dark .equilibrio-card .num { color: #86efac; }
     body.dark .equilibrio-card .lbl { color: #86efac; }
-    body.dark .analysis-card[style*="background: linear-gradient"] { background: #1e293b !important; }
-    
+    body.dark .badge-success { background: #065f46; color: #86efac; }
+    body.dark .badge-warning { background: #78350f; color: #fcd34d; }
+    body.dark .badge-danger { background: #7f1d1d; color: #fca5a5; }
+    body.dark .badge-info { background: #1e3a5f; color: #93c5fd; }
+    body.dark .nav-active { background: rgba(16, 185, 129, 0.2) !important; color: #86efac !important; }
+    body.dark .text-primary { color: #5eead4 !important; }
+    body.dark .text-tertiary { color: #fca5a5 !important; }
+    body.dark .text-secondary { color: #93c5fd !important; }
+    body.dark .dark-toggle:hover { background: rgba(255,255,255,0.08); }
+    body.dark .analysis-card[style*="background: linear-gradient"] { background: #1a2335 !important; }
+    body.dark .analysis-card[style*="background: linear-gradient"] .text-gray-600 { color: #b0c4db !important; }
+    body.dark .equilibrio-card .text-sm { color: #d1fae5 !important; }
+    body.dark .bg-primary-container\/60 { background: rgba(16, 185, 129, 0.15) !important; }
+
     .material-symbols-outlined { font-size: 24px; }
     .status-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      font-size: 0.6rem;
+      font-size: 0.55rem;
       padding: 2px 10px;
       border-radius: 20px;
       background: #f1f5f9;
@@ -68,36 +90,40 @@
     }
     .status-connected { background: #dcfce7; color: #166534; }
     .status-error { background: #fee2e2; color: #991b1b; }
+    .status-loading { background: #fef3c7; color: #92400e; animation: pulse 1.5s ease-in-out infinite; }
     .happy-face { display: inline-block; animation: bounce 1.2s infinite; font-size: 1.2rem; }
     @keyframes bounce { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3) rotate(5deg); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
     .toast {
       position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-      background: #1f2937; color: white; padding: 10px 20px; border-radius: 12px;
-      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3); z-index: 9999;
-      opacity: 0; transition: opacity 0.3s ease; pointer-events: none;
-      max-width: 90%; text-align: center; font-size: 0.9rem;
+      background: #1f2937; color: white; padding: 12px 24px; border-radius: 14px;
+      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3); z-index: 9999;
+      opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none; max-width: 90%; text-align: center; font-size: 0.9rem;
+      transform: translateX(-50%) translateY(10px);
     }
-    .toast.show { opacity: 1; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     .toast.error { background: #dc2626; }
     .toast.success { background: #16a34a; }
     .toast.warning { background: #d97706; }
+    .toast.info { background: #2563eb; }
 
     .filter-card {
       background: white;
       border-radius: 20px;
       padding: 16px 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
-      border: 1px solid rgba(0,0,0,0.04);
-      transition: background 0.3s;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: background 0.3s, border-color 0.3s;
     }
     .stat-card {
       background: white;
       border-radius: 16px;
       padding: 12px 14px;
-      border: 1px solid rgba(0,0,0,0.04);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-      transition: background 0.3s, transform 0.2s;
+      border: 1px solid rgba(0,0,0,0.05);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      transition: background 0.3s, transform 0.2s, border-color 0.3s;
     }
     .stat-card:hover { transform: translateY(-2px); }
     .stat-card .label { font-size: 0.55rem; letter-spacing: 0.04em; text-transform: uppercase; color: #6b7280; font-weight: 600; }
@@ -109,6 +135,11 @@
       border-color: #004831;
       box-shadow: 0 0 0 3px rgba(0,72,49,0.12);
     }
+    body.dark input:focus, body.dark select:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+    }
+
     .chart-container {
       position: relative;
       width: 100%;
@@ -120,8 +151,8 @@
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -129,7 +160,7 @@
       padding: 16px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.3s ease;
     }
     .modal-overlay.active {
       opacity: 1;
@@ -143,12 +174,12 @@
       max-height: 85vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
-      transform: translateY(10px);
-      transition: transform 0.25s ease;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.3s ease;
     }
     .modal-overlay.active .modal-card {
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
     }
     .modal-header {
       padding: 16px 20px 10px 20px;
@@ -168,8 +199,8 @@
     .modal-close {
       background: #f3f4f6;
       border: none;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -212,15 +243,12 @@
     }
 
     .analysis-card {
-      background: linear-gradient(135deg, #f8faff 0%, #eef4ff 100%);
+      background: white;
       border-radius: 16px;
       padding: 14px;
-      border: 1px solid rgba(0,72,49,0.08);
-      transition: background 0.3s;
-    }
-    body.dark .analysis-card {
-      background: #1e293b;
-      border-color: #334155;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: background 0.3s, border-color 0.3s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
     .analysis-card .label { font-size: 0.6rem; text-transform: uppercase; color: #6b7280; font-weight: 600; }
     .analysis-card .value { font-size: 1.2rem; font-weight: 700; }
@@ -235,10 +263,6 @@
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-danger { background: #fee2e2; color: #991b1b; }
     .badge-info { background: #dbeafe; color: #1e40af; }
-    body.dark .badge-success { background: #065f46; color: #86efac; }
-    body.dark .badge-warning { background: #78350f; color: #fcd34d; }
-    body.dark .badge-danger { background: #7f1d1d; color: #fca5a5; }
-    body.dark .badge-info { background: #1e3a5f; color: #93c5fd; }
 
     .threshold-input {
       width: 80px;
@@ -249,13 +273,11 @@
       font-weight: 700;
       text-align: center;
       transition: border-color 0.3s, background 0.3s, color 0.3s;
+      background: white;
     }
     .threshold-input:focus {
       border-color: #004831;
       box-shadow: 0 0 0 3px rgba(0,72,49,0.12);
-    }
-    body.dark .threshold-input:focus {
-      box-shadow: 0 0 0 3px rgba(0,72,49,0.3);
     }
 
     .costo-km-card {
@@ -263,12 +285,7 @@
       border-radius: 12px;
       padding: 10px 14px;
       border: 2px solid #004831;
-      margin-top: 8px;
-      transition: background 0.3s;
-    }
-    body.dark .costo-km-card {
-      background: #1e293b;
-      border-color: #004831;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .cat-item {
@@ -279,7 +296,6 @@
       margin: 2px 0;
     }
     .cat-item:hover { background: #f0f4ff; }
-    body.dark .cat-item:hover { background: #334155; }
 
     .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .table-scroll table { min-width: 600px; }
@@ -298,10 +314,6 @@
       border: 1px solid #e5e7eb;
       transition: background 0.3s, border-color 0.3s;
     }
-    body.dark .rentabilidad-stats .item {
-      background: #1e293b;
-      border-color: #334155;
-    }
     .rentabilidad-stats .item .num {
       font-size: 1.2rem;
       font-weight: 700;
@@ -312,9 +324,6 @@
       color: #6b7280;
       font-weight: 600;
     }
-    body.dark .rentabilidad-stats .item .lbl {
-      color: #94a3b8;
-    }
 
     .equilibrio-card {
       background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
@@ -322,26 +331,16 @@
       padding: 10px 14px;
       border: 2px solid #10b981;
     }
-    body.dark .equilibrio-card {
-      background: #064e3b;
-      border-color: #10b981;
-    }
     .equilibrio-card .num {
       font-size: 1.3rem;
       font-weight: 800;
       color: #065f46;
-    }
-    body.dark .equilibrio-card .num {
-      color: #86efac;
     }
     .equilibrio-card .lbl {
       font-size: 0.6rem;
       text-transform: uppercase;
       color: #065f46;
       font-weight: 600;
-    }
-    body.dark .equilibrio-card .lbl {
-      color: #86efac;
     }
 
     .dark-toggle {
@@ -356,20 +355,41 @@
     .dark-toggle:hover {
       background: rgba(0,0,0,0.05);
     }
-    body.dark .dark-toggle:hover {
-      background: rgba(255,255,255,0.05);
-    }
 
-    /* Navegación inferior activa */
     .nav-active {
-      background: rgba(0,72,49,0.1) !important;
+      background: rgba(0,72,49,0.08) !important;
       color: #004831 !important;
       border-radius: 12px;
     }
-    body.dark .nav-active {
-      background: rgba(0,72,49,0.3) !important;
-      color: #86efac !important;
+
+    /* Loading spinner */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(0,72,49,0.1);
+      border-radius: 50%;
+      border-top-color: #004831;
+      animation: spin 0.8s linear infinite;
     }
+    body.dark .spinner {
+      border: 3px solid rgba(16, 185, 129, 0.15);
+      border-top-color: #5eead4;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .data-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.7rem;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: #f1f5f9;
+    }
+    .data-status.loading { background: #fef3c7; color: #92400e; }
+    .data-status.loaded { background: #dcfce7; color: #166534; }
+    .data-status.error { background: #fee2e2; color: #991b1b; }
 
     @media (max-width: 640px) {
       .filter-card .flex { flex-direction: column; align-items: stretch; }
@@ -379,38 +399,18 @@
         padding: 10px 8px;
       }
       .stat-card .value { font-size: 1.2rem; }
-      .chart-container { height: 190px; min-height: 190px; }
+      .chart-container { height: 180px; min-height: 180px; }
       .modal-card { max-width: 100%; border-radius: 20px; }
       .modal-header { padding: 14px 16px 8px 16px; }
       .modal-body { padding: 10px 16px 16px 16px; }
-      .analysis-card .value { font-size: 1rem; }
-      .threshold-input { width: 70px; font-size: 0.8rem; }
+      .threshold-input { width: 65px; font-size: 0.8rem; }
       .rentabilidad-stats { grid-template-columns: repeat(2, 1fr); }
       nav .grid { gap: 0; }
+      .data-status { font-size: 0.6rem; padding: 2px 8px; }
     }
   </style>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "primary": "#004831",
-            "tertiary": "#752200",
-            "surface": "#f4f6fb",
-            "on-surface": "#0b1c30",
-            "surface-container-low": "#eff4ff",
-            "outline-variant": "#e0e4ea",
-            "secondary": "#455f88",
-            "on-surface-variant": "#4a5568",
-            "primary-container": "#0e6245",
-          }
-        }
-      }
-    }
-  </script>
 </head>
-<body class="bg-surface text-on-surface min-h-screen pb-24">
+<body>
 
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
 
@@ -428,20 +428,20 @@
   </div>
 
   <!-- HEADER -->
-  <header class="bg-white/80 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 w-full flex justify-between items-center px-3 h-12 shadow-sm">
+  <header class="bg-white/90 backdrop-blur-md border-b fixed top-0 z-50 w-full flex justify-between items-center px-3 h-12 shadow-sm">
     <div class="flex items-center gap-2">
-      <div class="w-7 h-7 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border border-outline-variant">
+      <div class="w-7 h-7 rounded-full bg-primary-container flex items-center justify-center overflow-hidden border">
         <img class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBH1O4D8wU5EtEDaBEpNBwRCH7vQ3WS9GvJBzpjUd8J3BoLn2STmJYTgvXHyBxPN6LK3qtOA834UyLWqHziQo0IkuuaQ2ecc-cgIaOUx2mEg7BJwfSefAlhGoqbcSdfTCmP49Fa6gONrxvvM3ru8_3kTuqIMN0PfFgNLdBxxgPCTt06oDL0wzfkdTf_NntTX-bdLMV5kSUMtfS08Nu3E34mhbDsIDn2IiAMzY1YmmKeQBPU_P6jEcabn0CoNO5FZ35M4mQizBs9L85C" alt="Avatar"/>
       </div>
       <h1 class="text-base font-bold bg-gradient-to-r from-primary to-primary-container bg-clip-text text-transparent">Driver Insights</h1>
       <div id="connectionStatus" class="status-badge status-error" role="status">
-        <span>🔄</span>
+        <span>🔄</span> Conectando...
       </div>
     </div>
     <div class="flex gap-1 items-center">
+      <div id="dataStatus" class="data-status error">📊 Sin datos</div>
       <button id="toggleDarkMode" class="dark-toggle" title="Cambiar tema">🌓</button>
       <button id="refreshBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">refresh</button>
-      <button id="exportPdfBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">picture_as_pdf</button>
       <button id="exportCsvBtn" class="material-symbols-outlined text-on-surface-variant hover:bg-surface-container-high p-1 rounded-full" style="font-size:22px">download</button>
     </div>
   </header>
@@ -454,15 +454,15 @@
       <div class="flex flex-wrap items-end gap-2">
         <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Desde</label>
-          <input type="date" id="fechaInicio" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm" />
+          <input type="date" id="fechaInicio" class="w-full border rounded-xl px-3 py-2 text-sm" />
         </div>
         <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Hasta</label>
-          <input type="date" id="fechaFin" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm" />
+          <input type="date" id="fechaFin" class="w-full border rounded-xl px-3 py-2 text-sm" />
         </div>
         <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Rubro</label>
-          <select id="rubroFilter" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm">
+          <select id="rubroFilter" class="w-full border rounded-xl px-3 py-2 text-sm">
             <option value="all">Todos</option>
             <option value="transporte">🚖 Transporte</option>
             <option value="electronica">🤖 Electrónica</option>
@@ -472,7 +472,7 @@
         </div>
         <div class="flex-1 min-w-[110px]">
           <label class="text-xs font-bold uppercase text-on-surface-variant">Categoría</label>
-          <select id="categoriaFilter" class="w-full border border-outline-variant rounded-xl px-3 py-2 text-sm">
+          <select id="categoriaFilter" class="w-full border rounded-xl px-3 py-2 text-sm">
             <option value="all">Todas</option>
           </select>
         </div>
@@ -496,7 +496,7 @@
         <p class="value text-tertiary" id="totalCostoOperativo">$0</p>
       </div>
       <div class="stat-card">
-        <p class="label">📊 Ganancia Real Transporte</p>
+        <p class="label">📊 Ganancia Real</p>
         <p class="value text-primary" id="gananciaRealTransporte">$0</p>
       </div>
       <div class="stat-card">
@@ -509,20 +509,20 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
       <div class="costo-km-card">
         <div class="flex justify-between items-center flex-wrap gap-2">
-          <span class="text-sm font-bold text-primary">🚗 Costo operativo por km</span>
+          <span class="text-sm font-bold text-primary">🚗 Costo por km</span>
           <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-xs text-gray-600">Combustible: <strong id="costoCombustibleKm">$0.00</strong>/km</span>
-            <span class="text-xs text-gray-600">Mantenimiento: <strong id="costoMantenimientoKm">$0.00</strong>/km</span>
-            <span class="text-xs text-gray-600 font-bold">Total: <strong id="costoTotalKm">$0.00</strong>/km</span>
+            <span class="text-xs">Combustible: <strong id="costoCombustibleKm">$0.00</strong>/km</span>
+            <span class="text-xs">Mantenimiento: <strong id="costoMantenimientoKm">$0.00</strong>/km</span>
+            <span class="text-xs font-bold">Total: <strong id="costoTotalKm">$0.00</strong>/km</span>
           </div>
         </div>
       </div>
       <div class="costo-km-card" style="border-color: #8B5CF6;">
         <div class="flex justify-between items-center flex-wrap gap-2">
-          <span class="text-sm font-bold text-primary">🏠 Costos Fijos Diarios</span>
+          <span class="text-sm font-bold text-primary">🏠 Costos Fijos</span>
           <div class="flex items-center gap-3 flex-wrap">
-            <span class="text-xs text-gray-600">Total fijos: <strong id="totalFijos">$0.00</strong></span>
-            <span class="text-xs text-gray-600 font-bold">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
+            <span class="text-xs">Total: <strong id="totalFijos">$0.00</strong></span>
+            <span class="text-xs font-bold">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
           </div>
         </div>
       </div>
@@ -533,8 +533,8 @@
       <div class="flex justify-between items-center flex-wrap gap-2">
         <span class="lbl">🎯 Punto de Equilibrio</span>
         <div class="flex items-center gap-4 flex-wrap">
-          <span class="text-sm">Viajes necesarios: <span class="num" id="viajesNecesarios">0</span></span>
-          <span class="text-sm">Km necesarios: <span class="num" id="kmNecesarios">0</span></span>
+          <span class="text-sm">Viajes/día: <span class="num" id="viajesNecesarios">0</span></span>
+          <span class="text-sm">Km/día: <span class="num" id="kmNecesarios">0</span></span>
           <span class="text-sm">Meta diaria: <span class="num" id="metaDiaria">$0</span></span>
         </div>
       </div>
@@ -560,10 +560,10 @@
       </div>
     </section>
 
-    <!-- KPIs DE OPERACIÓN -->
+    <!-- KPIs -->
     <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
       <div class="stat-card">
-        <p class="label">🚗 Viajes Totales</p>
+        <p class="label">🚗 Viajes</p>
         <p class="value text-secondary" id="totalViajes">0</p>
       </div>
       <div class="stat-card">
@@ -571,23 +571,23 @@
         <p class="value text-secondary" id="totalKm">0</p>
       </div>
       <div class="stat-card">
-        <p class="label">⏱️ Horas Trabajadas</p>
+        <p class="label">⏱️ Horas</p>
         <p class="value text-secondary" id="totalHoras">0</p>
       </div>
       <div class="stat-card">
-        <p class="label">📊 Ganancia Real/Hora</p>
+        <p class="label">📊 Ganancia/Hora</p>
         <p class="value text-primary" id="gananciaRealHora">$0</p>
       </div>
     </section>
 
-    <!-- GRÁFICO DE RENTABILIDAD REAL -->
+    <!-- GRÁFICO RENTABILIDAD -->
     <div class="analysis-card">
       <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
-        <span class="label">📊 Rentabilidad Real Diaria (Transporte)</span>
+        <span class="label">📊 Rentabilidad Real Diaria</span>
         <div class="flex items-center gap-2">
-          <span class="text-xs text-gray-600 font-medium">Umbral rentable:</span>
+          <span class="text-xs font-medium">Umbral:</span>
           <input type="number" id="umbralRentabilidad" class="threshold-input" value="40" step="5" min="0" />
-          <span class="text-xs text-gray-600">$</span>
+          <span class="text-xs">$</span>
           <button id="actualizarUmbral" class="bg-primary text-white px-3 py-1 rounded-xl text-xs font-bold">Actualizar</button>
         </div>
       </div>
@@ -614,35 +614,35 @@
       </div>
     </div>
 
-    <!-- GRÁFICO DE DESGLOSE DE COSTOS -->
+    <!-- GRÁFICO DESGLOSE -->
     <div class="analysis-card">
       <div class="flex justify-between items-center mb-2">
-        <span class="label">📊 Desglose de Ingresos vs Costos (Transporte)</span>
-        <span class="text-xs text-gray-500">Distribución diaria</span>
+        <span class="label">📊 Desglose Ingresos vs Costos</span>
+        <span class="text-xs">Distribución diaria</span>
       </div>
       <div class="chart-container" style="height:220px; min-height:220px;">
         <canvas id="desgloseChart"></canvas>
       </div>
     </div>
 
-    <!-- ANÁLISIS POR RUBRO CON RENTABILIDAD REAL -->
+    <!-- ANÁLISIS POR RUBRO -->
     <div class="analysis-card">
       <div class="flex justify-between items-center mb-2">
-        <span class="label">🏢 Análisis por Rubro (Rentabilidad Real)</span>
-        <span class="text-xs text-gray-500">Costos operativos incluidos</span>
+        <span class="label">🏢 Análisis por Rubro</span>
+        <span class="text-xs">Costos operativos incluidos</span>
       </div>
       <div id="analisisRubros" class="grid grid-cols-2 md:grid-cols-4 gap-2">
-        <!-- Se llena dinámicamente -->
+        <div class="col-span-4 text-center text-gray-500 py-4">Cargando datos...</div>
       </div>
-      <div id="recomendacionRubros" class="mt-2 text-sm font-medium text-center p-2 bg-white rounded-xl">
-        <!-- Recomendación -->
+      <div id="recomendacionRubros" class="mt-2 text-sm font-medium text-center p-2 bg-gray-50 rounded-xl">
+        Cargando recomendación...
       </div>
     </div>
 
-    <!-- ROI Y RECOMENDACIÓN -->
+    <!-- ROI -->
     <div class="analysis-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);">
       <div class="flex justify-between items-center flex-wrap gap-2">
-        <span class="label">💡 Recomendación Profesional</span>
+        <span class="label">💡 Recomendación</span>
         <span class="text-xs" id="recomendacionROI">Cargando...</span>
       </div>
       <div id="roiDetalles" class="mt-2 grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
@@ -653,15 +653,15 @@
       </div>
     </div>
 
-    <!-- GRÁFICOS EXISTENTES -->
+    <!-- GRÁFICOS -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+      <div class="bg-white rounded-2xl p-4 border shadow-sm">
         <h3 class="font-bold text-sm mb-2">📈 Evolución diaria</h3>
         <div class="chart-container">
           <canvas id="ingresosGastosChart"></canvas>
         </div>
       </div>
-      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+      <div class="bg-white rounded-2xl p-4 border shadow-sm">
         <h3 class="font-bold text-sm mb-2">🧩 Distribución de Gastos</h3>
         <div class="chart-container">
           <canvas id="gastosPieChart"></canvas>
@@ -671,25 +671,25 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+      <div class="bg-white rounded-2xl p-4 border shadow-sm">
         <h3 class="font-bold text-sm mb-2">🚖 Ingresos por Plataforma</h3>
         <div class="chart-container">
           <canvas id="platformChart"></canvas>
         </div>
       </div>
-      <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+      <div class="bg-white rounded-2xl p-4 border shadow-sm">
         <h3 class="font-bold text-sm mb-2">📋 Ranking de Gastos</h3>
         <div id="categoriaGastosList" class="space-y-1 max-h-[200px] overflow-y-auto"></div>
         <p class="text-xs text-center text-gray-400 mt-1">👆 Clic en categoría para detalle</p>
       </div>
     </div>
 
-    <!-- TABLA DETALLADA -->
-    <div class="bg-white rounded-2xl p-4 border border-outline-variant shadow-sm">
+    <!-- TABLA -->
+    <div class="bg-white rounded-2xl p-4 border shadow-sm">
       <h3 class="font-bold text-sm mb-2">📋 Actividad Filtrada</h3>
       <div class="table-scroll">
         <table class="w-full text-sm">
-          <thead class="bg-surface-container-low text-left text-xs uppercase">
+          <thead class="bg-gray-50 text-left text-xs uppercase">
             <tr>
               <th class="p-2">Fecha</th>
               <th class="p-2">Tipo</th>
@@ -710,7 +710,7 @@
     </div>
   </main>
 
-  <!-- NAVEGACIÓN INFERIOR (CORREGIDA CON EVENTOS) -->
+  <!-- NAVEGACIÓN -->
   <nav class="fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-md border-t py-1 z-50">
     <div class="grid grid-cols-5 gap-0.5 text-center">
       <a href="#" class="flex flex-col items-center py-1 text-on-surface-variant nav-link" data-page="dashboard">
@@ -738,7 +738,7 @@
 
   <script>
     // ============================================================
-    // CONFIGURACIÓN - REEMPLAZA CON TU URL REAL
+    // CONFIGURACIÓN
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwEQElqFZrH1801jI-D2RV5XXavP_-4utakFdwtx2VJ_TCwKnM1qz9BcNahbAmnLhx_iA/exec';
 
@@ -747,62 +747,32 @@
     let charts = {};
     let umbralRentabilidad = 40;
     let costoPorKm = { combustible: 0, mantenimiento: 0, total: 0 };
-    let costosFijos = { total: 0, diario: 0 };
+    let cargando = false;
 
     // ============================================================
-    // NAVEGACIÓN (CORREGIDA)
+    // NAVEGACIÓN
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Obtener todas las páginas que existen
-      const pages = ['dashboard', 'ingresos', 'gastos', 'vehiculo', 'estadisticas'];
-      
-      // Resaltar la página actual basado en la URL
-      const currentPath = window.location.pathname.split('/').pop().replace('.html', '') || 'dashboard';
-      
       document.querySelectorAll('.nav-link').forEach(link => {
-        const page = link.dataset.page;
-        
-        // Resaltar la página actual
-        if (page === currentPath) {
-          link.classList.add('nav-active');
-          link.classList.remove('text-on-surface-variant');
-        }
-        
-        // Evento click para navegación
         link.addEventListener('click', function(e) {
           e.preventDefault();
-          const targetPage = this.dataset.page;
-          navegarA(targetPage);
+          const page = this.dataset.page;
+          const pages = {
+            'dashboard': 'Dashboard.html',
+            'ingresos': 'registro_ingreso.html',
+            'gastos': 'registro_gasto.html',
+            'vehiculo': 'vehiculo_mantenimiento.html',
+            'estadisticas': 'reporte_estadisticas.html'
+          };
+          window.location.href = pages[page] || 'Dashboard.html';
         });
       });
     });
 
-    function navegarA(page) {
-      // Mapeo de páginas a archivos HTML
-      const pages = {
-        'dashboard': 'Dashboard.html',
-        'ingresos': 'registro_ingreso.html',
-        'gastos': 'registro_gasto.html',
-        'vehiculo': 'vehiculo_mantenimiento.html',
-        'estadisticas': 'reporte_estadisticas.html'
-      };
-      
-      // Si es la página actual, recargar
-      const currentPath = window.location.pathname.split('/').pop().replace('.html', '');
-      if (page === currentPath) {
-        location.reload();
-        return;
-      }
-      
-      // Navegar a la página
-      const target = pages[page] || 'Dashboard.html';
-      window.location.href = target;
-    }
-
     // ============================================================
     // TOAST
     // ============================================================
-    function showToast(msg, type = 'info', duration = 3000) {
+    function showToast(msg, type = 'info', duration = 4000) {
       const t = document.getElementById('toast');
       if (!t) return;
       t.textContent = msg;
@@ -810,6 +780,7 @@
       if (type === 'error') t.classList.add('error');
       else if (type === 'success') t.classList.add('success');
       else if (type === 'warning') t.classList.add('warning');
+      else t.classList.add('info');
       t.classList.add('show');
       clearTimeout(t._hide);
       t._hide = setTimeout(() => t.classList.remove('show'), duration);
@@ -833,7 +804,7 @@
         return;
       }
 
-      const total = gastosCategoria.reduce((s, g) => s + g.monto, 0);
+      const total = gastosCategoria.reduce((s, g) => s + (g.monto || 0), 0);
       const icono = categoria === 'combustible' ? '⛽' : categoria === 'alimentación' ? '🍔' : '📂';
       title.innerHTML = `<span class="material-symbols-outlined">receipt_long</span> ${icono} ${categoria.charAt(0).toUpperCase() + categoria.slice(1)}`;
 
@@ -847,7 +818,7 @@
         html += `<tr>
           <td>${g.fecha || ''}</td>
           <td>${g.descripcion || ''}</td>
-          <td class="text-right font-semibold">$${g.monto.toFixed(2)}</td>
+          <td class="text-right font-semibold">$${(g.monto || 0).toFixed(2)}</td>
         </tr>`;
       });
       html += `
@@ -864,33 +835,52 @@
     }
 
     // ============================================================
-    // CONEXIÓN
+    // UTILIDADES
+    // ============================================================
+    function safeNumber(value, defaultValue = 0) {
+      const num = parseFloat(value);
+      return isNaN(num) ? defaultValue : num;
+    }
+
+    function formatDate(dateStr) {
+      if (!dateStr) return '';
+      const d = new Date(dateStr);
+      return d.toISOString().split('T')[0];
+    }
+
+    // ============================================================
+    // CONEXIÓN Y CARGA DE DATOS
     // ============================================================
     async function verificarConexion() {
       const status = document.getElementById('connectionStatus');
-      status.innerHTML = '<span>🔄</span>';
-      status.className = 'status-badge status-error';
+      status.innerHTML = '<span>🔄</span> Conectando...';
+      status.className = 'status-badge status-loading';
       try {
-        const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(5000) });
+        const res = await fetch(`${SCRIPT_URL}?action=getStats`, { signal: AbortSignal.timeout(8000) });
         if (res.ok) {
-          status.innerHTML = '<span class="happy-face">😊</span><span>Conectado</span>';
+          status.innerHTML = '<span class="happy-face">😊</span> Conectado';
           status.className = 'status-badge status-connected';
           return true;
         }
         throw new Error('No OK');
       } catch(e) {
-        status.innerHTML = '<span>❌</span><span>Sin conexión</span>';
+        status.innerHTML = '<span>❌</span> Sin conexión';
         status.className = 'status-badge status-error';
         return false;
       }
     }
 
-    // ============================================================
-    // CARGAR DATOS
-    // ============================================================
     async function cargarDatos() {
+      if (cargando) return;
+      cargando = true;
+      
+      const dataStatus = document.getElementById('dataStatus');
+      dataStatus.className = 'data-status loading';
+      dataStatus.innerHTML = '⏳ Cargando...';
+      
       try {
         console.log('🔍 Cargando datos desde:', SCRIPT_URL);
+        
         const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
         if (!resStats.ok) throw new Error(`Error en getStats: ${resStats.status}`);
         const stats = await resStats.json();
@@ -899,7 +889,15 @@
         const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
         if (!resAct.ok) throw new Error(`Error en getRecentActivity: ${resAct.status}`);
         const actividad = await resAct.json();
-        console.log('📋 Actividad recibida:', actividad.length);
+        console.log('📋 Actividad recibida:', actividad.length, 'registros');
+
+        if (actividad.length === 0) {
+          showToast('⚠️ No se encontraron datos en la hoja', 'warning', 5000);
+          dataStatus.className = 'data-status error';
+          dataStatus.innerHTML = '⚠️ Sin datos';
+          cargando = false;
+          return;
+        }
 
         const ingresos = actividad.filter(a => a.tipo === 'ingreso');
         const gastos = actividad.filter(a => a.tipo === 'gasto');
@@ -907,7 +905,7 @@
 
         datosCompletos = { ingresos, gastos, recorridos };
 
-        // Extraer categorías únicas
+        // Categorías
         const cats = new Set();
         gastos.forEach(g => {
           const cat = g.categoria || g.Categoría || g.rubro || g.Rubro || 'otros';
@@ -923,11 +921,20 @@
           select.appendChild(opt);
         });
 
-        console.log('✅ Datos cargados');
+        dataStatus.className = 'data-status loaded';
+        dataStatus.innerHTML = `✅ ${ingresos.length} ingresos, ${gastos.length} gastos`;
+        showToast(`✅ Datos cargados: ${ingresos.length} ingresos, ${gastos.length} gastos`, 'success', 3000);
+        cargando = false;
+        return true;
+        
       } catch (e) {
-        console.error('❌ Error:', e);
-        showToast('Error al cargar datos', 'error', 5000);
+        console.error('❌ Error cargando datos:', e);
+        dataStatus.className = 'data-status error';
+        dataStatus.innerHTML = '❌ Error al cargar';
+        showToast('❌ Error al cargar datos: ' + e.message, 'error', 5000);
         datosCompletos = { ingresos: [], gastos: [], recorridos: [] };
+        cargando = false;
+        return false;
       }
     }
 
@@ -937,9 +944,10 @@
     function filtrarDatos(fechaInicio, fechaFin, rubro, categoria) {
       if (!datosCompletos) return null;
       const { ingresos, gastos, recorridos } = datosCompletos;
+      
       const inicio = fechaInicio ? new Date(fechaInicio) : null;
       const fin = fechaFin ? new Date(fechaFin) : null;
-      if (fin) fin.setHours(23,59,59);
+      if (fin) fin.setHours(23, 59, 59);
 
       function filtrarFecha(item) {
         if (!item.fecha) return true;
@@ -948,15 +956,17 @@
         if (fin && d > fin) return false;
         return true;
       }
+      
       function filtrarRubro(item) {
         if (rubro === 'all') return true;
-        const r = item.rubro ? item.rubro.toLowerCase() : '';
+        const r = (item.rubro || '').toLowerCase();
         if (rubro === 'general') return r === 'general';
         if (rubro === 'transporte') return r === 'transporte';
         if (rubro === 'electronica') return r === 'electrónica' || r === 'electronica';
         if (rubro === 'otro') return r === 'otro' || r === 'km0';
         return true;
       }
+      
       function filtrarCategoria(item) {
         if (categoria === 'all' || item.tipo !== 'gasto') return true;
         const cat = (item.categoria || item.Categoría || item.rubro || item.Rubro || 'otros').toLowerCase();
@@ -966,38 +976,15 @@
       const iF = ingresos.filter(i => filtrarFecha(i) && filtrarRubro(i));
       const gF = gastos.filter(g => filtrarFecha(g) && filtrarRubro(g) && filtrarCategoria(g));
       const rF = recorridos.filter(r => filtrarFecha(r));
+      
       return { ingresos: iF, gastos: gF, recorridos: rF };
     }
 
     // ============================================================
-    // SAFE NUMBER (validación de datos nulos)
-    // ============================================================
-    function safeNumber(value, defaultValue = 0) {
-      const num = parseFloat(value);
-      return isNaN(num) ? defaultValue : num;
-    }
-
-    // ============================================================
-    // CALCULAR COSTO POR KM (MEJORADO)
+    // CÁLCULOS
     // ============================================================
     function calcularCostoPorKm(gastos, ingresos) {
       const gastosTransporte = gastos.filter(g => g.rubro === 'transporte');
-      
-      const categoriasCostos = [
-        'combustible',
-        'mantenimiento',
-        'aceite',
-        'frenos',
-        'neumaticos',
-        'transmision',
-        'comisión de plataforma',
-        'comision de plataforma',
-        'lavado',
-        'estacionamiento',
-        'peaje',
-        'reparacion',
-        'seguro'
-      ];
       
       const combustible = gastosTransporte
         .filter(g => (g.categoria || '').toLowerCase() === 'combustible')
@@ -1018,30 +1005,29 @@
         .filter(i => i.rubro === 'transporte')
         .reduce((s, i) => s + safeNumber(i.kmTotal), 0);
       
-      const totalCostosVehiculo = combustible + mantenimiento + comisiones;
-      const costoPorKmCombustible = kmTotales > 0 ? combustible / kmTotales : 0;
-      const costoPorKmMantenimiento = kmTotales > 0 ? (mantenimiento + comisiones) / kmTotales : 0;
-      const costoPorKmTotal = kmTotales > 0 ? totalCostosVehiculo / kmTotales : 0;
+      const totalCostos = combustible + mantenimiento + comisiones;
+      const costoCombustibleKm = kmTotales > 0 ? combustible / kmTotales : 0;
+      const costoMantenimientoKm = kmTotales > 0 ? (mantenimiento + comisiones) / kmTotales : 0;
+      const costoTotalKm = kmTotales > 0 ? totalCostos / kmTotales : 0;
       
       return {
         combustible,
         mantenimiento,
         comisiones,
-        total: totalCostosVehiculo,
+        total: totalCostos,
         kmTotales,
-        costoCombustibleKm: costoPorKmCombustible,
-        costoMantenimientoKm: costoPorKmMantenimiento,
-        costoTotalKm: costoPorKmTotal
+        costoCombustibleKm,
+        costoMantenimientoKm,
+        costoTotalKm
       };
     }
 
-    // ============================================================
-    // CALCULAR COSTOS FIJOS
-    // ============================================================
     function calcularCostosFijos(gastos, fechaInicio, fechaFin) {
       const gastosFijos = gastos.filter(g => {
         const cat = (g.categoria || '').toLowerCase();
-        return cat === 'servicios' || cat === 'servicio' || cat === 'fijos' || cat === 'gastos fijos' || cat === 'arriendo' || cat === 'luz' || cat === 'agua' || cat === 'teléfono' || cat === 'telefono';
+        return cat === 'servicios' || cat === 'servicio' || cat === 'fijos' || 
+               cat === 'gastos fijos' || cat === 'arriendo' || cat === 'luz' || 
+               cat === 'agua' || cat === 'teléfono' || cat === 'telefono';
       });
       
       const total = gastosFijos.reduce((s, g) => s + safeNumber(g.monto), 0);
@@ -1055,13 +1041,9 @@
       }
       
       const diario = dias > 0 ? total / dias : 0;
-      
       return { total, diario, dias };
     }
 
-    // ============================================================
-    // CALCULAR PUNTO DE EQUILIBRIO
-    // ============================================================
     function calcularPuntoEquilibrio(costoFijoDiario, costoPorKm, gananciaPromedioPorViaje, kmPromedioPorViaje) {
       if (costoPorKm <= 0 || gananciaPromedioPorViaje <= 0) {
         return { viajesNecesarios: 0, kmNecesarios: 0, metaDiaria: 0 };
@@ -1081,13 +1063,10 @@
       return { viajesNecesarios, kmNecesarios, metaDiaria };
     }
 
-    // ============================================================
-    // CALCULAR ROI
-    // ============================================================
     function calcularROI(ingresos, gastos, horas) {
       const ganancia = ingresos - gastos;
       const gananciaPorHora = horas > 0 ? ganancia / horas : 0;
-      const salarioMinimoHora = 5.00; // Ajusta según tu país
+      const salarioMinimoHora = 5.00;
       const roi = ingresos > 0 ? (ganancia / ingresos) * 100 : 0;
       
       return {
@@ -1095,23 +1074,26 @@
         comparativa: gananciaPorHora - salarioMinimoHora,
         roi,
         estado: gananciaPorHora > salarioMinimoHora ? 
-          '✅ Ganas más que el salario mínimo por hora' : 
-          '⚠️ Ganas menos que el salario mínimo por hora',
+          '✅ Ganas más que el salario mínimo' : 
+          '⚠️ Ganas menos que el salario mínimo',
         color: gananciaPorHora > salarioMinimoHora ? 'text-green-600' : 'text-red-600'
       };
     }
 
     // ============================================================
-    // RENDERIZADO COMPLETO
+    // RENDERIZADO PRINCIPAL
     // ============================================================
     function renderizarTodo(datos) {
-      if (!datos) return;
-      const { ingresos, gastos, recorridos } = datos;
+      if (!datos) {
+        showToast('⚠️ No hay datos para mostrar', 'warning', 3000);
+        return;
+      }
       
+      const { ingresos, gastos, recorridos } = datos;
       const fechaInicio = document.getElementById('fechaInicio').value;
       const fechaFin = document.getElementById('fechaFin').value;
 
-      // Calcular costo por km
+      // Costo por km
       const costos = calcularCostoPorKm(gastos, ingresos);
       costoPorKm = {
         combustible: costos.costoCombustibleKm,
@@ -1123,13 +1105,12 @@
       document.getElementById('costoMantenimientoKm').textContent = '$' + costos.costoMantenimientoKm.toFixed(3);
       document.getElementById('costoTotalKm').textContent = '$' + costos.costoTotalKm.toFixed(3);
 
-      // Calcular costos fijos
+      // Costos fijos
       const fijos = calcularCostosFijos(gastos, fechaInicio, fechaFin);
-      costosFijos = { total: fijos.total, diario: fijos.diario };
       document.getElementById('totalFijos').textContent = '$' + fijos.total.toFixed(2);
       document.getElementById('costoFijoDiario').textContent = '$' + fijos.diario.toFixed(2);
 
-      // Totales de transporte con costos reales
+      // Transporte
       const ingresosTransporte = ingresos.filter(i => i.rubro === 'transporte');
       const totalIngresosTransporte = ingresosTransporte.reduce((s, i) => s + safeNumber(i.monto), 0);
       const kmTransporte = ingresosTransporte.reduce((s, i) => s + safeNumber(i.kmTotal), 0);
@@ -1193,19 +1174,19 @@
       // Gráficos
       renderGraficoRentabilidadReal(ingresosTransporte, costos);
       renderGraficoDesglose(ingresosTransporte, costos);
-      renderAnalisisRubrosReales(ingresos, gastos, costos);
+      renderAnalisisRubros(ingresos, gastos, costos);
       renderGraficoIngresosGastos(ingresos, gastos);
       renderGraficoGastosPie(gastos);
       renderGraficoPlataformas(ingresos);
       renderListaCategorias(gastos);
       renderTabla(ingresos, gastos);
       
-      // Verificar alertas
+      // Alertas
       verificarAlertas(ingresosTransporte, costos);
     }
 
     // ============================================================
-    // VERIFICAR ALERTAS DE RENTABILIDAD
+    // VERIFICAR ALERTAS
     // ============================================================
     function verificarAlertas(ingresosTransporte, costos) {
       const dias = {};
@@ -1218,18 +1199,21 @@
       });
       
       const fechas = Object.keys(dias);
+      let alertasMostradas = 0;
       fechas.forEach(f => {
         const ganancia = dias[f].ingresos - (dias[f].km * costos.costoTotalKm);
-        if (ganancia < umbralRentabilidad && ganancia > 0) {
-          showToast(`⚠️ ${f}: Ganancia de $${ganancia.toFixed(2)} (umbral: $${umbralRentabilidad})`, 'warning', 4000);
-        } else if (ganancia < 0) {
-          showToast(`❌ ${f}: Pérdida de $${Math.abs(ganancia).toFixed(2)}`, 'error', 4000);
+        if (ganancia < umbralRentabilidad && ganancia > 0 && alertasMostradas < 3) {
+          showToast(`⚠️ ${f}: $${ganancia.toFixed(2)} (umbral: $${umbralRentabilidad})`, 'warning', 3000);
+          alertasMostradas++;
+        } else if (ganancia < 0 && alertasMostradas < 3) {
+          showToast(`❌ ${f}: Pérdida de $${Math.abs(ganancia).toFixed(2)}`, 'error', 3000);
+          alertasMostradas++;
         }
       });
     }
 
     // ============================================================
-    // GRÁFICO DE RENTABILIDAD REAL
+    // GRÁFICO RENTABILIDAD
     // ============================================================
     function renderGraficoRentabilidadReal(ingresosTransporte, costos) {
       const canvas = document.getElementById('rentabilidadChart');
@@ -1280,7 +1264,7 @@
         data: {
           labels: fechas,
           datasets: [{
-            label: 'Ganancia Real (Transporte)',
+            label: 'Ganancia Real',
             data: gananciasReales,
             backgroundColor: colores,
             borderColor: colores.map(c => c === '#10B981' ? '#059669' : '#DC2626'),
@@ -1297,9 +1281,8 @@
               callbacks: {
                 label: function(context) {
                   const valor = context.parsed.y;
-                  const umbral = umbralRentabilidad;
-                  const estado = valor >= umbral ? '✅ Rentable' : '❌ No rentable';
-                  return `Ganancia real: $${valor.toFixed(2)} (${estado})`;
+                  const estado = valor >= umbralRentabilidad ? '✅ Rentable' : '❌ No rentable';
+                  return `Ganancia: $${valor.toFixed(2)} (${estado})`;
                 }
               }
             }
@@ -1308,7 +1291,7 @@
             y: {
               beginAtZero: true,
               ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } },
-              grid: { color: 'rgba(0,0,0,0.05)' }
+              grid: { color: 'rgba(0,0,0,0.06)' }
             },
             x: {
               ticks: { maxTicksLimit: 20, font: { size: 8 } },
@@ -1347,7 +1330,7 @@
     }
 
     // ============================================================
-    // GRÁFICO DE DESGLOSE DE COSTOS
+    // GRÁFICO DESGLOSE
     // ============================================================
     function renderGraficoDesglose(ingresosTransporte, costos) {
       const canvas = document.getElementById('desgloseChart');
@@ -1386,28 +1369,28 @@
             {
               label: 'Ingresos',
               data: dataIngresos,
-              backgroundColor: 'rgba(0,72,49,0.6)',
+              backgroundColor: 'rgba(0,72,49,0.5)',
               borderColor: '#004831',
               borderWidth: 1
             },
             {
               label: 'Combustible',
               data: dataCombustible,
-              backgroundColor: 'rgba(245, 158, 11, 0.6)',
+              backgroundColor: 'rgba(245, 158, 11, 0.5)',
               borderColor: '#D97706',
               borderWidth: 1
             },
             {
-              label: 'Mantenimiento + Comisiones',
+              label: 'Mantenimiento',
               data: dataMantenimiento,
-              backgroundColor: 'rgba(239, 68, 68, 0.6)',
+              backgroundColor: 'rgba(239, 68, 68, 0.5)',
               borderColor: '#DC2626',
               borderWidth: 1
             },
             {
               label: 'Ganancia Real',
               data: dataGanancia,
-              backgroundColor: 'rgba(16, 185, 129, 0.6)',
+              backgroundColor: 'rgba(16, 185, 129, 0.5)',
               borderColor: '#10B981',
               borderWidth: 1
             }
@@ -1426,7 +1409,7 @@
             y: {
               beginAtZero: true,
               ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } },
-              grid: { color: 'rgba(0,0,0,0.05)' }
+              grid: { color: 'rgba(0,0,0,0.06)' }
             },
             x: {
               ticks: { maxTicksLimit: 15, font: { size: 8 } },
@@ -1438,9 +1421,9 @@
     }
 
     // ============================================================
-    // ANÁLISIS POR RUBRO CON RENTABILIDAD REAL
+    // ANÁLISIS POR RUBRO
     // ============================================================
-    function renderAnalisisRubrosReales(ingresos, gastos, costos) {
+    function renderAnalisisRubros(ingresos, gastos, costos) {
       const container = document.getElementById('analisisRubros');
       const rubros = {};
       
@@ -1461,7 +1444,7 @@
 
       const rubrosKeys = Object.keys(rubros);
       if (rubrosKeys.length === 0) {
-        container.innerHTML = '<div class="col-span-2 text-center text-gray-500 py-2">Sin datos</div>';
+        container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">Sin datos</div>';
         return;
       }
 
@@ -1474,8 +1457,7 @@
         const gastosTotales = r === 'transporte' ? costoOperativo : data.gastos;
         const ganancia = data.ingresos - gastosTotales;
         const margen = data.ingresos > 0 ? (ganancia / data.ingresos) * 100 : 0;
-        const gananciaHora = data.horas > 0 ? ganancia / data.horas : 0;
-        return { rubro: r, ...data, gastosTotales, ganancia, margen, gananciaHora };
+        return { rubro: r, ...data, gastosTotales, ganancia, margen };
       });
 
       analisis.sort((a, b) => b.ganancia - a.ganancia);
@@ -1483,12 +1465,11 @@
       container.innerHTML = analisis.slice(0, 4).map(r => {
         const badgeClass = r.ganancia > 0 ? 'badge-success' : 'badge-danger';
         const icon = r.rubro === 'transporte' ? '🚖' : r.rubro === 'electronica' ? '🤖' : r.rubro === 'general' ? '🏠' : '📦';
-        return `<div class="bg-white rounded-xl p-2 text-center border border-gray-100">
+        return `<div class="bg-gray-50 rounded-xl p-2 text-center border">
           <p class="font-bold text-sm">${icon} ${r.rubro}</p>
-          <p class="text-xs text-gray-500">Ganancia: <span class="font-bold text-primary">$${r.ganancia.toFixed(2)}</span></p>
-          <p class="text-xs text-gray-500">Margen: <span class="font-bold">${r.margen.toFixed(1)}%</span></p>
-          <p class="text-xs text-gray-500">Viajes: ${r.viajes} | Km: ${r.km.toFixed(1)}</p>
-          ${r.rubro === 'transporte' ? `<p class="text-xs text-gray-500">Costo operativo: $${r.gastosTotales.toFixed(2)}</p>` : ''}
+          <p class="text-xs text-gray-600">Ganancia: <span class="font-bold text-primary">$${r.ganancia.toFixed(2)}</span></p>
+          <p class="text-xs text-gray-600">Margen: <span class="font-bold">${r.margen.toFixed(1)}%</span></p>
+          <p class="text-xs text-gray-600">Viajes: ${r.viajes} | Km: ${r.km.toFixed(1)}</p>
           <span class="badge ${badgeClass} mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
         </div>`;
       }).join('');
@@ -1499,7 +1480,7 @@
         const peor = analisis[analisis.length - 1];
         let msg = '';
         if (mejor.ganancia > 0) {
-          msg = `✅ <strong>${mejor.rubro}</strong> es tu negocio más rentable ($${mejor.ganancia.toFixed(2)} ganancia real). `;
+          msg = `✅ <strong>${mejor.rubro}</strong> es tu negocio más rentable ($${mejor.ganancia.toFixed(2)}). `;
         }
         if (peor.ganancia < 0 && peor.rubro !== mejor.rubro) {
           msg += `⚠️ <strong>${peor.rubro}</strong> no es rentable (pérdida de $${Math.abs(peor.ganancia).toFixed(2)}). Considera reducir tiempo en este rubro.`;
@@ -1558,7 +1539,7 @@
               label: 'Ingresos',
               data: dataIng,
               borderColor: '#004831',
-              backgroundColor: 'rgba(0,72,49,0.1)',
+              backgroundColor: 'rgba(0,72,49,0.08)',
               fill: true,
               tension: 0.3,
               pointRadius: 3,
@@ -1568,7 +1549,7 @@
               label: 'Gastos',
               data: dataGas,
               borderColor: '#752200',
-              backgroundColor: 'rgba(117,34,0,0.1)',
+              backgroundColor: 'rgba(117,34,0,0.08)',
               fill: true,
               tension: 0.3,
               pointRadius: 3,
@@ -1707,7 +1688,7 @@
 
       container.innerHTML = sorted.map(([cat, monto]) => {
         const pct = total > 0 ? (monto/total)*100 : 0;
-        return `<div class="cat-item flex justify-between items-center py-1 px-2 hover:bg-surface-container-low rounded-lg" data-categoria="${cat}">
+        return `<div class="cat-item flex justify-between items-center py-1 px-2 hover:bg-gray-100 rounded-lg" data-categoria="${cat}">
                   <span class="cat-name capitalize">${cat}</span>
                   <span class="cat-amount">$${monto.toFixed(2)} <span class="text-xs text-gray-400">(${pct.toFixed(1)}%)</span></span>
                 </div>`;
@@ -1752,11 +1733,18 @@
     // ============================================================
     // EXPORTAR CSV
     // ============================================================
-    function exportarCSV(datos) {
-      if (!datos) return;
-      const { ingresos, gastos } = datos;
+    function exportarCSV() {
+      if (!datosFiltrados) {
+        showToast('No hay datos para exportar', 'error');
+        return;
+      }
+      const { ingresos, gastos } = datosFiltrados;
       const all = [...ingresos.map(i=>({...i, tipo:'ingreso'})), ...gastos.map(g=>({...g, tipo:'gasto'}))];
-      if (all.length === 0) { showToast('No hay datos para exportar', 'error'); return; }
+      if (all.length === 0) {
+        showToast('No hay datos para exportar', 'error');
+        return;
+      }
+      
       const headers = ['Fecha','Tipo','Rubro','Categoría','Descripción','Monto','KmTotal','Horas','Orden'];
       const rows = all.map(item => [
         item.fecha||'', item.tipo, item.rubro||'', 
@@ -1764,7 +1752,7 @@
         safeNumber(item.monto), safeNumber(item.kmTotal), safeNumber(item.horas), safeNumber(item.orden)
       ]);
       let csv = headers.join(',') + '\n' + rows.map(row => row.join(',')).join('\n');
-      const blob = new Blob([csv], {type: 'text/csv'});
+      const blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = `reporte_${new Date().toISOString().slice(0,10)}.csv`;
@@ -1773,43 +1761,6 @@
       document.body.removeChild(link);
       URL.revokeObjectURL(link.href);
       showToast('✅ CSV exportado', 'success');
-    }
-
-    // ============================================================
-    // EXPORTAR PDF
-    // ============================================================
-    function exportarPDF() {
-      const element = document.getElementById('dashboardContent');
-      showToast('📄 Generando PDF...', 'info', 2000);
-      html2canvas(element, {
-        scale: 2,
-        backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#f4f6fb',
-        useCORS: true,
-        logging: false
-      }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-        let heightLeft = pdfHeight;
-        let position = 0;
-        
-        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-        heightLeft -= pdf.internal.pageSize.getHeight();
-        
-        while (heightLeft >= 0) {
-          position = heightLeft - pdfHeight;
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-          heightLeft -= pdf.internal.pageSize.getHeight();
-        }
-        pdf.save(`dashboard_${new Date().toISOString().slice(0,10)}.pdf`);
-        showToast('✅ PDF exportado', 'success');
-      }).catch(err => {
-        console.error('Error al exportar PDF:', err);
-        showToast('Error al exportar PDF', 'error');
-      });
     }
 
     // ============================================================
@@ -1844,9 +1795,6 @@
           if (filtros.darkMode) {
             document.documentElement.classList.add('dark');
             document.body.classList.add('dark');
-          } else {
-            document.documentElement.classList.remove('dark');
-            document.body.classList.remove('dark');
           }
         }
       } catch(e) { /* ignore */ }
@@ -1856,17 +1804,25 @@
     // APLICAR FILTROS
     // ============================================================
     function aplicarFiltros() {
+      if (!datosCompletos) {
+        showToast('Primero carga los datos', 'warning', 3000);
+        return;
+      }
+      
       const inicio = document.getElementById('fechaInicio').value;
       const fin = document.getElementById('fechaFin').value;
       const rubro = document.getElementById('rubroFilter').value;
       const categoria = document.getElementById('categoriaFilter').value;
 
       datosFiltrados = filtrarDatos(inicio, fin, rubro, categoria);
-      if (datosFiltrados) {
+      if (datosFiltrados && (datosFiltrados.ingresos.length > 0 || datosFiltrados.gastos.length > 0)) {
         renderizarTodo(datosFiltrados);
         guardarFiltros();
       } else {
-        showToast('No hay datos con esos filtros', 'info', 3000);
+        showToast('No hay datos con esos filtros', 'warning', 3000);
+        // Mostrar vacío
+        const vacio = { ingresos: [], gastos: [], recorridos: [] };
+        renderizarTodo(vacio);
       }
     }
 
@@ -1878,21 +1834,28 @@
       const hace30 = new Date(hoy);
       hace30.setDate(hace30.getDate() - 30);
       
-      // Cargar filtros guardados o valores por defecto
-      const saved = localStorage.getItem('filtros_driver');
-      if (saved) {
-        cargarFiltros();
-      } else {
+      // Cargar filtros guardados
+      cargarFiltros();
+      
+      // Si no hay filtros guardados, poner fechas por defecto
+      if (!document.getElementById('fechaInicio').value) {
         document.getElementById('fechaInicio').value = hace30.toISOString().slice(0,10);
+      }
+      if (!document.getElementById('fechaFin').value) {
         document.getElementById('fechaFin').value = hoy.toISOString().slice(0,10);
       }
 
+      // Cargar datos
       await cargarDatos();
       await verificarConexion();
-      aplicarFiltros();
+      
+      if (datosCompletos) {
+        aplicarFiltros();
+      }
 
-      // Event listeners para botones
+      // Event listeners
       document.getElementById('applyFiltersBtn').addEventListener('click', aplicarFiltros);
+      
       document.getElementById('clearFiltersBtn').addEventListener('click', () => {
         document.getElementById('fechaInicio').value = '';
         document.getElementById('fechaFin').value = '';
@@ -1900,17 +1863,21 @@
         document.getElementById('categoriaFilter').value = 'all';
         aplicarFiltros();
       });
+      
       document.getElementById('refreshBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('refreshBtn');
+        btn.style.transform = 'rotate(360deg)';
+        btn.style.transition = 'transform 0.5s';
         await cargarDatos();
         await verificarConexion();
         aplicarFiltros();
+        setTimeout(() => {
+          btn.style.transform = 'rotate(0deg)';
+        }, 500);
         showToast('✅ Datos actualizados', 'success');
       });
-      document.getElementById('exportCsvBtn').addEventListener('click', () => {
-        if (datosFiltrados) exportarCSV(datosFiltrados);
-        else showToast('No hay datos para exportar', 'error');
-      });
-      document.getElementById('exportPdfBtn').addEventListener('click', exportarPDF);
+      
+      document.getElementById('exportCsvBtn').addEventListener('click', exportarCSV);
 
       // Umbral
       document.getElementById('actualizarUmbral').addEventListener('click', () => {
@@ -1924,18 +1891,18 @@
           showToast('⚠️ Ingresa un valor válido', 'error');
         }
       });
+      
       document.getElementById('umbralRentabilidad').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
           document.getElementById('actualizarUmbral').click();
         }
       });
 
-      // Dark Mode toggle
+      // Dark Mode
       document.getElementById('toggleDarkMode').addEventListener('click', () => {
         document.documentElement.classList.toggle('dark');
         document.body.classList.toggle('dark');
         guardarFiltros();
-        // Recargar gráficos para adaptarse al tema
         setTimeout(() => aplicarFiltros(), 100);
       });
     });
