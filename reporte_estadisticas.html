@@ -7,131 +7,189 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
 
   <style>
+    /* ===== SCROLLBAR PERSONALIZADA ===== */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #0b7e5c; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #0a6b4e; }
+
+    /* ===== RESET Y BASE ===== */
     * { box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
       background: #f4f7fc;
       margin: 0; padding: 0; font-size: 14px;
-      padding-bottom: 70px;
+      padding-bottom: 80px;
+      transition: background 0.3s ease, color 0.3s ease;
     }
+
+    /* ===== TEMA CLARO (default) ===== */
     :root {
+      --bg-page: #f4f7fc;
       --bg-card: #ffffff;
-      --border: #e2e8f0;
+      --bg-card-hover: #f8faff;
+      --border-color: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
       --primary: #0b7e5c;
       --primary-light: #e6f7f1;
-      --danger: #b91c1c;
-      --text: #0f172a;
-      --text-muted: #475569;
+      --primary-dark: #0a6b4e;
+      --shadow: 0 4px 20px rgba(0,0,0,0.04);
+      --shadow-hover: 0 8px 30px rgba(11,126,92,0.12);
+      --radius: 16px;
     }
+
+    /* ===== TEMA OSCURO ===== */
+    html.dark {
+      --bg-page: #0a0f1a;
+      --bg-card: #172031;
+      --bg-card-hover: #1e2a3f;
+      --border-color: #2a3448;
+      --text-primary: #e8edf5;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --primary: #34d399;
+      --primary-light: #1a2e3a;
+      --primary-dark: #2bb388;
+      --shadow: 0 4px 20px rgba(0,0,0,0.3);
+      --shadow-hover: 0 8px 30px rgba(52, 211, 153, 0.15);
+    }
+
+    body { background: var(--bg-page); color: var(--text-primary); }
+
+    /* ===== TARJETAS ===== */
     .stat-card {
       background: var(--bg-card);
-      border-radius: 16px;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      transition: all 0.25s ease;
+      animation: fadeInUp 0.5s ease both;
+    }
+    .stat-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-hover);
+      background: var(--bg-card-hover);
     }
     .stat-card .label {
-      font-size: 0.55rem;
+      font-size: 0.6rem;
       text-transform: uppercase;
       color: var(--text-muted);
       font-weight: 600;
-      letter-spacing: 0.02em;
+      letter-spacing: 0.04em;
     }
     .stat-card .value {
-      font-size: 1.3rem;
+      font-size: 1.6rem;
       font-weight: 800;
+      line-height: 1.2;
+      margin: 4px 0 2px;
     }
     .stat-card .sub {
       font-size: 0.6rem;
       color: var(--text-muted);
-      margin-top: 2px;
       display: block;
     }
+
     .filter-card {
-      background: var(--bg-card);
-      border-radius: 16px;
-      padding: 16px;
-      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-radius: var(--radius);
+      padding: 18px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      transition: background 0.3s;
     }
+    html.dark .filter-card {
+      background: rgba(23, 32, 49, 0.8);
+    }
+
     .costo-card {
       background: var(--bg-card);
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       border: 2px solid var(--primary);
+      box-shadow: var(--shadow);
+      transition: all 0.25s;
     }
+    .costo-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+
     .equilibrio-card {
       background: var(--primary-light);
       border-radius: 12px;
-      padding: 10px 14px;
+      padding: 12px 16px;
       border: 2px solid var(--primary);
+      box-shadow: var(--shadow);
+      transition: all 0.25s;
     }
-    .chart-container {
-      height: 220px;
-      min-height: 220px;
-      width: 100%;
-      position: relative;
-    }
+    .equilibrio-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
 
-    /* FILTROS: 2 COLUMNAS EN ESCRITORIO, 1 EN MÓVIL */
+    /* ===== ANIMACIONES ===== */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .stat-card:nth-child(1) { animation-delay: 0.05s; }
+    .stat-card:nth-child(2) { animation-delay: 0.10s; }
+    .stat-card:nth-child(3) { animation-delay: 0.15s; }
+    .stat-card:nth-child(4) { animation-delay: 0.20s; }
+
+    /* ===== FILTROS ===== */
     .filtros-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 12px;
     }
     .filtros-grid .fila-botones {
       grid-column: 1 / -1;
       display: flex;
-      gap: 10px;
+      gap: 12px;
       justify-content: flex-end;
     }
-    .filtros-grid .fila-botones button {
-      flex: 1;
-    }
+    .filtros-grid .fila-botones button { flex: 1; }
 
     @media (max-width: 640px) {
-      .filtros-grid {
-        grid-template-columns: 1fr;
-      }
-      .filtros-grid .fila-botones {
-        flex-direction: column;
-      }
-      .filtros-grid .fila-botones button {
-        flex: none;
-        width: 100%;
-      }
-      .stat-card .value { font-size: 1.1rem; }
+      .filtros-grid { grid-template-columns: 1fr; }
+      .filtros-grid .fila-botones { flex-direction: column; }
+      .filtros-grid .fila-botones button { flex: none; width: 100%; }
+      .stat-card .value { font-size: 1.2rem; }
       .chart-container { height: 180px; min-height: 180px; }
-      /* Todas las tarjetas a 2 columnas en móvil */
       .grid-cols-2 { grid-template-columns: 1fr 1fr; }
       .grid-cols-4 { grid-template-columns: 1fr 1fr; }
       .grid-cols-2.md\:grid-cols-4 { grid-template-columns: 1fr 1fr; }
-      /* Para el resumen por rubro que tendrá más de 4 elementos, que se ajuste */
-      .grid-cols-4.md\:grid-cols-4 { grid-template-columns: 1fr 1fr; }
     }
 
+    /* ===== BOTONES ===== */
     .btn-primary {
-      background: var(--primary);
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
-      padding: 10px 20px;
+      padding: 10px 24px;
       border-radius: 12px;
       font-weight: 700;
       border: none;
       cursor: pointer;
       transition: all 0.25s ease;
-      box-shadow: 0 2px 8px rgba(11,126,92,0.2);
+      box-shadow: 0 4px 12px rgba(11,126,92,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(11,126,92,0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(11,126,92,0.35);
     }
     .btn-primary:active { transform: scale(0.97); }
+
     .btn-gray {
-      background: #e5e7eb;
-      color: #374151;
-      padding: 10px 16px;
+      background: var(--border-color);
+      color: var(--text-primary);
+      padding: 10px 18px;
       border-radius: 12px;
       font-weight: 700;
       border: none;
@@ -139,73 +197,46 @@
       transition: all 0.25s ease;
     }
     .btn-gray:hover {
-      background: #d1d5db;
-      transform: translateY(-2px);
+      background: var(--text-muted);
+      color: white;
+      transform: translateY(-3px);
     }
     .btn-gray:active { transform: scale(0.97); }
 
+    /* ===== INPUTS ===== */
     input, select {
-      background: white;
-      color: var(--text);
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 10px;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1.5px solid var(--border-color);
+      padding: 10px 12px;
+      border-radius: 12px;
       width: 100%;
       font-size: 14px;
-      transition: border-color 0.2s, box-shadow 0.2s;
+      transition: all 0.2s;
     }
     input:focus, select:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(11,126,92,0.12);
+      box-shadow: 0 0 0 4px rgba(11,126,92,0.1);
+    }
+    html.dark input:focus, html.dark select:focus {
+      box-shadow: 0 0 0 4px rgba(52, 211, 153, 0.15);
     }
 
-    .badge-success { background: #dcfce7; color: #166534; padding: 2px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
-    .badge-danger { background: #fee2e2; color: #991b1b; padding: 2px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
-    .badge-warning { background: #fef3c7; color: #92400e; padding: 2px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
-    .badge-info { background: #dbeafe; color: #1e40af; padding: 2px 12px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; }
-
-    .toast {
-      position: fixed;
-      bottom: 80px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1f2937;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 12px;
-      z-index: 9999;
-      opacity: 0;
-      transition: opacity 0.3s;
-      pointer-events: none;
-      font-weight: 500;
-      box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+    /* ===== CHART ===== */
+    .chart-container {
+      height: 220px;
+      min-height: 220px;
+      width: 100%;
+      position: relative;
     }
-    .toast.show { opacity: 1; }
-    .toast.error { background: #dc2626; }
-    .toast.success { background: #16a34a; }
 
-    .status {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 2px 12px;
-      border-radius: 20px;
-      font-size: 0.6rem;
-      font-weight: 600;
-      background: #f1f5f9;
-    }
-    .status.ok { background: #dcfce7; color: #166534; }
-    .status.error { background: #fee2e2; color: #991b1b; }
-    .status.loading { background: #fef3c7; color: #92400e; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-
-    /* Modal */
+    /* ===== MODAL ===== */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
-      backdrop-filter: blur(4px);
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
       z-index: 1000;
       display: flex;
       align-items: center;
@@ -213,35 +244,36 @@
       padding: 20px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease;
+      transition: opacity 0.3s ease;
     }
     .modal-overlay.active { opacity: 1; pointer-events: auto; }
     .modal-card {
-      background: white;
-      border-radius: 24px;
-      max-width: 480px;
+      background: var(--bg-card);
+      border-radius: 28px;
+      max-width: 520px;
       width: 100%;
       max-height: 85vh;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-      transform: translateY(20px);
-      transition: transform 0.25s ease;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.25);
+      transform: translateY(30px) scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid var(--border-color);
     }
-    .modal-overlay.active .modal-card { transform: translateY(0); }
+    .modal-overlay.active .modal-card { transform: translateY(0) scale(1); }
     .modal-header {
-      padding: 16px 20px 12px 20px;
-      border-bottom: 1px solid #e5e7eb;
+      padding: 18px 24px 14px 24px;
+      border-bottom: 1px solid var(--border-color);
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .modal-header h2 { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .modal-header h2 { font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
     .modal-close {
-      background: #f3f4f6;
+      background: var(--border-color);
       border: none;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       cursor: pointer;
       font-size: 1.2rem;
@@ -249,74 +281,140 @@
       align-items: center;
       justify-content: center;
       transition: background 0.2s;
+      color: var(--text-primary);
     }
-    .modal-close:hover { background: #e5e7eb; }
-    .modal-body {
-      padding: 16px 20px 20px 20px;
-      overflow-y: auto;
-      flex: 1;
-    }
+    .modal-close:hover { background: var(--text-muted); color: white; }
+    .modal-body { padding: 20px 24px 24px; overflow-y: auto; flex: 1; }
     .detalle-item {
       display: flex;
       justify-content: space-between;
-      padding: 6px 0;
-      border-bottom: 1px solid #f3f4f6;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border-color);
       font-size: 0.9rem;
     }
     .detalle-total {
       font-weight: 700;
       font-size: 1rem;
-      border-top: 2px solid #e5e7eb;
-      padding-top: 10px;
-      margin-top: 6px;
+      border-top: 2px solid var(--border-color);
+      padding-top: 12px;
+      margin-top: 8px;
       text-align: right;
     }
-    .rubro-clickeable {
-      cursor: pointer;
-      transition: background 0.15s;
-      border-radius: 8px;
-      padding: 4px 8px;
-    }
-    .rubro-clickeable:hover { background: #f0f4ff; }
 
-    .text-primary { color: var(--primary) !important; }
-    .text-tertiary { color: var(--danger) !important; }
-    .text-secondary { color: var(--text-muted) !important; }
-    .bg-primary { background: var(--primary) !important; }
-    .border { border-color: var(--border) !important; }
-
-    /* Navegación inferior */
+    /* ===== NAVEGACIÓN INFERIOR ===== */
     .nav-bottom {
       position: fixed;
       bottom: 0;
       left: 0;
       right: 0;
-      background: white;
-      border-top: 1px solid var(--border);
+      background: var(--bg-card);
+      border-top: 1px solid var(--border-color);
       display: flex;
       justify-content: space-around;
-      padding: 6px 0 8px;
+      padding: 8px 0 10px;
       z-index: 50;
-      box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 -4px 20px rgba(0,0,0,0.04);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: background 0.3s;
     }
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
       font-size: 0.6rem;
-      color: #9ca3af;
+      color: var(--text-muted);
       text-decoration: none;
-      transition: color 0.2s;
-      padding: 2px 8px;
-      border-radius: 8px;
+      transition: all 0.2s;
+      padding: 4px 12px;
+      border-radius: 16px;
+      gap: 2px;
     }
-    .nav-item .icon { font-size: 1.4rem; line-height: 1.2; }
-    .nav-item.active { color: var(--primary); font-weight: 600; background: var(--primary-light); }
-    .nav-item:hover { color: var(--primary); }
+    .nav-item .icon { font-size: 1.5rem; line-height: 1.2; transition: transform 0.2s; }
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 700;
+      background: var(--primary-light);
+    }
+    .nav-item:hover .icon { transform: scale(1.1); }
     @media (max-width: 640px) {
       .nav-item .icon { font-size: 1.2rem; }
-      .nav-item { font-size: 0.55rem; padding: 2px 4px; }
+      .nav-item { font-size: 0.5rem; padding: 2px 6px; }
     }
+
+    /* ===== BADGES ===== */
+    .badge-success { background: #dcfce7; color: #166534; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
+    .badge-danger { background: #fee2e2; color: #991b1b; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
+    .badge-warning { background: #fef3c7; color: #92400e; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
+    .badge-info { background: #dbeafe; color: #1e40af; padding: 3px 14px; border-radius: 30px; font-size: 0.65rem; font-weight: 700; }
+
+    html.dark .badge-success { background: #065f46; color: #86efac; }
+    html.dark .badge-danger { background: #7f1d1d; color: #fca5a5; }
+    html.dark .badge-warning { background: #78350f; color: #fcd34d; }
+    html.dark .badge-info { background: #1e3a5f; color: #93c5fd; }
+
+    /* ===== TOAST ===== */
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg-card);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+      padding: 12px 24px;
+      border-radius: 16px;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      font-weight: 600;
+      box-shadow: var(--shadow-hover);
+    }
+    .toast.show { opacity: 1; }
+    .toast.error { background: #dc2626; color: white; border: none; }
+    .toast.success { background: #16a34a; color: white; border: none; }
+
+    /* ===== STATUS ===== */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 14px;
+      border-radius: 30px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      background: var(--border-color);
+      color: var(--text-muted);
+    }
+    .status.ok { background: #dcfce7; color: #166534; }
+    .status.error { background: #fee2e2; color: #991b1b; }
+    .status.loading { background: #fef3c7; color: #92400e; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+
+    /* ===== UTILITARIOS ===== */
+    .text-primary { color: var(--primary) !important; }
+    .text-tertiary { color: #b91c1c !important; }
+    html.dark .text-tertiary { color: #fca5a5 !important; }
+    .bg-primary { background: var(--primary) !important; }
+    .border { border-color: var(--border-color) !important; }
+    .rubro-clickeable {
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 12px;
+      padding: 8px 6px;
+    }
+    .rubro-clickeable:hover { background: var(--primary-light); transform: scale(1.02); }
+    .theme-toggle {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .theme-toggle:hover { background: var(--border-color); }
   </style>
 </head>
 <body>
@@ -335,34 +433,35 @@
 </div>
 
 <!-- HEADER -->
-<header class="bg-white shadow-sm border-b fixed top-0 w-full z-50 px-4 py-2 flex justify-between items-center">
-  <div class="flex items-center gap-2">
-    <div class="w-8 h-8 rounded-full bg-[#0b7e5c] flex items-center justify-center text-white font-bold text-sm">DI</div>
-    <span class="font-bold text-[#0b7e5c]">Driver Insights</span>
+<header class="bg-white/80 backdrop-blur-lg border-b fixed top-0 w-full z-50 px-4 py-2.5 flex justify-between items-center shadow-sm transition-colors" style="background: var(--bg-card); border-color: var(--border-color);">
+  <div class="flex items-center gap-3">
+    <div class="w-9 h-9 rounded-full bg-gradient-to-br from-[#0b7e5c] to-[#0a6b4e] flex items-center justify-center text-white font-extrabold text-sm shadow-md">DI</div>
+    <span class="font-bold text-[#0b7e5c] dark:text-[#34d399] text-base">Driver Insights</span>
     <span id="status" class="status error">🔴 Sin conexión</span>
   </div>
-  <div class="flex gap-1">
-    <button onclick="recargarDatos()" class="px-3 py-1 rounded-lg hover:bg-gray-100 transition" title="Recargar">🔄</button>
-    <button onclick="exportarCSV()" class="px-3 py-1 rounded-lg hover:bg-gray-100 transition" title="Exportar CSV">⬇️</button>
+  <div class="flex gap-1 items-center">
+    <button id="themeToggle" class="theme-toggle" title="Cambiar tema">🌓</button>
+    <button onclick="recargarDatos()" class="px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-lg" title="Recargar">🔄</button>
+    <button onclick="exportarCSV()" class="px-3 py-1 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-lg" title="Exportar CSV">⬇️</button>
   </div>
 </header>
 
 <!-- MAIN -->
-<main id="dashboardContent" class="pt-20 px-3 pb-24 max-w-6xl mx-auto space-y-3">
+<main id="dashboardContent" class="pt-20 px-3 pb-24 max-w-7xl mx-auto space-y-4">
 
   <!-- FILTROS -->
   <section class="filter-card">
     <div class="filtros-grid">
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500">Desde</label>
+        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 flex items-center gap-1"><span>📅</span> Desde</label>
         <input type="date" id="fechaInicio" />
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500">Hasta</label>
+        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 flex items-center gap-1"><span>📅</span> Hasta</label>
         <input type="date" id="fechaFin" />
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500">Rubro</label>
+        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 flex items-center gap-1"><span>📂</span> Rubro</label>
         <select id="rubroFilter">
           <option value="all">Todos</option>
           <option value="transporte">🚖 Transporte</option>
@@ -372,41 +471,41 @@
         </select>
       </div>
       <div>
-        <label class="text-xs font-bold uppercase text-gray-500">Categoría</label>
+        <label class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400 flex items-center gap-1"><span>🏷️</span> Categoría</label>
         <select id="categoriaFilter"><option value="all">Todas</option></select>
       </div>
       <div class="fila-botones">
         <button class="btn-primary" id="btnAplicar">📊 Aplicar Filtro</button>
-        <button class="btn-gray" id="btnLimpiar">Limpiar</button>
+        <button class="btn-gray" id="btnLimpiar">🧹 Limpiar</button>
       </div>
     </div>
-    <div id="filtroInfo" class="mt-2 text-xs text-gray-500 text-center hidden">✅ Filtro aplicado: <span id="filtroTexto"></span></div>
+    <div id="filtroInfo" class="mt-3 text-xs text-center text-gray-500 dark:text-gray-400 hidden">✅ Filtro aplicado: <span id="filtroTexto" class="font-medium text-primary"></span></div>
   </section>
 
   <!-- RESUMEN POR RUBRO (TODOS LOS RUBROS) -->
-  <div id="resumenRubros" class="grid grid-cols-2 md:grid-cols-4 gap-2">
+  <div id="resumenRubros" class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <!-- Se llena dinámicamente -->
   </div>
 
   <!-- COSTO POR KM Y COSTOS FIJOS -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
     <div class="costo-card">
-      <div class="flex justify-between flex-wrap gap-1">
+      <div class="flex justify-between items-center flex-wrap gap-2">
         <span class="font-bold text-primary text-sm">🚗 Costo por km</span>
         <div class="flex gap-3 text-xs flex-wrap">
-          <span>Combustible: <strong id="costoCombustible">$0.000</strong>/km</span>
-          <span>Mantenimiento: <strong id="costoMantenimiento">$0.000</strong>/km</span>
-          <span class="font-bold">Total: <strong id="costoTotalKm">$0.000</strong>/km</span>
+          <span class="text-gray-500 dark:text-gray-400">Combustible: <strong class="text-primary" id="costoCombustible">$0.000</strong>/km</span>
+          <span class="text-gray-500 dark:text-gray-400">Mantenimiento: <strong class="text-primary" id="costoMantenimiento">$0.000</strong>/km</span>
+          <span class="font-bold text-primary">Total: <strong id="costoTotalKm">$0.000</strong>/km</span>
         </div>
       </div>
     </div>
-    <div class="costo-card" style="border-color:#8B5CF6;">
-      <div class="flex justify-between items-center flex-wrap gap-1">
+    <div class="costo-card" style="border-color: #8B5CF6;">
+      <div class="flex justify-between items-center flex-wrap gap-2">
         <span class="font-bold text-primary text-sm">🏠 Costos Fijos</span>
-        <div class="flex items-center gap-2 flex-wrap">
-          <span class="text-xs">Total: <strong id="totalFijos">$0.00</strong></span>
-          <span class="text-xs font-bold">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
-          <button id="btnEditarFijos" class="text-xs bg-gray-200 px-2 py-1 rounded-lg hover:bg-gray-300 transition">✏️</button>
+        <div class="flex items-center gap-3 flex-wrap">
+          <span class="text-xs text-gray-500 dark:text-gray-400">Total: <strong class="text-primary" id="totalFijos">$0.00</strong></span>
+          <span class="text-xs font-bold text-primary">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
+          <button id="btnEditarFijos" class="text-xs bg-gray-200 dark:bg-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold">✏️ Editar</button>
         </div>
       </div>
     </div>
@@ -414,19 +513,19 @@
 
   <!-- PUNTO DE EQUILIBRIO -->
   <div class="equilibrio-card">
-    <div class="flex justify-between items-center flex-wrap gap-2">
+    <div class="flex justify-between items-center flex-wrap gap-3">
       <span class="font-bold text-primary text-sm">🎯 Punto de Equilibrio</span>
-      <div class="flex items-center gap-3 flex-wrap">
-        <span class="text-sm">Viajes/día: <strong class="text-primary text-lg" id="viajesNecesarios">0</strong></span>
-        <span class="text-sm">Km/día: <strong class="text-primary text-lg" id="kmNecesarios">0.0</strong></span>
-        <span class="text-sm">Meta diaria: $<input type="number" id="metaDiaria" class="w-20 px-2 py-1 border rounded-lg text-center font-bold" value="40" /></span>
-        <button class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnMeta">Actualizar</button>
+      <div class="flex items-center gap-4 flex-wrap">
+        <span class="text-sm text-gray-600 dark:text-gray-300">Viajes/día: <strong class="text-primary text-xl" id="viajesNecesarios">0</strong></span>
+        <span class="text-sm text-gray-600 dark:text-gray-300">Km/día: <strong class="text-primary text-xl" id="kmNecesarios">0.0</strong></span>
+        <span class="text-sm text-gray-600 dark:text-gray-300">Meta diaria: $<input type="number" id="metaDiaria" class="w-20 px-2 py-1.5 border rounded-lg text-center font-bold bg-transparent" value="40" /></span>
+        <button class="bg-primary text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnMeta">Actualizar</button>
       </div>
     </div>
   </div>
 
   <!-- GENERAL (totales globales) -->
-  <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="stat-card"><p class="label">💰 Ingresos Totales</p><p class="value text-primary" id="totIngresos">$0</p></div>
     <div class="stat-card"><p class="label">💸 Gastos Totales</p><p class="value text-tertiary" id="totGastos">$0</p></div>
     <div class="stat-card"><p class="label">📈 Ganancia Neta</p><p class="value text-primary" id="gananciaNeta">$0</p></div>
@@ -438,7 +537,7 @@
   </section>
 
   <!-- KPIs -->
-  <section class="grid grid-cols-2 md:grid-cols-4 gap-2">
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="stat-card"><p class="label">🚗 Viajes</p><p class="value text-secondary" id="viajes">0</p></div>
     <div class="stat-card"><p class="label">📏 Km Totales</p><p class="value text-secondary" id="kmTotales">0.0</p></div>
     <div class="stat-card"><p class="label">⏱️ Horas</p><p class="value text-secondary" id="horas">0.0</p></div>
@@ -446,80 +545,80 @@
   </section>
 
   <!-- DÍAS SIN TRABAJO -->
-  <div class="stat-card" style="border-left: 4px solid #f59e0b;">
+  <div class="stat-card" style="border-left: 5px solid #f59e0b;">
     <div class="flex justify-between items-center flex-wrap">
       <span class="font-bold text-sm">📅 Días sin trabajo</span>
-      <span class="text-lg font-bold text-amber-600" id="diasSinTrabajo">0</span>
+      <span class="text-2xl font-bold text-amber-600 dark:text-amber-400" id="diasSinTrabajo">0</span>
     </div>
-    <span class="text-xs text-gray-500">Días en el rango seleccionado sin actividad</span>
+    <span class="text-xs text-gray-500 dark:text-gray-400">Días en el rango seleccionado sin actividad</span>
   </div>
 
   <!-- GRÁFICO RENTABILIDAD -->
   <div class="stat-card">
-    <div class="flex justify-between items-center flex-wrap gap-2 mb-2">
+    <div class="flex justify-between items-center flex-wrap gap-3 mb-3">
       <span class="font-bold text-sm">📊 Rentabilidad Diaria</span>
       <div class="flex items-center gap-2">
-        <span class="text-xs text-gray-500">Umbral: $</span>
-        <input type="number" id="umbral" class="w-16 px-2 py-1 border rounded-lg text-center font-bold" value="40" />
-        <button class="bg-primary text-white px-3 py-1 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnUmbral">OK</button>
+        <span class="text-xs text-gray-500 dark:text-gray-400">Umbral: $</span>
+        <input type="number" id="umbral" class="w-16 px-2 py-1.5 border rounded-lg text-center font-bold bg-transparent" value="40" />
+        <button class="bg-primary text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:opacity-90 transition" id="btnUmbral">OK</button>
       </div>
     </div>
     <div class="chart-container"><canvas id="rentabilidadChart"></canvas></div>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-center">
-      <div class="bg-gray-50 rounded-lg p-2"><span class="text-green-600 text-xl font-bold" id="diasRentables">0</span><br><span class="text-xs text-gray-500">Días Rentables</span></div>
-      <div class="bg-gray-50 rounded-lg p-2"><span class="text-red-600 text-xl font-bold" id="diasNoRentables">0</span><br><span class="text-xs text-gray-500">Días No Rentables</span></div>
-      <div class="bg-gray-50 rounded-lg p-2"><span class="text-blue-600 text-xl font-bold" id="pctRentabilidad">0%</span><br><span class="text-xs text-gray-500">% Rentabilidad</span></div>
-      <div class="bg-gray-50 rounded-lg p-2"><span class="text-primary text-xl font-bold" id="promRentable">$0</span><br><span class="text-xs text-gray-500">Promedio días rentables</span></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-3 text-center">
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-3"><span class="text-green-600 dark:text-green-400 text-2xl font-bold" id="diasRentables">0</span><br><span class="text-xs text-gray-500 dark:text-gray-400">Días Rentables</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-3"><span class="text-red-600 dark:text-red-400 text-2xl font-bold" id="diasNoRentables">0</span><br><span class="text-xs text-gray-500 dark:text-gray-400">Días No Rentables</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-3"><span class="text-blue-600 dark:text-blue-400 text-2xl font-bold" id="pctRentabilidad">0%</span><br><span class="text-xs text-gray-500 dark:text-gray-400">% Rentabilidad</span></div>
+      <div class="bg-gray-50 dark:bg-gray-800/30 rounded-xl p-3"><span class="text-primary text-2xl font-bold" id="promRentable">$0</span><br><span class="text-xs text-gray-500 dark:text-gray-400">Promedio días rentables</span></div>
     </div>
   </div>
 
   <!-- DESGLOSE -->
   <div class="stat-card">
-    <p class="font-bold text-sm mb-2">📊 Desglose Ingresos vs Costos (Transporte)</p>
+    <p class="font-bold text-sm mb-3">📊 Desglose Ingresos vs Costos (Transporte)</p>
     <div class="chart-container"><canvas id="desgloseChart"></canvas></div>
   </div>
 
   <!-- ANÁLISIS POR RUBRO -->
   <div class="stat-card">
-    <p class="font-bold text-sm mb-2">🏢 Análisis por Rubro (rentabilidad real)</p>
-    <div id="rubrosContainer" class="grid grid-cols-2 md:grid-cols-4 gap-2"></div>
-    <div id="recomendacion" class="mt-2 text-center text-sm p-2 bg-gray-50 rounded-lg"></div>
+    <p class="font-bold text-sm mb-3">🏢 Análisis por Rubro (rentabilidad real)</p>
+    <div id="rubrosContainer" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+    <div id="recomendacion" class="mt-3 text-center text-sm p-3 bg-gray-50 dark:bg-gray-800/30 rounded-xl font-medium"></div>
   </div>
 
   <!-- RECOMENDACIÓN "IA" -->
-  <div class="stat-card" style="background: #fef3c7;">
-    <p class="font-bold text-sm">💡 Recomendación inteligente</p>
-    <p id="iaRecomendacion" class="text-sm">Cargando...</p>
-    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 text-sm">
-      <div><span class="text-gray-600">Mejor día:</span> <strong id="mejorDia">-</strong></div>
-      <div><span class="text-gray-600">Peor día:</span> <strong id="peorDia">-</strong></div>
-      <div><span class="text-gray-600">Mejor ganancia/hora:</span> <strong id="mejorDiaHora">-</strong></div>
+  <div class="stat-card" style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: none;">
+    <p class="font-bold text-sm text-gray-800">💡 Recomendación inteligente</p>
+    <p id="iaRecomendacion" class="text-sm text-gray-700 font-medium">Cargando...</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mt-2 text-sm">
+      <div class="bg-white/60 backdrop-blur-sm rounded-xl p-2 text-center"><span class="text-gray-600">Mejor día:</span><br><strong id="mejorDia" class="text-primary">-</strong></div>
+      <div class="bg-white/60 backdrop-blur-sm rounded-xl p-2 text-center"><span class="text-gray-600">Peor día:</span><br><strong id="peorDia" class="text-tertiary">-</strong></div>
+      <div class="bg-white/60 backdrop-blur-sm rounded-xl p-2 text-center"><span class="text-gray-600">Mejor ganancia/hora:</span><br><strong id="mejorDiaHora" class="text-primary">-</strong></div>
     </div>
   </div>
 
   <!-- ROI -->
-  <div class="stat-card" style="background: #e6f7f1;">
+  <div class="stat-card" style="background: var(--primary-light); border: 1px solid var(--primary);">
     <p class="font-bold text-sm">📈 Rendimiento vs Salario Mínimo</p>
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2 text-sm">
-      <div><span class="text-gray-600">Ganancia/Hora:</span> <strong id="roiHora">$0.00</strong></div>
-      <div><span class="text-gray-600">vs Salario Mínimo:</span> <strong id="roiVs">$0.00</strong></div>
-      <div><span class="text-gray-600">ROI:</span> <strong id="roiPct">0%</strong></div>
-      <div><span class="text-gray-600">Estado:</span> <strong id="roiEstado">-</strong></div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-2 text-sm">
+      <div><span class="text-gray-600 dark:text-gray-300">Ganancia/Hora:</span> <strong class="text-primary" id="roiHora">$0.00</strong></div>
+      <div><span class="text-gray-600 dark:text-gray-300">vs Salario Mínimo:</span> <strong id="roiVs">$0.00</strong></div>
+      <div><span class="text-gray-600 dark:text-gray-300">ROI:</span> <strong id="roiPct">0%</strong></div>
+      <div><span class="text-gray-600 dark:text-gray-300">Estado:</span> <strong id="roiEstado">-</strong></div>
     </div>
   </div>
 
   <!-- TABLA -->
   <div class="stat-card overflow-x-auto">
-    <p class="font-bold text-sm mb-2">📋 Actividad Filtrada</p>
+    <p class="font-bold text-sm mb-3">📋 Actividad Filtrada</p>
     <table class="w-full text-sm">
-      <thead class="text-left text-xs uppercase text-gray-500 border-b">
+      <thead class="text-left text-xs uppercase text-gray-500 dark:text-gray-400 border-b dark:border-gray-700">
         <tr>
           <th class="p-2">Fecha</th><th class="p-2">Tipo</th><th class="p-2">Rubro</th>
           <th class="p-2">Categoría</th><th class="p-2 text-right">Monto</th>
           <th class="p-2 text-right">Km</th><th class="p-2 text-right">Horas</th><th class="p-2 text-right">Orden</th>
         </tr>
       </thead>
-      <tbody id="tablaBody" class="divide-y"><tr><td colspan="8" class="text-center py-4 text-gray-500">Cargando...</td></tr></tbody>
+      <tbody id="tablaBody" class="divide-y dark:divide-gray-700"><tr><td colspan="8" class="text-center py-4 text-gray-500">Cargando...</td></tr></tbody>
     </table>
   </div>
 
@@ -540,12 +639,30 @@
 // ============================================================
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBYF7kAakxzSOYyEP_xENM6-NgYYsIVb-qPewtknEx_sR2Fx3n-lBA_rCb2HBrS7YBrw/exec';
 
-let statsData = null;      // datos globales del servidor (sin filtrar por rubro/categoría)
-let activityData = [];     // todos los registros de actividad
+let statsData = null;
+let activityData = [];
 let charts = {};
 
 // ============================================================
-// TOAST, STATUS, MODAL (igual que antes)
+// DARK MODE
+// ============================================================
+function toggleTheme() {
+  const html = document.documentElement;
+  html.classList.toggle('dark');
+  localStorage.setItem('darkMode', html.classList.contains('dark'));
+}
+function loadTheme() {
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.documentElement.classList.add('dark');
+  }
+  // Actualizar gráficos si existen
+  setTimeout(() => {
+    if (statsData) renderizar();
+  }, 100);
+}
+
+// ============================================================
+// TOAST, STATUS, MODAL
 // ============================================================
 function toast(msg, type='info') {
   const t = document.getElementById('toast');
@@ -553,7 +670,7 @@ function toast(msg, type='info') {
   t.className = 'toast show';
   if (type === 'error') t.classList.add('error');
   else if (type === 'success') t.classList.add('success');
-  else t.style.background = '#1f2937';
+  else { t.style.background = 'var(--bg-card)'; t.style.color = 'var(--text-primary)'; t.style.border = '1px solid var(--border-color)'; }
   clearTimeout(t._hide);
   t._hide = setTimeout(() => t.classList.remove('show'), 3000);
 }
@@ -573,7 +690,7 @@ function abrirModal(rubro, detalle) {
     <div class="detalle-item"><span>Mantenimiento</span><strong>$${detalle.mantenimiento.toFixed(2)}</strong></div>
     <div class="detalle-item"><span>Combustible</span><strong>$${detalle.combustible.toFixed(2)}</strong></div>
     <div class="detalle-item"><span>Otros costos</span><strong>$${detalle.otros.toFixed(2)}</strong></div>
-    <div class="detalle-item" style="font-weight:600;border-top:1px solid #e5e7eb;padding-top:8px;margin-top:4px;">
+    <div class="detalle-item" style="font-weight:700;border-top:2px solid var(--border-color);padding-top:10px;margin-top:6px;">
       <span>Ganancia Real</span><strong class="text-primary">$${detalle.gananciaReal.toFixed(2)}</strong>
     </div>
     <div class="detalle-item"><span>Horas trabajadas</span><strong>${detalle.horas.toFixed(1)}h</strong></div>
@@ -591,7 +708,7 @@ function cerrarModal() {
 }
 
 // ============================================================
-// CARGAR DATOS (solo una vez)
+// CARGAR DATOS
 // ============================================================
 async function cargarDatos() {
   setStatus('loading', '🔄 Cargando...');
@@ -606,7 +723,6 @@ async function cargarDatos() {
     activityData = await resAct.json();
     console.log('Actividad:', activityData.length);
 
-    // Poblar categorías
     const cats = new Set();
     activityData.filter(a => a.tipo === 'gasto').forEach(g => {
       const cat = g.categoria || g.Categoría || g.rubro || 'otros';
@@ -633,7 +749,7 @@ async function cargarDatos() {
 }
 
 // ============================================================
-// FILTRAR DATOS (cliente)
+// FILTRAR DATOS
 // ============================================================
 function filtrarDatos() {
   if (!activityData.length) return { ingresos: [], gastos: [] };
@@ -672,11 +788,10 @@ function filtrarDatos() {
 }
 
 // ============================================================
-// CALCULAR MÉTRICAS POR RUBRO (para las tarjetas)
+// CALCULAR MÉTRICAS POR RUBRO
 // ============================================================
 function calcularMetricasPorRubro(ingresos, gastos) {
   const rubros = {};
-  // Inicializar con los rubros que aparecen en ingresos
   ingresos.forEach(i => {
     const r = i.rubro || 'General';
     if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
@@ -690,43 +805,28 @@ function calcularMetricasPorRubro(ingresos, gastos) {
     if (!rubros[r]) rubros[r] = { ingresos: 0, gastos: 0, viajes: 0, km: 0, horas: 0 };
     rubros[r].gastos += (g.monto || 0);
   });
-  // Calcular ganancia y margen para cada rubro
   Object.keys(rubros).forEach(r => {
     const d = rubros[r];
     d.ganancia = d.ingresos - d.gastos;
     d.margen = d.ingresos > 0 ? (d.ganancia / d.ingresos) * 100 : 0;
     d.gananciaHora = d.horas > 0 ? d.ganancia / d.horas : 0;
-    // Para transporte, el costo operativo se calcula aparte (usaremos los datos del servidor)
-    if (r === 'Transporte') {
-      // Si statsData existe, podemos sobreescribir con los datos reales de transporte
-      if (statsData && statsData.transporte) {
-        const t = statsData.transporte;
-        // Los ingresos y gastos ya están filtrados, pero el costo operativo real viene del servidor
-        // Para no duplicar, usamos los valores filtrados de ingresos y gastos, pero el costo operativo lo tomamos del servidor (que ya está filtrado por fecha)
-        // Sin embargo, el costo operativo del servidor no está filtrado por rubro/categoría, solo por fecha.
-        // Para mantener coherencia, dejamos los gastos filtrados.
-      }
-    }
   });
   return rubros;
 }
 
 // ============================================================
-// RENDERIZAR (todo con datos filtrados)
+// RENDERIZAR
 // ============================================================
 function renderizar() {
   if (!statsData || !activityData.length) return;
 
-  // 1. Obtener datos filtrados
   const datos = filtrarDatos();
   const ingresos = datos.ingresos;
   const gastos = datos.gastos;
 
-  // 2. Calcular métricas por rubro
   const rubros = calcularMetricasPorRubro(ingresos, gastos);
   const rubrosKeys = Object.keys(rubros);
 
-  // 3. Mostrar resumen de rubros en tarjetas
   const contenedorRubros = document.getElementById('resumenRubros');
   if (rubrosKeys.length) {
     contenedorRubros.innerHTML = rubrosKeys.map(r => {
@@ -737,14 +837,13 @@ function renderizar() {
         <p class="label">${icon} ${r}</p>
         <p class="value text-primary">$${d.ganancia.toFixed(2)}</p>
         <span class="sub">Ingresos: $${d.ingresos.toFixed(2)} | Gastos: $${d.gastos.toFixed(2)}</span>
-        <span class="sub">Margen: ${d.margen.toFixed(1)}% <span class="${badge}">${d.ganancia >= 0 ? '✅' : '❌'}</span></span>
+        <span class="sub mt-1">Margen: ${d.margen.toFixed(1)}% <span class="${badge}">${d.ganancia >= 0 ? '✅' : '❌'}</span></span>
       </div>`;
     }).join('');
   } else {
-    contenedorRubros.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">No hay datos para mostrar</div>';
+    contenedorRubros.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-6">📭 No hay datos para mostrar</div>';
   }
 
-  // 4. Totales generales (usando los datos filtrados)
   const totalIngresos = ingresos.reduce((s, i) => s + (i.monto || 0), 0);
   const totalGastos = gastos.reduce((s, g) => s + (g.monto || 0), 0);
   const gananciaNeta = totalIngresos - totalGastos;
@@ -755,11 +854,10 @@ function renderizar() {
   document.getElementById('margen').textContent = margen.toFixed(1) + '%';
   const mg = margen;
   const mgBadge = document.getElementById('margenBadge');
-  if (mg >= 15) mgBadge.innerHTML = '<span class="badge-success">✅ Bueno</span>';
+  if (mg >= 15) mgBadge.innerHTML = '<span class="badge-success">✅ Excelente</span>';
   else if (mg >= 5) mgBadge.innerHTML = '<span class="badge-warning">📊 Regular</span>';
-  else mgBadge.innerHTML = '<span class="badge-danger">⚠️ Malo</span>';
+  else mgBadge.innerHTML = '<span class="badge-danger">⚠️ Mejorable</span>';
 
-  // 5. KPIs generales (también filtrados)
   const totalViajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
   const totalKm = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
   const totalHoras = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
@@ -769,7 +867,6 @@ function renderizar() {
   document.getElementById('horas').textContent = totalHoras.toFixed(1);
   document.getElementById('gananciaHora').textContent = '$' + gananciaHora.toFixed(2);
 
-  // 6. Días sin trabajo (basado en fechas de actividad filtrada)
   const fechasActividad = new Set();
   ingresos.forEach(i => { if (i.fecha) fechasActividad.add(i.fecha); });
   gastos.forEach(g => { if (g.fecha) fechasActividad.add(g.fecha); });
@@ -786,19 +883,16 @@ function renderizar() {
   }
   document.getElementById('diasSinTrabajo').textContent = diasSinTrabajo;
 
-  // 7. Costo por km (usamos los datos del servidor, pero solo para transporte)
   const t = statsData.transporte || {};
   const ckm = t.costoPorKm || {};
   document.getElementById('costoCombustible').textContent = '$' + (ckm.combustible || 0).toFixed(3);
   document.getElementById('costoMantenimiento').textContent = '$' + (ckm.mantenimiento || 0).toFixed(3);
   document.getElementById('costoTotalKm').textContent = '$' + (ckm.total || 0).toFixed(3);
 
-  // 8. Costos fijos (localStorage)
   const fijos = cargarFijosLocal();
   document.getElementById('totalFijos').textContent = '$' + (fijos.total || 0).toFixed(2);
   document.getElementById('costoFijoDiario').textContent = '$' + (fijos.diario || 0).toFixed(2);
 
-  // 9. Punto de equilibrio (usamos datos de transporte del servidor)
   const eq = statsData.equilibrio || {};
   const meta = parseFloat(document.getElementById('metaDiaria').value) || 40;
   const viajesMeta = eq.margenPorViaje > 0 ? Math.ceil(meta / eq.margenPorViaje) : 0;
@@ -806,33 +900,24 @@ function renderizar() {
   document.getElementById('viajesNecesarios').textContent = viajesMeta || 0;
   document.getElementById('kmNecesarios').textContent = (kmMeta || 0).toFixed(1);
 
-  // 10. Rentabilidad diaria (usamos los datos del servidor, pero basados en ganancia neta de los filtrados)
-  // Para simplificar, usamos los datos del servidor (que ya están filtrados por fecha)
   const rd = statsData.rentabilidadDiaria || {};
   document.getElementById('diasRentables').textContent = rd.diasRentables || 0;
   document.getElementById('diasNoRentables').textContent = rd.diasNoRentables || 0;
   document.getElementById('pctRentabilidad').textContent = (rd.porcentajeRentabilidad || 0).toFixed(1) + '%';
   document.getElementById('promRentable').textContent = '$' + (rd.gananciaPromedioDiasRentables || 0).toFixed(2);
 
-  // 11. ROI (usamos datos del servidor)
   const roi = statsData.roi || {};
   document.getElementById('roiHora').textContent = '$' + (roi.gananciaPorHora || 0).toFixed(2);
   document.getElementById('roiVs').textContent = ((roi.comparativa || 0) > 0 ? '+' : '') + (roi.comparativa || 0).toFixed(2);
   document.getElementById('roiPct').textContent = (roi.roi || 0).toFixed(1) + '%';
   document.getElementById('roiEstado').textContent = roi.estado || '-';
 
-  // 12. Recomendación IA (basada en los días del servidor)
   generarRecomendacionIA(rd, {});
-
-  // 13. Análisis por rubro (usamos los datos del servidor para el desglose real)
   renderAnalisisRubros(statsData.analisisRubros || []);
-
-  // 14. Gráficos
   renderGraficoRentabilidad(rd);
   renderGraficoDesglose(statsData.desgloseDiario || {});
   renderTablaFiltrada(ingresos, gastos);
 
-  // 15. Indicador de filtro
   const filtroInfo = document.getElementById('filtroInfo');
   const filtroTexto = document.getElementById('filtroTexto');
   const inicio = document.getElementById('fechaInicio').value;
@@ -848,7 +933,7 @@ function renderizar() {
 }
 
 // ============================================================
-// GRÁFICOS (igual que antes)
+// GRÁFICOS (con mejora de colores)
 // ============================================================
 function renderGraficoRentabilidad(rd) {
   const canvas = document.getElementById('rentabilidadChart');
@@ -894,8 +979,8 @@ function renderGraficoRentabilidad(rd) {
         }
       },
       scales: {
-        y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } } },
-        x: { ticks: { maxTicksLimit: 20, font: { size: 8 } } }
+        y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        x: { ticks: { maxTicksLimit: 20, font: { size: 8 } }, grid: { display: false } }
       }
     },
     plugins: [{
@@ -909,15 +994,15 @@ function renderGraficoRentabilidad(rd) {
           ctx2.save();
           ctx2.setLineDash([6, 4]);
           ctx2.strokeStyle = '#0b7e5c';
-          ctx2.lineWidth = 2;
+          ctx2.lineWidth = 2.5;
           ctx2.beginPath();
           ctx2.moveTo(xScale.left, yPos);
           ctx2.lineTo(xScale.right, yPos);
           ctx2.stroke();
           ctx2.fillStyle = '#0b7e5c';
-          ctx2.font = 'bold 9px Inter';
+          ctx2.font = 'bold 10px Inter';
           ctx2.textAlign = 'right';
-          ctx2.fillText('Umbral: $' + umbral, xScale.right - 5, yPos - 5);
+          ctx2.fillText('Umbral: $' + umbral, xScale.right - 5, yPos - 8);
           ctx2.restore();
         }
       }
@@ -949,19 +1034,19 @@ function renderGraficoDesglose(desg) {
     data: {
       labels: labels,
       datasets: [
-        { label: 'Ingresos', data: ingresos, backgroundColor: 'rgba(11,126,92,0.6)', borderColor: '#0b7e5c', borderWidth: 1 },
-        { label: 'Combustible', data: comb, backgroundColor: 'rgba(245,158,11,0.6)', borderColor: '#D97706', borderWidth: 1 },
-        { label: 'Mantenimiento', data: mant, backgroundColor: 'rgba(239,68,68,0.6)', borderColor: '#DC2626', borderWidth: 1 },
-        { label: 'Comisiones', data: comis, backgroundColor: 'rgba(139,92,246,0.6)', borderColor: '#8B5CF6', borderWidth: 1 }
+        { label: 'Ingresos', data: ingresos, backgroundColor: 'rgba(11,126,92,0.65)', borderColor: '#0b7e5c', borderWidth: 1.5 },
+        { label: 'Combustible', data: comb, backgroundColor: 'rgba(245,158,11,0.65)', borderColor: '#D97706', borderWidth: 1.5 },
+        { label: 'Mantenimiento', data: mant, backgroundColor: 'rgba(239,68,68,0.65)', borderColor: '#DC2626', borderWidth: 1.5 },
+        { label: 'Comisiones', data: comis, backgroundColor: 'rgba(139,92,246,0.65)', borderColor: '#8B5CF6', borderWidth: 1.5 }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', labels: { boxWidth: 12, font: { size: 9 } } } },
+      plugins: { legend: { position: 'top', labels: { boxWidth: 14, font: { size: 10, weight: '600' } } } },
       scales: {
-        y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } } },
-        x: { ticks: { maxTicksLimit: 15, font: { size: 8 } } }
+        y: { beginAtZero: true, ticks: { callback: v => '$' + v.toFixed(0), font: { size: 9 } }, grid: { color: 'rgba(0,0,0,0.04)' } },
+        x: { ticks: { maxTicksLimit: 15, font: { size: 8 } }, grid: { display: false } }
       }
     }
   });
@@ -970,7 +1055,7 @@ function renderGraficoDesglose(desg) {
 function renderAnalisisRubros(analisis) {
   const container = document.getElementById('rubrosContainer');
   if (!analisis || !analisis.length) {
-    container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-2">Sin datos</div>';
+    container.innerHTML = '<div class="col-span-4 text-center text-gray-500 py-4">Sin datos</div>';
     document.getElementById('recomendacion').textContent = 'Sin recomendación';
     return;
   }
@@ -989,13 +1074,13 @@ function renderAnalisisRubros(analisis) {
       margen: r.margen,
       comisionPct: 10
     };
-    return `<div class="rubro-clickeable bg-gray-50 rounded-lg p-2 text-center border" data-rubro="${r.rubro}" data-detalle='${JSON.stringify(detalle)}'>
+    return `<div class="rubro-clickeable bg-gray-50 dark:bg-gray-800/40 rounded-xl p-3 text-center border dark:border-gray-700 shadow-sm" data-rubro="${r.rubro}" data-detalle='${JSON.stringify(detalle)}'>
       <p class="font-bold text-sm">${icon} ${r.rubro}</p>
-      <p class="text-xs text-gray-600">Ganancia: <strong class="text-primary">$${(r.ganancia || 0).toFixed(2)}</strong></p>
-      <p class="text-xs text-gray-600">Margen: <strong>${(r.margen || 0).toFixed(1)}%</strong></p>
-      <p class="text-xs text-gray-600">Viajes: ${r.viajes || 0} | Km: ${(r.km || 0).toFixed(1)}</p>
-      <p class="text-xs text-gray-600">Rentabilidad/h: <strong class="text-primary">$${(r.gananciaHora || 0).toFixed(2)}/h</strong></p>
-      <span class="${badge}">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
+      <p class="text-xs text-gray-600 dark:text-gray-300">Ganancia: <strong class="text-primary">$${(r.ganancia || 0).toFixed(2)}</strong></p>
+      <p class="text-xs text-gray-600 dark:text-gray-300">Margen: <strong>${(r.margen || 0).toFixed(1)}%</strong></p>
+      <p class="text-xs text-gray-600 dark:text-gray-300">Viajes: ${r.viajes || 0} | Km: ${(r.km || 0).toFixed(1)}</p>
+      <p class="text-xs text-gray-600 dark:text-gray-300">Rentabilidad/h: <strong class="text-primary">$${(r.gananciaHora || 0).toFixed(2)}/h</strong></p>
+      <span class="${badge} inline-block mt-1">${r.ganancia > 0 ? '✅ Rentable' : '❌ No rentable'}</span>
     </div>`;
   }).join('');
   container.querySelectorAll('.rubro-clickeable').forEach(el => {
@@ -1025,15 +1110,15 @@ function renderTablaFiltrada(ingresos, gastos) {
     const signo = item.tipo === 'ingreso' ? '+' : '-';
     const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-tertiary';
     const cat = item.plataforma || item.categoria || '';
-    return `<tr class="border-t">
-      <td class="p-1">${item.fecha || ''}</td>
-      <td class="p-1 capitalize">${item.tipo}</td>
-      <td class="p-1 capitalize">${item.rubro || ''}</td>
-      <td class="p-1">${cat}</td>
-      <td class="p-1 text-right font-bold ${color}">${signo}$${(item.monto||0).toFixed(2)}</td>
-      <td class="p-1 text-right">${(item.kmTotal||0).toFixed(1)}</td>
-      <td class="p-1 text-right">${(item.horas||0).toFixed(1)}</td>
-      <td class="p-1 text-right">${item.orden||0}</td>
+    return `<tr class="border-t dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/30 transition-colors">
+      <td class="p-2">${item.fecha || ''}</td>
+      <td class="p-2 capitalize font-medium">${item.tipo}</td>
+      <td class="p-2 capitalize">${item.rubro || ''}</td>
+      <td class="p-2">${cat}</td>
+      <td class="p-2 text-right font-bold ${color}">${signo}$${(item.monto||0).toFixed(2)}</td>
+      <td class="p-2 text-right">${(item.kmTotal||0).toFixed(1)}</td>
+      <td class="p-2 text-right">${(item.horas||0).toFixed(1)}</td>
+      <td class="p-2 text-right">${item.orden||0}</td>
     </tr>`;
   }).join('');
 }
@@ -1083,7 +1168,7 @@ function generarRecomendacionIA(rd, g) {
 }
 
 // ============================================================
-// COSTOS FIJOS (localStorage)
+// COSTOS FIJOS, EXPORTAR, RECARGAR, FILTROS
 // ============================================================
 function cargarFijosLocal() {
   try {
@@ -1109,10 +1194,6 @@ function editarFijos() {
   toast('✅ Costos fijos actualizados', 'success');
   renderizar();
 }
-
-// ============================================================
-// EXPORTAR CSV
-// ============================================================
 function exportarCSV() {
   if (!activityData.length) { toast('No hay datos', 'error'); return; }
   const headers = ['Fecha','Tipo','Rubro','Categoría','Monto','Km','Horas','Orden'];
@@ -1128,18 +1209,10 @@ function exportarCSV() {
   link.click();
   toast('✅ CSV exportado', 'success');
 }
-
-// ============================================================
-// RECARGAR
-// ============================================================
 async function recargarDatos() {
   await cargarDatos();
   renderizar();
 }
-
-// ============================================================
-// GUARDAR FILTROS
-// ============================================================
 function guardarFiltros() {
   try {
     localStorage.setItem('filtros_driver', JSON.stringify({
@@ -1171,6 +1244,7 @@ function cargarFiltros() {
 // INICIO
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
+  loadTheme();
   const hoy = new Date();
   const hace30 = new Date(hoy);
   hace30.setDate(hace30.getDate() - 30);
@@ -1181,6 +1255,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await cargarDatos();
   renderizar();
 
+  document.getElementById('themeToggle').addEventListener('click', toggleTheme);
   document.getElementById('btnAplicar').addEventListener('click', () => { renderizar(); guardarFiltros(); });
   document.getElementById('btnLimpiar').addEventListener('click', () => {
     document.getElementById('fechaInicio').value = '';
