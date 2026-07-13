@@ -497,7 +497,7 @@
 
 <script>
     // ============================================================
-    // CONFIGURACIÓN
+    // CONFIGURACIÓN - ACTUALIZA CON TU URL
     // ============================================================
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwtNZ6GPxcXKbvpog9wkMnyAnr1h0lQRExX7Zqp6fR8v8v9n_oOo9m9Q-gJZvdsj3uoIA/exec';
 
@@ -551,324 +551,136 @@
             const resStats = await fetch(`${SCRIPT_URL}?action=getStats`);
             if (!resStats.ok) throw new Error('Error en getStats');
             statsData = await resStats.json();
-            console.log('Stats:', statsData);
+            console.log('Stats recibidos:', statsData);
 
             const resAct = await fetch(`${SCRIPT_URL}?action=getRecentActivity`);
             if (!resAct.ok) throw new Error('Error en getRecentActivity');
             activityData = await resAct.json();
-            console.log('Actividad:', activityData.length);
+            console.log('Actividad recibida:', activityData.length);
 
-            // Poblar categorías (si existe el selector)
-            const cats = new Set();
-            activityData.filter(a => a.tipo === 'gasto').forEach(g => {
-                const cat = g.categoria || g.Categoría || g.rubro || 'otros';
-                if (cat) cats.add(cat);
-            });
-            const select = document.getElementById('categoryFilter');
-            if (select) {
-                select.innerHTML = '<option value="all">Todos los Sectores</option>';
-                cats.forEach(c => {
-                    const opt = document.createElement('option');
-                    opt.value = c;
-                    opt.textContent = c.charAt(0).toUpperCase() + c.slice(1);
-                    select.appendChild(opt);
-                });
-            }
             return true;
         } catch (e) {
             console.error('Error al cargar datos:', e);
-            showToast('Error al cargar datos', 'error');
+            showToast('Error al cargar datos: ' + e.message, 'error');
             return false;
         }
     }
 
     // ============================================================
-    // FILTRAR DATOS (fecha + sector)
+    // RENDERIZAR USANDO STATSDATA (DATOS PROCESADOS DEL BACKEND)
     // ============================================================
-    function filtrarDatosLocal() {
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
-        const sector = document.getElementById('categoryFilter').value;
+    function renderizar() {
+        if (!statsData) {
+            showToast('No hay datos estadísticos', 'error');
+            return;
+        }
 
-        let filtered = activityData.filter(item => {
-            if (item.fecha) {
-                const d = new Date(item.fecha);
-                if (start && d < new Date(start)) return false;
-                if (end && d > new Date(end)) return false;
-            }
-            if (sector !== 'all') {
-                const rubro = (item.rubro || '').toLowerCase();
-                if (sector === 'transporte' && rubro !== 'transporte') return false;
-                if (sector === 'electronica' && rubro !== 'electrónica' && rubro !== 'electronica') return false;
-                if (sector === 'km0' && rubro !== 'km0') return false;
-                if (sector === 'general' && rubro !== 'general') return false;
-            }
-            return true;
-        });
+        const data = statsData;
+        const t = data.transporte || {};
+        const g = data.general || {};
+        const d = data.desgloseDiario || { fechas: [], ingresos: [] };
+        const r = data.rentabilidadDiaria || { fechas: [], ganancias: [], diasRentables: 0, diasNoRentables: 0 };
+        const rubros = data.analisisRubros || [];
+        const fijos = data.costosFijos || { total: 0, diario: 0 };
+        const eq = data.equilibrio || {};
+        const roi = data.roi || { gananciaPorHora: 0 };
 
-        return {
-            ingresos: filtered.filter(a => a.tipo === 'ingreso'),
-            gastos: filtered.filter(a => a.tipo === 'gasto')
-        };
-    }
+        // --- Totales globales ---
+        document.getElementById('totalIngresos').textContent = '$' + (g.totalIngresos || 0).toFixed(2);
+        document.getElementById('totalGastos').textContent = '$' + (g.totalGastos || 0).toFixed(2);
+        document.getElementById('netProfit').textContent = '$' + (g.gananciaNeta || 0).toFixed(2);
+        document.getElementById('margin').textContent = ((g.margen || 0)).toFixed(1) + '%';
 
-    // ============================================================
-    // CALCULAR MÉTRICAS (todo desde activityData)
-    // ============================================================
-    function calcularMetricas(ingresos, gastos) {
-        // Totales
-        const totalIngresos = ingresos.reduce((s, i) => s + (i.monto || 0), 0);
-        const totalGastos = gastos.reduce((s, g) => s + (g.monto || 0), 0);
-        const ganancia = totalIngresos - totalGastos;
-        const margen = totalIngresos > 0 ? (ganancia / totalIngresos) * 100 : 0;
-
-        // Km totales (desde columna KmTotal de ingresos)
-        const totalKm = ingresos.reduce((s, i) => s + (i.kmTotal || 0), 0);
-
-        // Gastos de combustible y mantenimiento (categorías)
-        const gastosCombustible = gastos.filter(g => (g.categoria || '').toLowerCase() === 'combustible');
-        const totalCombustible = gastosCombustible.reduce((s, g) => s + (g.monto || 0), 0);
-
-        const gastosMantenimiento = gastos.filter(g => {
-            const cat = (g.categoria || '').toLowerCase();
-            return cat === 'mantenimiento' || cat === 'aceite' || cat === 'frenos' || cat === 'neumaticos' || cat === 'transmision';
-        });
-        const totalMantenimiento = gastosMantenimiento.reduce((s, g) => s + (g.monto || 0), 0);
-
-        // Costo por km
-        const costoCombustibleKm = totalKm > 0 ? totalCombustible / totalKm : 0;
-        const costoMantenimientoKm = totalKm > 0 ? totalMantenimiento / totalKm : 0;
-        const costoTotalKm = costoCombustibleKm + costoMantenimientoKm;
-
-        // Por sector (rubro)
-        const sectores = ['transporte', 'electronica', 'km0', 'general'];
-        const sectorData = {};
-        sectores.forEach(sec => {
-            const ingSec = ingresos.filter(i => (i.rubro || '').toLowerCase() === sec);
-            const gasSec = gastos.filter(g => (g.rubro || '').toLowerCase() === sec);
-            const rev = ingSec.reduce((s, i) => s + (i.monto || 0), 0);
-            const exp = gasSec.reduce((s, g) => s + (g.monto || 0), 0);
-            const prof = rev - exp;
-            const marg = rev > 0 ? (prof / rev) * 100 : 0;
-            sectorData[sec] = { revenue: rev, expenses: exp, profit: prof, margin: marg };
-        });
-
-        // Días (agrupados por fecha) para rentabilidad diaria
-        const diasMap = {};
-        ingresos.forEach(i => {
-            const f = i.fecha || '';
-            if (!f) return;
-            if (!diasMap[f]) diasMap[f] = { ingresos: 0, gastos: 0 };
-            diasMap[f].ingresos += (i.monto || 0);
-        });
-        gastos.forEach(g => {
-            const f = g.fecha || '';
-            if (!f) return;
-            if (!diasMap[f]) diasMap[f] = { ingresos: 0, gastos: 0 };
-            diasMap[f].gastos += (g.monto || 0);
-        });
-
-        const fechas = Object.keys(diasMap).sort();
-        const gananciasDiarias = fechas.map(f => {
-            const d = diasMap[f];
-            return d.ingresos - d.gastos;
-        });
+        // --- Días rentables ---
         const umbral = parseFloat(document.getElementById('umbralProfit').value) || 40;
-        const diasRentables = gananciasDiarias.filter(g => g >= umbral).length;
-        const diasNoRentables = gananciasDiarias.filter(g => g < umbral && g >= 0).length;
+        document.getElementById('diasRentables').textContent = r.diasRentables || 0;
+        document.getElementById('diasNoRentables').textContent = (r.diasNoRentables || 0) + (r.diasPerdida || 0);
 
-        // Días sin trabajo (en el rango de fechas del filtro)
+        // --- Días sin trabajo ---
         const start = document.getElementById('startDate').value;
         const end = document.getElementById('endDate').value;
         let diasSinTrabajo = 0;
-        if (start && end && fechas.length > 0) {
+        if (start && end && d.fechas && d.fechas.length > 0) {
             const ini = new Date(start);
             const fin = new Date(end);
             let current = new Date(ini);
-            const fechasSet = new Set(fechas);
+            const fechasSet = new Set(d.fechas);
             while (current <= fin) {
                 const key = current.toISOString().slice(0, 10);
                 if (!fechasSet.has(key)) diasSinTrabajo++;
                 current.setDate(current.getDate() + 1);
             }
         }
+        document.getElementById('diasSinTrabajo').textContent = diasSinTrabajo;
 
-        // KPIs
-        const horas = ingresos.reduce((s, i) => s + (i.horas || 0), 0);
-        const viajes = ingresos.reduce((s, i) => s + (i.orden || 0), 0);
-        const gananciaHora = horas > 0 ? ganancia / horas : 0;
-        const avgTicket = viajes > 0 ? totalIngresos / viajes : 0;
+        // --- Costo por km ---
+        const costoPorKm = t.costoPorKm || { combustible: 0, mantenimiento: 0, total: 0 };
+        document.getElementById('costoCombustible').textContent = '$' + (costoPorKm.combustible || 0).toFixed(3);
+        document.getElementById('costoMantenimiento').textContent = '$' + (costoPorKm.mantenimiento || 0).toFixed(3);
+        document.getElementById('costoTotalKm').textContent = '$' + (costoPorKm.total || 0).toFixed(3);
 
-        // Punto de equilibrio (basado en transporte)
-        const ingresosTransp = ingresos.filter(i => (i.rubro || '').toLowerCase() === 'transporte');
-        const gastosTransp = gastos.filter(g => (g.rubro || '').toLowerCase() === 'transporte');
-        const totalIngTransp = ingresosTransp.reduce((s, i) => s + (i.monto || 0), 0);
-        const viajesTransp = ingresosTransp.reduce((s, i) => s + (i.orden || 0), 0);
-        const kmTransp = ingresosTransp.reduce((s, i) => s + (i.kmTotal || 0), 0);
-        const costoVarViaje = viajesTransp > 0 ? (gastosTransp.reduce((s, g) => s + (g.monto || 0), 0) / viajesTransp) : 0;
-        const ingPromedioViaje = viajesTransp > 0 ? totalIngTransp / viajesTransp : 0;
-        const margenPorViaje = ingPromedioViaje - costoVarViaje;
-        const fijos = cargarFijosLocal();
-        const viajesNecesarios = margenPorViaje > 0 ? Math.ceil(fijos.diario / margenPorViaje) : 0;
-        const kmNecesarios = viajesNecesarios * (viajesTransp > 0 ? kmTransp / viajesTransp : 0);
+        // --- Costos fijos ---
+        document.getElementById('totalFijos').textContent = '$' + (fijos.total || 0).toFixed(2);
+        document.getElementById('costoFijoDiario').textContent = '$' + (fijos.diario || 0).toFixed(2);
 
-        // Mejor/peor día
+        // --- Punto de equilibrio ---
+        document.getElementById('viajesNecesarios').textContent = eq.viajesNecesarios || 0;
+        document.getElementById('kmNecesarios').textContent = (eq.kmNecesarios || 0).toFixed(0);
+        document.getElementById('equilibrioTexto').textContent =
+            `Necesitas ${eq.viajesNecesarios || 0} viajes/día (prom. $${(eq.gananciaPromedioPorViaje || 0).toFixed(2)}) para cubrir costos fijos de $${(fijos.diario || 0).toFixed(2)}/día.`;
+
+        // --- KPIs ---
+        document.getElementById('gananciaHora').textContent = '$' + (roi.gananciaPorHora || 0).toFixed(2);
+        const viajes = t.viajes || 0;
+        const avgTicket = viajes > 0 ? (g.totalIngresos || 0) / viajes : 0;
+        document.getElementById('avgTicket').textContent = '$' + avgTicket.toFixed(2);
+
+        // --- Mejor/peor día ---
+        const fechas = d.fechas || [];
+        const gananciasDiarias = r.ganancias || [];
         let mejorDia = null, peorDia = null;
-        if (fechas.length > 0) {
+        if (fechas.length > 0 && gananciasDiarias.length > 0) {
             const gananciasMap = {};
             fechas.forEach((f, idx) => {
-                gananciasMap[f] = gananciasDiarias[idx];
+                gananciasMap[f] = gananciasDiarias[idx] || 0;
             });
             const sorted = fechas.slice().sort((a, b) => gananciasMap[b] - gananciasMap[a]);
             mejorDia = sorted.length > 0 ? { fecha: sorted[0], ganancia: gananciasMap[sorted[0]] } : null;
             peorDia = sorted.length > 1 ? { fecha: sorted[sorted.length - 1], ganancia: gananciasMap[sorted[sorted.length - 1]] } : null;
         }
 
-        // Días buenos y malos (ganancia > 0 o < 0)
-        const diasBuenos = fechas.filter(f => gananciasDiarias[fechas.indexOf(f)] > 0);
-        const diasMalos = fechas.filter(f => gananciasDiarias[fechas.indexOf(f)] < 0);
-
-        return {
-            totalIngresos,
-            totalGastos,
-            ganancia,
-            margen,
-            totalKm,
-            costoTotalKm,
-            costoCombustibleKm,
-            costoMantenimientoKm,
-            totalCombustible,
-            totalMantenimiento,
-            sectorData,
-            diasRentables,
-            diasNoRentables,
-            diasSinTrabajo,
-            gananciaHora,
-            avgTicket,
-            viajes,
-            horas,
-            fechas,
-            gananciasDiarias,
-            mejorDia,
-            peorDia,
-            diasBuenos,
-            diasMalos,
-            viajesNecesarios,
-            kmNecesarios,
-            margenPorViaje,
-            ingPromedioViaje,
-            fijos: fijos,
-            ingresos,
-            gastos
-        };
-    }
-
-    // ============================================================
-    // COSTOS FIJOS (localStorage)
-    // ============================================================
-    function cargarFijosLocal() {
-        try {
-            const saved = localStorage.getItem('fijos_driver');
-            if (saved) return JSON.parse(saved);
-        } catch (e) {}
-        return { total: 520, diario: 17.33 };
-    }
-    function guardarFijosLocal(total, diario) {
-        localStorage.setItem('fijos_driver', JSON.stringify({ total, diario }));
-    }
-    function editarFijos() {
-        const actual = cargarFijosLocal();
-        const total = prompt('Total de costos fijos mensuales:', actual.total);
-        if (total === null) return;
-        const dias = prompt('Días laborales al mes:', '30');
-        if (dias === null) return;
-        const t = parseFloat(total);
-        const d = parseInt(dias);
-        if (isNaN(t) || isNaN(d) || d <= 0) { showToast('Valores inválidos', 'error'); return; }
-        const diario = t / d;
-        guardarFijosLocal(t, diario);
-        showToast('✅ Costos fijos actualizados', 'success');
-        renderizar();
-    }
-
-    // ============================================================
-    // RENDERIZAR TODO
-    // ============================================================
-    function renderizar() {
-        if (!activityData.length) {
-            showToast('No hay datos para mostrar', 'error');
-            return;
-        }
-
-        const { ingresos, gastos } = filtrarDatosLocal();
-        const metrics = calcularMetricas(ingresos, gastos);
-
-        // --- Totales globales ---
-        document.getElementById('totalIngresos').textContent = '$' + metrics.totalIngresos.toFixed(2);
-        document.getElementById('totalGastos').textContent = '$' + metrics.totalGastos.toFixed(2);
-        document.getElementById('netProfit').textContent = '$' + metrics.ganancia.toFixed(2);
-        document.getElementById('margin').textContent = metrics.margen.toFixed(1) + '%';
-
-        // --- Días rentables ---
-        document.getElementById('diasRentables').textContent = metrics.diasRentables;
-        document.getElementById('diasNoRentables').textContent = metrics.diasNoRentables;
-
-        // --- Días sin trabajo ---
-        document.getElementById('diasSinTrabajo').textContent = metrics.diasSinTrabajo;
-
-        // --- Costo por km ---
-        document.getElementById('costoCombustible').textContent = '$' + metrics.costoCombustibleKm.toFixed(3);
-        document.getElementById('costoMantenimiento').textContent = '$' + metrics.costoMantenimientoKm.toFixed(3);
-        document.getElementById('costoTotalKm').textContent = '$' + metrics.costoTotalKm.toFixed(3);
-
-        // --- Costos fijos ---
-        document.getElementById('totalFijos').textContent = '$' + metrics.fijos.total.toFixed(2);
-        document.getElementById('costoFijoDiario').textContent = '$' + metrics.fijos.diario.toFixed(2);
-
-        // --- Punto de equilibrio ---
-        document.getElementById('viajesNecesarios').textContent = metrics.viajesNecesarios || 0;
-        document.getElementById('kmNecesarios').textContent = (metrics.kmNecesarios || 0).toFixed(0);
-        document.getElementById('equilibrioTexto').textContent =
-            `Necesitas ${metrics.viajesNecesarios} viajes/día (prom. $${metrics.ingPromedioViaje.toFixed(2)}) para cubrir costos fijos de $${metrics.fijos.diario.toFixed(2)}/día.`;
-
-        // --- KPIs ---
-        document.getElementById('gananciaHora').textContent = '$' + metrics.gananciaHora.toFixed(2);
-        document.getElementById('avgTicket').textContent = '$' + metrics.avgTicket.toFixed(2);
-
-        // --- Mejor/peor día ---
-        if (metrics.mejorDia) {
-            document.getElementById('mejorDia').textContent = formatFecha(metrics.mejorDia.fecha) + ' ($' + metrics.mejorDia.ganancia.toFixed(2) + ')';
-            document.getElementById('mejorDia').dataset.dia = JSON.stringify(metrics.mejorDia);
+        if (mejorDia) {
+            document.getElementById('mejorDia').textContent = formatFecha(mejorDia.fecha) + ' ($' + mejorDia.ganancia.toFixed(2) + ')';
+            document.getElementById('mejorDia').dataset.dia = JSON.stringify(mejorDia);
         } else {
             document.getElementById('mejorDia').textContent = '--';
         }
-        if (metrics.peorDia) {
-            document.getElementById('peorDia').textContent = formatFecha(metrics.peorDia.fecha) + ' (-$' + Math.abs(metrics.peorDia.ganancia).toFixed(2) + ')';
-            document.getElementById('peorDia').dataset.dia = JSON.stringify(metrics.peorDia);
+        if (peorDia) {
+            document.getElementById('peorDia').textContent = formatFecha(peorDia.fecha) + ' (-$' + Math.abs(peorDia.ganancia).toFixed(2) + ')';
+            document.getElementById('peorDia').dataset.dia = JSON.stringify(peorDia);
         } else {
             document.getElementById('peorDia').textContent = '--';
         }
-        document.getElementById('mejorDiaHora').textContent = '$' + metrics.gananciaHora.toFixed(2) + '/h';
-        document.getElementById('roiPct').textContent = metrics.margen.toFixed(1) + '%';
 
-        // --- Días buenos y malos (lista) ---
-        renderDiasLista(metrics.fechas, metrics.gananciasDiarias);
+        document.getElementById('mejorDiaHora').textContent = '$' + (roi.gananciaPorHora || 0).toFixed(2) + '/h';
+        document.getElementById('roiPct').textContent = ((g.margen || 0)).toFixed(1) + '%';
+
+        // --- Días buenos y malos ---
+        renderDiasLista(fechas, gananciasDiarias);
 
         // --- Sector Cards ---
-        renderSectorCards(metrics.sectorData);
+        renderSectorCards(rubros);
 
         // --- Recomendación IA ---
-        generarRecomendacion(metrics);
+        generarRecomendacion(rubros, eq, fijos);
 
         // --- Gráficos ---
-        renderGraficos(metrics);
+        renderGraficos(d, r, rubros);
 
         // --- Tabla ---
-        renderTabla(ingresos, gastos);
+        renderTabla(activityData);
 
         // --- Filtro info ---
-        const start = document.getElementById('startDate').value;
-        const end = document.getElementById('endDate').value;
         const filtroInfo = document.getElementById('filtroInfo');
         const filtroTexto = document.getElementById('filtroTexto');
         if (start || end) {
@@ -884,50 +696,63 @@
     }
 
     // ============================================================
-    // RENDER SECTOR CARDS
+    // RENDER SECTOR CARDS (usando rubros del backend)
     // ============================================================
-    function renderSectorCards(sectorData) {
+    function renderSectorCards(rubros) {
         const container = document.getElementById('sectorCards');
-        const sectores = [
-            { key: 'transporte', label: 'Transporte', icon: 'directions_car', color: 'text-primary' },
-            { key: 'electronica', label: 'Electrónica', icon: 'memory', color: 'text-tertiary' },
-            { key: 'km0', label: 'KM0', icon: 'sell', color: 'text-error' },
-            { key: 'general', label: 'General', icon: 'home', color: 'text-secondary' }
-        ];
+        const icons = {
+            'transporte': { icon: 'directions_car', color: 'text-primary', label: 'Transporte' },
+            'electronica': { icon: 'memory', color: 'text-tertiary', label: 'Electrónica' },
+            'electrónica': { icon: 'memory', color: 'text-tertiary', label: 'Electrónica' },
+            'km0': { icon: 'sell', color: 'text-error', label: 'KM0' },
+            'general': { icon: 'home', color: 'text-secondary', label: 'General' }
+        };
 
         container.innerHTML = '';
-        sectores.forEach(sec => {
-            const data = sectorData[sec.key] || { revenue: 0, expenses: 0, profit: 0, margin: 0 };
-            const profitColor = data.profit >= 0 ? 'text-primary' : 'text-error';
-            const barColor = data.profit >= 0 ? 'bg-primary' : 'bg-error';
-            const marginPct = Math.min(Math.abs(data.margin), 100);
+        
+        if (!rubros || rubros.length === 0) {
+            container.innerHTML = '<div class="text-center text-on-surface-variant/60 py-4 text-sm">No hay datos de sectores</div>';
+            return;
+        }
+
+        rubros.forEach(sec => {
+            const key = sec.rubro.toLowerCase();
+            const info = icons[key] || { icon: 'business', color: 'text-primary', label: sec.rubro };
+            const profitColor = sec.ganancia >= 0 ? 'text-primary' : 'text-error';
+            const barColor = sec.ganancia >= 0 ? 'bg-primary' : 'bg-error';
+            const marginPct = Math.min(Math.abs(sec.margen || 0), 100);
 
             const card = document.createElement('div');
             card.className = 'min-w-[200px] snap-center glass-card rounded-2xl p-4 space-y-3 border border-white/5 active:scale-95 transition-transform cursor-pointer';
             card.onclick = () => abrirModal(
-                sec.label,
+                info.label,
                 `<div class="grid grid-cols-2 gap-4">
-                    <div class="bg-white/5 p-4 rounded-2xl"><p class="text-[10px] uppercase font-bold text-on-surface-variant mb-1">Ingreso Neto</p><p class="text-xl font-bold text-primary">$${data.profit.toFixed(2)}</p></div>
-                    <div class="bg-white/5 p-4 rounded-2xl"><p class="text-[10px] uppercase font-bold text-on-surface-variant mb-1">Margen</p><p class="text-xl font-bold text-on-surface">${data.margin.toFixed(0)}%</p></div>
+                    <div class="bg-white/5 p-4 rounded-2xl"><p class="text-[10px] uppercase font-bold text-on-surface-variant mb-1">Ingreso Neto</p><p class="text-xl font-bold text-primary">$${(sec.ganancia || 0).toFixed(2)}</p></div>
+                    <div class="bg-white/5 p-4 rounded-2xl"><p class="text-[10px] uppercase font-bold text-on-surface-variant mb-1">Margen</p><p class="text-xl font-bold text-on-surface">${(sec.margen || 0).toFixed(0)}%</p></div>
                 </div>
                 <ul class="space-y-3">
-                    <li class="flex justify-between items-center bg-white/5 p-3 rounded-xl"><span class="text-xs text-on-surface-variant">Ingresos</span><span class="font-bold text-primary">$${data.revenue.toFixed(2)}</span></li>
-                    <li class="flex justify-between items-center bg-white/5 p-3 rounded-xl"><span class="text-xs text-on-surface-variant">Gastos</span><span class="font-bold text-error">$${data.expenses.toFixed(2)}</span></li>
+                    <li class="flex justify-between items-center bg-white/5 p-3 rounded-xl"><span class="text-xs text-on-surface-variant">Ingresos</span><span class="font-bold text-primary">$${(sec.ingresos || 0).toFixed(2)}</span></li>
+                    <li class="flex justify-between items-center bg-white/5 p-3 rounded-xl"><span class="text-xs text-on-surface-variant">Gastos</span><span class="font-bold text-error">$${(sec.gastosTotales || 0).toFixed(2)}</span></li>
+                    <li class="flex justify-between items-center bg-white/5 p-3 rounded-xl"><span class="text-xs text-on-surface-variant">Ganancia/Hora</span><span class="font-bold ${profitColor}">$${(sec.gananciaHora || 0).toFixed(2)}</span></li>
                 </ul>`
             );
             card.innerHTML = `
                 <div class="flex items-center gap-2">
-                    <span class="material-symbols-outlined ${sec.color} text-xl">${sec.icon}</span>
-                    <span class="font-bold text-sm">${sec.label}</span>
+                    <span class="material-symbols-outlined ${info.color} text-xl">${info.icon}</span>
+                    <span class="font-bold text-sm">${info.label}</span>
                 </div>
                 <div class="space-y-1">
                     <div class="flex justify-between text-[11px]">
                         <span class="text-on-surface-variant">Ganancia:</span>
-                        <span class="${profitColor} font-bold">$${data.profit.toFixed(2)}</span>
+                        <span class="${profitColor} font-bold">$${(sec.ganancia || 0).toFixed(2)}</span>
                     </div>
                     <div class="flex justify-between text-[11px]">
                         <span class="text-on-surface-variant">Margen:</span>
-                        <span class="text-on-surface">${data.margin.toFixed(0)}%</span>
+                        <span class="text-on-surface">${(sec.margen || 0).toFixed(0)}%</span>
+                    </div>
+                    <div class="flex justify-between text-[11px]">
+                        <span class="text-on-surface-variant">Ganancia/H:</span>
+                        <span class="${profitColor}">$${(sec.gananciaHora || 0).toFixed(2)}</span>
                     </div>
                 </div>
                 <div class="w-full bg-white/5 h-1.5 rounded-full overflow-hidden">
@@ -945,7 +770,7 @@
         const containerBuenos = document.getElementById('diasBuenos');
         const containerMalos = document.getElementById('diasMalos');
 
-        const dias = fechas.map((f, idx) => ({ fecha: f, ganancia: gananciasDiarias[idx] }));
+        const dias = fechas.map((f, idx) => ({ fecha: f, ganancia: gananciasDiarias[idx] || 0 }));
         const buenos = dias.filter(d => d.ganancia > 0).sort((a, b) => b.ganancia - a.ganancia);
         const malos = dias.filter(d => d.ganancia < 0).sort((a, b) => a.ganancia - b.ganancia);
 
@@ -979,21 +804,31 @@
         if (!fechaStr) return '';
         const d = new Date(fechaStr);
         if (isNaN(d.getTime())) return fechaStr;
-        const day = d.getDate().toString().padStart(2, '0');
-        const month = (d.getMonth() + 1).toString().padStart(2, '0');
-        const year = d.getFullYear();
-        return `${day}/${month}/${year}`;
+        return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
     }
 
     // ============================================================
     // MOSTRAR DETALLE DE UN DÍA
     // ============================================================
     function mostrarDetalleDia(fecha) {
-        const { ingresos, gastos } = filtrarDatosLocal();
-        const itemsIng = ingresos.filter(i => i.fecha === fecha);
-        const itemsGas = gastos.filter(g => g.fecha === fecha);
-        const totalIng = itemsIng.reduce((s, i) => s + (i.monto || 0), 0);
-        const totalGas = itemsGas.reduce((s, g) => s + (g.monto || 0), 0);
+        if (fecha === 'mejor' || fecha === 'peor') {
+            const el = document.getElementById(fecha === 'mejor' ? 'mejorDia' : 'peorDia');
+            const diaData = el.dataset.dia;
+            if (diaData) {
+                const data = JSON.parse(diaData);
+                fecha = data.fecha;
+            } else {
+                showToast('No hay datos para este día', 'error');
+                return;
+            }
+        }
+
+        const items = activityData.filter(a => a.fecha === fecha);
+        const ingresos = items.filter(a => a.tipo === 'ingreso');
+        const gastos = items.filter(a => a.tipo === 'gasto');
+        const totalIng = ingresos.reduce((s, i) => s + (i.monto || 0), 0);
+        const totalGas = gastos.reduce((s, g) => s + (g.monto || 0), 0);
+        
         let html = `
             <div class="detalle-item flex justify-between"><span>Fecha</span><strong>${formatFecha(fecha)}</strong></div>
             <div class="detalle-item flex justify-between"><span>Ingresos</span><strong class="text-primary">$${totalIng.toFixed(2)}</strong></div>
@@ -1002,54 +837,66 @@
             <hr style="border-color:rgba(255,255,255,0.05);margin:8px 0;">
             <p class="text-xs text-on-surface-variant/60">Transacciones:</p>
         `;
-        itemsIng.forEach(i => {
-            html += `<div class="detalle-item flex justify-between" style="font-size:0.75rem;padding:2px 0;">
-                <span>${i.plataforma || 'N/A'} (Ingreso)</span>
-                <span class="text-primary">+$${(i.monto || 0).toFixed(2)}</span>
-            </div>`;
-        });
-        itemsGas.forEach(g => {
-            html += `<div class="detalle-item flex justify-between" style="font-size:0.75rem;padding:2px 0;">
-                <span>${g.categoria || 'N/A'} (Gasto)</span>
-                <span class="text-error">-$${(g.monto || 0).toFixed(2)}</span>
-            </div>`;
-        });
+        
+        if (items.length === 0) {
+            html += '<p class="text-xs text-on-surface-variant/40">No hay transacciones registradas</p>';
+        } else {
+            items.forEach(item => {
+                const signo = item.tipo === 'ingreso' ? '+' : '-';
+                const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-error';
+                html += `<div class="detalle-item flex justify-between" style="font-size:0.75rem;padding:2px 0;">
+                    <span>${item.plataforma || item.categoria || 'N/A'} (${item.tipo})</span>
+                    <span class="${color}">${signo}$${(item.monto || 0).toFixed(2)}</span>
+                </div>`;
+            });
+        }
         abrirModal('Detalle del día ' + formatFecha(fecha), html);
     }
 
     // ============================================================
     // RECOMENDACIÓN IA
     // ============================================================
-    function generarRecomendacion(metrics) {
-        const mejorSector = Object.keys(metrics.sectorData).reduce((a, b) => metrics.sectorData[a].margin > metrics.sectorData[b].margin ? a : b, 'transporte');
-        const label = { 'transporte': 'Transporte', 'electronica': 'Electrónica', 'km0': 'KM0', 'general': 'General' }[mejorSector] || '--';
-        document.getElementById('mejorSector').textContent = label;
-        document.getElementById('enfoqueSemanal').textContent = label;
+    function generarRecomendacion(rubros, eq, fijos) {
+        if (!rubros || rubros.length === 0) {
+            document.getElementById('iaRecomendacion').textContent = 'No hay suficientes datos para generar recomendaciones.';
+            return;
+        }
+
+        const mejor = rubros[0];
+        const peor = rubros[rubros.length - 1];
+        const mejoresRubros = rubros.filter(r => r.gananciaHora > 0);
 
         let rec = '';
-        const margen = metrics.sectorData[mejorSector]?.margin || 0;
-        if (margen > 15) rec = `El sector <span class="text-primary font-bold">${label}</span> presenta un margen del <span class="text-primary font-bold">${margen.toFixed(0)}%</span>, excelente rendimiento. Enfócate en mantenerlo.`;
-        else if (margen > 5) rec = `El sector <span class="text-primary font-bold">${label}</span> tiene un margen del ${margen.toFixed(0)}%. Optimiza costos para mejorar.`;
-        else rec = `Todos los sectores tienen margen bajo. Revisa gastos operativos y busca aumentar ingresos.`;
-        if (metrics.viajesNecesarios > 0) {
-            rec += ` 🎯 Necesitas ${metrics.viajesNecesarios} viajes/día (prom. $${metrics.ingPromedioViaje.toFixed(2)}) para cubrir costos fijos de $${metrics.fijos.diario.toFixed(2)}/día.`;
+        if (mejor && mejor.gananciaHora > 0) {
+            rec = `✅ <span class="text-primary font-bold">${mejor.rubro}</span> es tu negocio más rentable ($${mejor.gananciaHora.toFixed(2)}/hora). `;
         }
-        document.getElementById('iaRecomendacion').innerHTML = rec;
+        if (peor && peor.gananciaHora < 0 && peor.rubro !== mejor?.rubro) {
+            rec += `⚠️ <span class="text-error font-bold">${peor.rubro}</span> genera pérdida de $${Math.abs(peor.gananciaHora).toFixed(2)}/hora. Considera reducir tiempo en este rubro. `;
+        }
+        if (mejoresRubros.length > 0) {
+            rec += `💡 ${mejoresRubros.length} rubro(s) generan ganancia positiva. `;
+        }
+        if (eq.viajesNecesarios > 0) {
+            rec += `🎯 Necesitas ${eq.viajesNecesarios} viajes/día (prom. $${(eq.gananciaPromedioPorViaje || 0).toFixed(2)}) para cubrir costos fijos de $${(fijos.diario || 0).toFixed(2)}/día.`;
+        }
+        
+        document.getElementById('iaRecomendacion').innerHTML = rec || 'Análisis completado. Revisa los datos para obtener recomendaciones.';
     }
 
     // ============================================================
     // GRÁFICOS
     // ============================================================
-    function renderGraficos(metrics) {
-        const fechas = metrics.fechas;
+    function renderGraficos(desgloseDiario, rentabilidadDiaria, rubros) {
+        const fechas = desgloseDiario.fechas || [];
         const labels = fechas.map(f => formatFecha(f));
-        const dataIng = fechas.map(f => {
-            const dia = metrics.ingresos.filter(i => i.fecha === f).reduce((s, i) => s + (i.monto || 0), 0);
-            return dia;
-        });
-        const dataGas = fechas.map(f => {
-            const dia = metrics.gastos.filter(g => g.fecha === f).reduce((s, g) => s + (g.monto || 0), 0);
-            return dia;
+        
+        // Datos para el gráfico de evolución diaria
+        const dataIng = desgloseDiario.ingresos || [];
+        const dataGas = fechas.map((f, idx) => {
+            return (desgloseDiario.combustible?.[idx] || 0) + 
+                   (desgloseDiario.mantenimiento?.[idx] || 0) + 
+                   (desgloseDiario.comisiones?.[idx] || 0) + 
+                   (desgloseDiario.otros?.[idx] || 0);
         });
 
         // Line chart
@@ -1076,21 +923,21 @@
                 maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: {
-                    x: { grid: { display: false } },
+                    x: { grid: { display: false }, ticks: { maxTicksLimit: 15, font: { size: 8 } } },
                     y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, border: { display: false }, ticks: { display: false } }
                 }
             }
         });
 
-        // Distribución de gastos (pastel)
+        // Distribución de gastos (pastel) - usar datos del backend
         const gastosPorCategoria = {};
-        metrics.gastos.forEach(g => {
+        activityData.filter(a => a.tipo === 'gasto').forEach(g => {
             const cat = g.categoria || 'Otros';
             gastosPorCategoria[cat] = (gastosPorCategoria[cat] || 0) + (g.monto || 0);
         });
         const catLabels = Object.keys(gastosPorCategoria);
         const catData = Object.values(gastosPorCategoria);
-        const colores = ['#004831', '#2d6950', '#96d4b4', '#4edea3', '#ffb4ab', '#bec6e0'];
+        const colores = ['#004831', '#2d6950', '#96d4b4', '#4edea3', '#ffb4ab', '#bec6e0', '#f59e0b', '#8B5CF6'];
 
         const ctxPie = document.getElementById('gastosPieChart').getContext('2d');
         if (charts.pie) charts.pie.destroy();
@@ -1100,7 +947,7 @@
                 labels: catLabels.length ? catLabels : ['Sin datos'],
                 datasets: [{
                     data: catLabels.length ? catData : [1],
-                    backgroundColor: colores.slice(0, catLabels.length || 1),
+                    backgroundColor: colores.slice(0, Math.max(catLabels.length, 1)),
                     borderWidth: 0
                 }]
             },
@@ -1113,26 +960,20 @@
             }
         });
 
-        // Peso por sector (doughnut)
-        const sectorData = metrics.sectorData;
-        const sectorLabels = ['Transporte', 'Electrónica', 'KM0', 'General'];
-        const sectorValues = [
-            sectorData.transporte ? sectorData.transporte.revenue : 0,
-            sectorData.electronica ? sectorData.electronica.revenue : 0,
-            sectorData.km0 ? sectorData.km0.revenue : 0,
-            sectorData.general ? sectorData.general.revenue : 0
-        ];
-        const sectorColors = ['#96d4b4', '#4edea3', '#ffb4ab', '#bec6e0'];
+        // Peso por sector (doughnut) - usar rubros del backend
+        const sectorLabels = rubros.map(r => r.rubro);
+        const sectorValues = rubros.map(r => r.ingresos || 0);
+        const sectorColors = ['#96d4b4', '#4edea3', '#ffb4ab', '#bec6e0', '#f59e0b', '#8B5CF6'];
 
         const ctxDoughnut = document.getElementById('platformChart').getContext('2d');
         if (charts.doughnut) charts.doughnut.destroy();
         charts.doughnut = new Chart(ctxDoughnut, {
             type: 'doughnut',
             data: {
-                labels: sectorLabels,
+                labels: sectorLabels.length ? sectorLabels : ['Sin datos'],
                 datasets: [{
-                    data: sectorValues,
-                    backgroundColor: sectorColors,
+                    data: sectorLabels.length ? sectorValues : [1],
+                    backgroundColor: sectorColors.slice(0, Math.max(sectorLabels.length, 1)),
                     borderWidth: 0,
                     cutout: '75%',
                     borderRadius: 8
@@ -1151,16 +992,17 @@
     // ============================================================
     // TABLA DE ACTIVIDAD
     // ============================================================
-    function renderTabla(ingresos, gastos) {
+    function renderTabla(data) {
         const container = document.getElementById('tablaBody');
-        const all = [...ingresos.map(i => ({ ...i, tipo: 'ingreso' })), ...gastos.map(g => ({ ...g, tipo: 'gasto' }))];
-        all.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-        if (!all.length) {
-            container.innerHTML = `<div class="text-center text-on-surface-variant/60 py-8 text-sm">No hay actividad en este período</div>`;
+        if (!data || data.length === 0) {
+            container.innerHTML = `<div class="text-center text-on-surface-variant/60 py-8 text-sm">No hay actividad registrada</div>`;
             return;
         }
+
+        const sorted = [...data].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
         container.innerHTML = '';
-        all.slice(0, 30).forEach(item => {
+        
+        sorted.slice(0, 30).forEach(item => {
             let date = new Date(item.fecha);
             if (isNaN(date.getTime())) date = null;
             const card = document.createElement('div');
@@ -1169,15 +1011,13 @@
             let icon = 'directions_car';
             let sectorClass = 'sector-transporte';
             const rubro = (item.rubro || '').toLowerCase();
-            if (rubro === 'electronica' || rubro === 'electrónica') { icon = 'memory';
-                sectorClass = 'sector-electronica'; } else if (rubro === 'km0') { icon = 'sell';
-                sectorClass = 'sector-km0'; } else if (rubro === 'general') { icon = 'home';
-                sectorClass = 'sector-general'; }
+            if (rubro === 'electronica' || rubro === 'electrónica') { icon = 'memory'; sectorClass = 'sector-electronica'; } 
+            else if (rubro === 'km0') { icon = 'sell'; sectorClass = 'sector-km0'; } 
+            else if (rubro === 'general') { icon = 'home'; sectorClass = 'sector-general'; }
 
             const signo = item.tipo === 'ingreso' ? '+' : '-';
             const color = item.tipo === 'ingreso' ? 'text-primary' : 'text-error';
-
-            let fechaStr = date ? date.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit' }) : (item.fecha || '---');
+            const fechaStr = date ? date.toLocaleDateString('es-ES', { weekday: 'short', day: '2-digit', month: '2-digit' }) : (item.fecha || '---');
 
             card.innerHTML = `
                 <div class="flex items-center gap-4">
@@ -1197,7 +1037,7 @@
                 </div>
                 <div class="text-right">
                     <p class="font-bold ${color}">${signo}$${(item.monto || 0).toFixed(2)}</p>
-                    ${item.kmTotal ? `<p class="text-[10px] text-on-surface-variant/50">${item.kmTotal.toFixed(1)} km</p>` : ''}
+                    ${item.kmTotal ? `<p class="text-[10px] text-on-surface-variant/50">${Number(item.kmTotal).toFixed(1)} km</p>` : ''}
                 </div>
             `;
             container.appendChild(card);
@@ -1208,8 +1048,8 @@
     // DETALLES DE INGRESOS Y GASTOS (MODAL)
     // ============================================================
     function mostrarDetalleIngresos() {
-        const { ingresos } = filtrarDatosLocal();
-        if (!ingresos.length) { showToast('No hay ingresos en este período', 'error'); return; }
+        const ingresos = activityData.filter(a => a.tipo === 'ingreso');
+        if (!ingresos.length) { showToast('No hay ingresos registrados', 'error'); return; }
         const grupos = {};
         ingresos.forEach(i => {
             const key = (i.rubro || 'General') + ' - ' + (i.plataforma || 'N/A');
@@ -1230,8 +1070,8 @@
     }
 
     function mostrarDetalleGastos() {
-        const { gastos } = filtrarDatosLocal();
-        if (!gastos.length) { showToast('No hay gastos en este período', 'error'); return; }
+        const gastos = activityData.filter(a => a.tipo === 'gasto');
+        if (!gastos.length) { showToast('No hay gastos registrados', 'error'); return; }
         const grupos = {};
         gastos.forEach(g => {
             const key = g.categoria || 'Otros';
@@ -1252,15 +1092,40 @@
     }
 
     // ============================================================
+    // COSTOS FIJOS (localStorage)
+    // ============================================================
+    function cargarFijosLocal() {
+        try {
+            const saved = localStorage.getItem('fijos_driver');
+            if (saved) return JSON.parse(saved);
+        } catch (e) {}
+        return { total: 520, diario: 17.33 };
+    }
+    function guardarFijosLocal(total, diario) {
+        localStorage.setItem('fijos_driver', JSON.stringify({ total, diario }));
+    }
+    function editarFijos() {
+        const actual = cargarFijosLocal();
+        const total = prompt('Total de costos fijos mensuales:', actual.total);
+        if (total === null) return;
+        const dias = prompt('Días laborales al mes:', '30');
+        if (dias === null) return;
+        const t = parseFloat(total);
+        const d = parseInt(dias);
+        if (isNaN(t) || isNaN(d) || d <= 0) { showToast('Valores inválidos', 'error'); return; }
+        const diario = t / d;
+        guardarFijosLocal(t, diario);
+        showToast('✅ Costos fijos actualizados', 'success');
+        renderizar();
+    }
+
+    // ============================================================
     // EXPORTAR CSV
     // ============================================================
     function exportarCSV() {
         if (!activityData.length) { showToast('No hay datos para exportar', 'error'); return; }
-        const { ingresos, gastos } = filtrarDatosLocal();
-        const all = [...ingresos.map(i => ({ ...i, tipo: 'ingreso' })), ...gastos.map(g => ({ ...g, tipo: 'gasto' }))];
-        if (!all.length) { showToast('No hay datos en este filtro', 'error'); return; }
         const headers = ['Fecha', 'Tipo', 'Rubro', 'Categoría', 'Monto', 'KmTotal', 'Horas', 'Orden'];
-        const rows = all.map(item => [
+        const rows = activityData.map(item => [
             item.fecha || '', item.tipo, item.rubro || '', item.categoria || item.plataforma || '',
             (item.monto || 0), (item.kmTotal || 0), (item.horas || 0), (item.orden || 0)
         ]);
@@ -1285,8 +1150,10 @@
         document.getElementById('startDate').value = hace30.toISOString().split('T')[0];
         document.getElementById('endDate').value = hoy.toISOString().split('T')[0];
 
-        await cargarDatos();
-        renderizar();
+        const cargado = await cargarDatos();
+        if (cargado) {
+            renderizar();
+        }
 
         // Eventos
         document.getElementById('applyFilters').addEventListener('click', renderizar);
@@ -1301,7 +1168,6 @@
         document.getElementById('cardGastos').addEventListener('click', mostrarDetalleGastos);
         document.getElementById('btnEditarFijos').addEventListener('click', editarFijos);
 
-        // Inputs que actualizan en tiempo real
         document.getElementById('umbralProfit').addEventListener('change', renderizar);
         document.getElementById('metaDiaria').addEventListener('change', renderizar);
     });
