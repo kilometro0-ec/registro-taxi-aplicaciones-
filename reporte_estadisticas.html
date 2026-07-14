@@ -328,8 +328,12 @@
                 <div class="flex items-center gap-3 flex-wrap">
                     <span class="text-xs text-gray-400">Total: <strong class="text-primary" id="totalFijos">$0.00</strong></span>
                     <span class="text-xs font-bold text-primary">Por día: <strong id="costoFijoDiario">$0.00</strong></span>
-                    <button id="btnEditarFijos" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20 transition font-semibold">Editar</button>
+                    <button id="btnEditarFijos" class="text-xs bg-white/10 px-3 py-1.5 rounded-lg hover:bg-white/20 transition font-semibold">Editar días</button>
                 </div>
+            </div>
+            <div id="fijosItemsWrap" class="mt-3 space-y-1 hidden">
+                <p class="text-[9px] font-label-caps text-on-surface-variant uppercase tracking-wider mb-1">Ítems activos (hoja GastosFijos)</p>
+                <div id="fijosItems" class="space-y-1 max-h-24 overflow-y-auto"></div>
             </div>
         </div>
     </div>
@@ -389,7 +393,6 @@
                 <span class="material-symbols-outlined text-primary">auto_awesome</span>
                 <h2 class="text-sm font-bold text-primary">Perspectivas Multi-Sector</h2>
             </div>
-            <!-- FIX 1: Added missing mejorSector and enfoqueSemanal elements -->
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-white/5 rounded-xl p-3 border border-white/5">
                     <p class="text-[9px] font-label-caps text-on-surface-variant uppercase mb-1">Mejor Sector</p>
@@ -506,10 +509,12 @@
 </nav>
 
 <script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH2yoAGbey536zToR-KWwZ6yQEzzAow6TEhDFvKBQGjUArLtR0bWu2ylnmumMhIab4qg/exec';
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw22tadLyLfrA7rKbfRjwlLLBIyCP64YPmG1baenphZ5ywBvp2kkJxETOeGfUjb609KzA/exec';
 
     let activityData = [];
     let statsData = null;
+    // NUEVO: costos fijos ahora vienen del backend (hoja GastosFijos + Configuracion)
+    let fijosData = { total: 0, dias: 30, diario: 0, items: [] };
     let charts = {};
 
     function showToast(msg, type) {
@@ -553,13 +558,23 @@
             if (!resAct.ok) throw new Error('Error en getRecentActivity');
             activityData = await resAct.json();
 
-            // FIX 3: No overwrite the sector dropdown — hardcoded options
-            // match filtrarDatosLocal() which filters by rubro, not categoria.
+            // NUEVO: costos fijos reales desde la hoja GastosFijos (+ Configuracion para días laborables)
+            var resFijos = await fetch(SCRIPT_URL + '?action=getFijos');
+            if (!resFijos.ok) throw new Error('Error en getFijos');
+            var fijosResp = await resFijos.json();
+            if (fijosResp && !fijosResp.error) {
+                fijosData = {
+                    total: fijosResp.total || 0,
+                    dias: fijosResp.dias || 30,
+                    diario: fijosResp.diario || 0,
+                    items: fijosResp.items || []
+                };
+            }
+
             return true;
         } catch (e) {
             console.error('Error al cargar datos:', e);
             showToast('Error al cargar datos', 'error');
-            // FIX 7: show error state in the table area
             document.getElementById('tablaBody').innerHTML =
                 '<div class="text-center text-error/60 py-8 text-sm">' +
                     '<span class="material-symbols-outlined text-3xl block mb-2">cloud_off</span>' +
@@ -569,7 +584,6 @@
         }
     }
 
-    // FIX 5: use string comparison for ISO dates instead of Date objects
     function filtrarDatosLocal() {
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
@@ -656,10 +670,8 @@
         });
         var umbral = parseFloat(document.getElementById('umbralProfit').value) || 40;
         var diasRentables = gananciasDiarias.filter(function(g) { return g >= umbral; }).length;
-        // FIX 4: count ALL days below threshold, including negative profit days
         var diasNoRentables = gananciasDiarias.filter(function(g) { return g < umbral; }).length;
 
-        // FIX 6: calculate diasSinTrabajo even without explicit date range
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
         var rangeStart = start || (fechas.length > 0 ? fechas[0] : '');
@@ -690,7 +702,8 @@
         var costoVarViaje = viajesTransp > 0 ? (gastosTransp.reduce(function(s, g) { return s + (g.monto || 0); }, 0) / viajesTransp) : 0;
         var ingPromedioViaje = viajesTransp > 0 ? totalIngTransp / viajesTransp : 0;
         var margenPorViaje = ingPromedioViaje - costoVarViaje;
-        var fijos = cargarFijosLocal();
+        // NUEVO: fijos viene del backend (fijosData), ya no de localStorage
+        var fijos = fijosData;
         var metaDiaria = parseFloat(document.getElementById('metaDiaria').value) || fijos.diario;
         var viajesNecesarios = margenPorViaje > 0 ? Math.ceil(metaDiaria / margenPorViaje) : 0;
         var kmNecesarios = viajesNecesarios * (viajesTransp > 0 ? kmTransp / viajesTransp : 0);
@@ -742,29 +755,45 @@
         };
     }
 
-    function cargarFijosLocal() {
-        try {
-            var saved = localStorage.getItem('fijos_driver');
-            if (saved) return JSON.parse(saved);
-        } catch (e) {}
-        return { total: 520, diario: 17.33 };
-    }
-    function guardarFijosLocal(total, diario) {
-        localStorage.setItem('fijos_driver', JSON.stringify({ total: total, diario: diario }));
-    }
-    function editarFijos() {
-        var actual = cargarFijosLocal();
-        var total = prompt('Total de costos fijos mensuales:', actual.total);
-        if (total === null) return;
-        var dias = prompt('Días laborales al mes:', '30');
+    // NUEVO: edita solo los "días laborables al mes" — el total sale de la hoja GastosFijos
+    async function editarFijos() {
+        var dias = prompt('Días laborables al mes (para calcular el costo fijo diario):', fijosData.dias || 30);
         if (dias === null) return;
-        var t = parseFloat(total);
         var d = parseInt(dias);
-        if (isNaN(t) || isNaN(d) || d <= 0) { showToast('Valores inválidos', 'error'); return; }
-        var diario = t / d;
-        guardarFijosLocal(t, diario);
-        showToast('Costos fijos actualizados', 'success');
-        renderizar();
+        if (isNaN(d) || d <= 0) { showToast('Valor inválido', 'error'); return; }
+
+        try {
+            var res = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'saveFijos', dias: d })
+            });
+            var data = await res.json();
+            if (data.error) throw new Error(data.error);
+            showToast('Costos fijos actualizados', 'success');
+            var ok = await cargarDatos();
+            if (ok) renderizar();
+        } catch (e) {
+            console.error(e);
+            showToast('No se pudo guardar en la hoja', 'error');
+        }
+    }
+
+    function renderFijosItems() {
+        var wrap = document.getElementById('fijosItemsWrap');
+        var cont = document.getElementById('fijosItems');
+        var items = fijosData.items || [];
+        if (!items.length) {
+            wrap.classList.add('hidden');
+            return;
+        }
+        wrap.classList.remove('hidden');
+        cont.innerHTML = items.map(function(it) {
+            return '<div class="flex justify-between text-[11px] text-on-surface-variant">' +
+                '<span>' + (it.nombre || 'N/A') + '</span>' +
+                '<span class="text-primary font-semibold">$' + (it.monto || 0).toFixed(2) + '</span>' +
+            '</div>';
+        }).join('');
     }
 
     function renderizar() {
@@ -790,7 +819,6 @@
         document.getElementById('diasSinTrabajo').textContent = metrics.diasSinTrabajo;
         var start = document.getElementById('startDate').value;
         var end = document.getElementById('endDate').value;
-        // FIX 6: update label to show context
         if (!start && !end) {
             document.getElementById('diasSinTrabajoLabel').textContent = 'Días sin actividad (rango de datos)';
         } else {
@@ -803,6 +831,7 @@
 
         document.getElementById('totalFijos').textContent = '$' + metrics.fijos.total.toFixed(2);
         document.getElementById('costoFijoDiario').textContent = '$' + metrics.fijos.diario.toFixed(2);
+        renderFijosItems();
 
         document.getElementById('viajesNecesarios').textContent = metrics.viajesNecesarios || 0;
         document.getElementById('kmNecesarios').textContent = (metrics.kmNecesarios || 0).toFixed(0);
@@ -812,7 +841,6 @@
         document.getElementById('gananciaHora').textContent = '$' + metrics.gananciaHora.toFixed(2);
         document.getElementById('avgTicket').textContent = '$' + metrics.avgTicket.toFixed(2);
 
-        // FIX 2: store fecha in data attribute and wire click correctly
         if (metrics.mejorDia) {
             document.getElementById('mejorDia').textContent = formatFecha(metrics.mejorDia.fecha) + ' ($' + metrics.mejorDia.ganancia.toFixed(2) + ')';
             document.getElementById('mejorDia').dataset.fecha = metrics.mejorDia.fecha;
@@ -951,7 +979,6 @@
         return parts[2] + '/' + parts[1] + '/' + parts[0];
     }
 
-    // FIX 2: accept a real date string, no longer 'mejor'/'peor' literals
     function mostrarDetalleDia(fecha) {
         if (!fecha) return;
         var result = filtrarDatosLocal();
@@ -996,7 +1023,6 @@
         var labels = { 'transporte': 'Transporte', 'electronica': 'Electrónica', 'km0': 'KM0', 'general': 'General' };
         var label = labels[mejorSector] || '--';
 
-        // FIX 1: these elements now exist in the HTML
         document.getElementById('mejorSector').textContent = label;
         document.getElementById('enfoqueSemanal').textContent = label;
 
