@@ -11,6 +11,8 @@
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <!-- Tesseract.js para OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
   <style>
     * { box-sizing: border-box; transition: all 0.2s ease; }
@@ -37,6 +39,11 @@
     .btn-guardar:hover:not(:disabled) { background: #006b48; transform: scale(1.01); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
     .btn-guardar:disabled { opacity: 0.6; transform: none; cursor: not-allowed; }
     .campo-orden { background: #f0fdf4; border-radius: 0.5rem; padding: 0.5rem; border: 1px solid #bfc9c1; }
+    .overlay-ocr { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .overlay-ocr.hidden { display: none; }
+    .ocr-extracted { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 6px; }
+    .btn-extraer { background: #1E3A8A; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold; border: none; cursor: pointer; }
+    .btn-extraer:hover { background: #2a4a9e; }
     @media (max-width: 640px) {
       .rubro-btn { padding: 10px 6px; font-size: 0.9rem; }
     }
@@ -70,6 +77,15 @@
 <body class="bg-surface text-on-surface min-h-screen pb-24">
 
   <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <!-- OVERLAY DE PROCESAMIENTO OCR -->
+  <div id="ocrOverlay" class="overlay-ocr hidden">
+    <div class="bg-white p-6 rounded-xl text-center max-w-xs">
+      <div class="spinner mx-auto"></div>
+      <p class="mt-3 font-medium">Procesando imagen...</p>
+      <p id="ocrStatus" class="text-xs text-gray-500 mt-1">Extrayendo texto</p>
+    </div>
+  </div>
 
   <!-- HEADER -->
   <header class="bg-surface/90 backdrop-blur-md border-b border-outline-variant fixed top-0 z-50 flex justify-between items-center px-3 h-12 w-full shadow-sm">
@@ -116,9 +132,20 @@
 
     <!-- ====== CAMPOS TRANSPORTE ====== -->
     <div id="camposTransporte" class="space-y-4">
+      <!-- SECCIÓN OCR -->
+      <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Captura de pantalla (Indriver)</label>
+        <div class="flex flex-wrap items-center gap-2 mt-2">
+          <input type="file" accept="image/*" capture="environment" id="imageInput" class="flex-1 border rounded p-2 text-sm" />
+          <button id="extractBtn" class="btn-extraer flex items-center gap-1">
+            <span class="material-symbols-outlined" style="font-size:18px">auto_awesome</span> Extraer
+          </button>
+        </div>
+        <div id="extractResult" class="text-sm mt-2"></div>
+      </section>
+
       <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm">
         <label class="text-xs font-bold uppercase text-on-surface-variant">Plataforma</label>
-        <!-- Solo Indriver (fijo) -->
         <div class="mt-2 p-3 bg-surface-container-low rounded-lg flex items-center gap-3">
           <span class="material-symbols-outlined" style="font-size:28px">handshake</span>
           <span class="font-bold text-base">Indriver</span>
@@ -135,7 +162,6 @@
           </div>
           <p class="text-[10px] mt-1 text-gray-500">Comisión fija para Indriver</p>
         </div>
-        <!-- Número de orden -->
         <div class="campo-orden mt-3">
           <label class="text-xs font-bold uppercase">Número de orden / viaje</label>
           <input type="text" id="ordenTransporte" class="w-full p-2 bg-white border rounded-lg text-sm mt-1" placeholder="Ej: #12345" />
@@ -263,7 +289,16 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw4jgLJSSkX23cVnH_sws4COTv2mTN1ElZbaOLRzm7DBgzCBdOa-kX2XzPBTm6qyg-I-A/exec'; // <-- CAMBIA POR TU URL
     let rubroActual = 'Transporte';
     let commissionPercent = 13.79; // Comisión fija Indriver
-    let km0Estado = 'entregado'; // 'entregado' o 'no_entregado'
+    let km0Estado = 'entregado';
+
+    // ============================================================
+    // ELEMENTOS
+    // ============================================================
+    const imageInput = document.getElementById('imageInput');
+    const extractBtn = document.getElementById('extractBtn');
+    const extractResult = document.getElementById('extractResult');
+    const ocrOverlay = document.getElementById('ocrOverlay');
+    const ocrStatus = document.getElementById('ocrStatus');
 
     // ============================================================
     // CONEXIÓN
@@ -303,15 +338,182 @@
     }
 
     // ============================================================
+    // FUNCIONES AUXILIARES OCR
+    // ============================================================
+    function limpiarNumero(texto) {
+      if (!texto) return null;
+      const limpio = texto.replace(/[^0-9,.]/g, '').replace(',', '.');
+      return parseFloat(limpio) || null;
+    }
+
+    function extraerFecha(texto) {
+      // Formato "2 ago 2026" o "02/08/2026" o "2026-08-02"
+      let fechas = [];
+      const regex1 = /(\d{1,2})\s+(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)\s+(\d{4})/i;
+      const match1 = texto.match(regex1);
+      if (match1) {
+        const meses = {ene:0, feb:1, mar:2, abr:3, may:4, jun:5, jul:6, ago:7, sep:8, oct:9, nov:10, dic:11};
+        const mes = meses[match1[2].toLowerCase()];
+        if (mes !== undefined) {
+          const fecha = new Date(parseInt(match1[3]), mes, parseInt(match1[1]));
+          if (!isNaN(fecha)) return fecha.toISOString().slice(0,10);
+        }
+      }
+      const regex2 = /(\d{2})\/(\d{2})\/(\d{4})/;
+      const match2 = texto.match(regex2);
+      if (match2) {
+        const fecha = new Date(parseInt(match2[3]), parseInt(match2[2])-1, parseInt(match2[1]));
+        if (!isNaN(fecha)) return fecha.toISOString().slice(0,10);
+      }
+      return null;
+    }
+
+    // ============================================================
+    // EXTRACCIÓN OCR (ESPECÍFICA PARA INDIRIVER)
+    // ============================================================
+    async function extraerDatosIndriver(imageFile) {
+      ocrOverlay.classList.remove('hidden');
+      ocrStatus.textContent = 'Iniciando OCR...';
+
+      try {
+        const { data: { text } } = await Tesseract.recognize(imageFile, 'spa', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              ocrStatus.textContent = `Procesando ${Math.round(m.progress * 100)}%`;
+            }
+          }
+        });
+        ocrStatus.textContent = 'Extracción completada.';
+        console.log('Texto OCR:', text);
+
+        // --- PATRONES DE LA IMAGEN DE INDIRIVER ---
+        let neto = null, km = null, viajes = null, tarifa = null, bruto = null, comision = null, fecha = null;
+
+        // 1. Ingreso neto (ej: "$31.42" o "31.42 Ingresos netos")
+        const netoMatch = text.match(/\$\s*(\d+[\.,]\d{2})/) || text.match(/(\d+[\.,]\d{2})\s*Ingresos netos/i);
+        if (netoMatch) neto = limpiarNumero(netoMatch[1]);
+
+        // 2. Kilometraje (ej: "40.1 km")
+        const kmMatch = text.match(/(\d+[\.,]\d+)\s*km/i);
+        if (kmMatch) km = limpiarNumero(kmMatch[1]);
+
+        // 3. Solicitudes / viajes (ej: "14 Solicitudes")
+        const viajesMatch = text.match(/(\d+)\s*Solicitudes/i) || text.match(/(\d+)\s*viajes/i);
+        if (viajesMatch) viajes = parseInt(viajesMatch[1]);
+
+        // 4. Tarifa por km (ej: "$0.78 Por km")
+        const tarifaMatch = text.match(/\$\s*(\d+[\.,]\d+)\s*Por km/i) || text.match(/(\d+[\.,]\d+)\s*Por km/i);
+        if (tarifaMatch) tarifa = limpiarNumero(tarifaMatch[1]);
+
+        // 5. Ingreso bruto (ej: "Recibido $36.45" o "Solo tarifas $36.45")
+        const brutoMatch = text.match(/Recibido\s*(?:Solo tarifas)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
+                           text.match(/\$\s*(\d+[\.,]\d{2})\s*(?:Recibido|Solo tarifas)/i);
+        if (brutoMatch) bruto = limpiarNumero(brutoMatch[1]);
+
+        // 6. Comisiones / impuestos (ej: "Pagado $5.03")
+        const comisionMatch = text.match(/Pagado\s*(?:Pago por el servicio e impuestos)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
+                              text.match(/\$\s*(\d+[\.,]\d{2})\s*(?:Pagado|Pago por el servicio)/i);
+        if (comisionMatch) comision = limpiarNumero(comisionMatch[1]);
+
+        // 7. Fecha
+        fecha = extraerFecha(text);
+
+        // 8. Hora (intentar extraer algo como "18:26" si aparece)
+        let horaInicio = null, horaFin = null;
+        const horaMatch = text.match(/(\d{1,2}:\d{2})\s*(?:am|pm|a\.m\.|p\.m\.)?/i);
+        if (horaMatch) {
+          // Asumimos que la primera hora es inicio y la segunda fin (si existe)
+          const horas = text.match(/(\d{1,2}:\d{2})/g);
+          if (horas && horas.length >= 2) {
+            horaInicio = horas[0];
+            horaFin = horas[1];
+          } else if (horas && horas.length === 1) {
+            horaInicio = horas[0];
+          }
+        }
+
+        // ===== AUTO-RELLENAR CAMPOS =====
+        if (neto !== null) document.getElementById('monto').value = neto.toFixed(2);
+        if (fecha) document.getElementById('fecha').value = fecha;
+        if (km !== null) {
+          document.getElementById('distanciaApp').value = km;
+          document.getElementById('distanciaTotal').value = km; // opcional
+        }
+        if (viajes !== null) {
+          // Podríamos ponerlo en notas o en un campo extra, pero lo añadimos a notas
+          const notasField = document.getElementById('notas');
+          notasField.value = (notasField.value ? notasField.value + ' | ' : '') + `Viajes: ${viajes}`;
+        }
+        if (tarifa !== null) {
+          // Lo añadimos a notas también
+          const notasField = document.getElementById('notas');
+          notasField.value = (notasField.value ? notasField.value + ' | ' : '') + `Tarifa/km: $${tarifa.toFixed(2)}`;
+        }
+        if (bruto !== null) {
+          // Lo añadimos a notas
+          const notasField = document.getElementById('notas');
+          notasField.value = (notasField.value ? notasField.value + ' | ' : '') + `Bruto: $${bruto.toFixed(2)}`;
+        }
+        if (comision !== null) {
+          // Lo añadimos a notas
+          const notasField = document.getElementById('notas');
+          notasField.value = (notasField.value ? notasField.value + ' | ' : '') + `Comisión: $${comision.toFixed(2)}`;
+        }
+        if (horaInicio) document.getElementById('horaInicio').value = horaInicio;
+        if (horaFin) document.getElementById('horaFin').value = horaFin;
+
+        // Mostrar resumen de lo extraído
+        let resumen = '✅ Datos extraídos:\n';
+        resumen += `Neto: $${neto !== null ? neto.toFixed(2) : 'N/A'}\n`;
+        resumen += `Km: ${km !== null ? km : 'N/A'}\n`;
+        resumen += `Solicitudes: ${viajes !== null ? viajes : 'N/A'}\n`;
+        resumen += `Tarifa/km: $${tarifa !== null ? tarifa.toFixed(2) : 'N/A'}\n`;
+        resumen += `Bruto: $${bruto !== null ? bruto.toFixed(2) : 'N/A'}\n`;
+        resumen += `Comisiones: $${comision !== null ? comision.toFixed(2) : 'N/A'}\n`;
+        resumen += `Fecha: ${fecha || 'N/A'}\n`;
+        resumen += `Hora inicio: ${horaInicio || 'N/A'}\n`;
+        resumen += `Hora fin: ${horaFin || 'N/A'}`;
+        extractResult.innerHTML = `<div class="ocr-extracted">${resumen.replace(/\n/g, '<br>')}</div>`;
+
+        // Calcular preview
+        calcularPreview();
+
+        if (neto === null && km === null && viajes === null) {
+          extractResult.innerHTML += '<p class="text-red-500 text-xs mt-1">⚠️ No se pudieron extraer datos principales. Verifica la imagen.</p>';
+        }
+
+      } catch (error) {
+        console.error(error);
+        extractResult.innerHTML = '<p class="text-red-500">❌ Error al procesar la imagen: ' + error.message + '</p>';
+      } finally {
+        ocrOverlay.classList.add('hidden');
+      }
+    }
+
+    // ============================================================
+    // EVENTO EXTRACT
+    // ============================================================
+    extractBtn.addEventListener('click', function() {
+      if (!imageInput.files || imageInput.files.length === 0) {
+        alert('Selecciona una imagen primero.');
+        return;
+      }
+      // Verificar que estemos en transporte
+      if (rubroActual !== 'Transporte') {
+        showToast('La extracción de imagen solo está disponible para Transporte (Indriver)', 'error');
+        return;
+      }
+      extraerDatosIndriver(imageInput.files[0]);
+    });
+
+    // ============================================================
     // RUBRO
     // ============================================================
     function seleccionarRubro(rubro) {
       rubroActual = rubro;
-      // Resetear estilos
       document.querySelectorAll('.rubro-btn').forEach(b => {
         b.className = 'rubro-btn flex flex-col items-center gap-0.5';
       });
-      // Activar según rubro
       const btnMap = {
         'Transporte': document.getElementById('rubroTransporte'),
         'Electrónica': document.getElementById('rubroElectronica'),
@@ -322,18 +524,16 @@
       else if (rubro === 'Electrónica') active.classList.add('active-electronica');
       else if (rubro === 'KM0') active.classList.add('active-km0');
 
-      // Mostrar/ocultar campos
       document.getElementById('camposTransporte').classList.toggle('hidden', rubro !== 'Transporte');
       document.getElementById('camposElectronica').classList.toggle('hidden', rubro !== 'Electrónica');
       document.getElementById('camposKm0').classList.toggle('hidden', rubro !== 'KM0');
 
-      // Si es KM0, establecer monto fijo de $4
       if (rubro === 'KM0') {
         document.getElementById('monto').value = 4.00;
         document.getElementById('monto').readOnly = true;
       } else {
         document.getElementById('monto').readOnly = false;
-        document.getElementById('monto').value = '';
+        // No vaciamos si ya tiene un valor
       }
 
       calcularPreview();
@@ -356,7 +556,7 @@
     }
 
     // ============================================================
-    // COMISIÓN (solo transporte)
+    // COMISIÓN
     // ============================================================
     function guardarComision() {
       let val = parseFloat(document.getElementById('comisionInput').value);
@@ -366,7 +566,7 @@
       localStorage.setItem('comision_Indriver', commissionPercent);
       document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
       calcularPreview();
-      showToast(`✅ Comisión para Indriver guardada: ${commissionPercent}%`, 'success');
+      showToast(`✅ Comisión guardada: ${commissionPercent}%`, 'success');
     }
 
     // ============================================================
@@ -445,7 +645,6 @@
         orden = document.getElementById('ordenKm0').value || '';
         const estadoTexto = km0Estado === 'entregado' ? 'Entregado' : 'No entregado';
         notas = `Orden: ${orden} | Estado: ${estadoTexto} | ${notas}`;
-        // Monto fijo 4.00 (ya está)
       }
 
       const params = new URLSearchParams();
@@ -490,10 +689,8 @@
     // INICIALIZACIÓN
     // ============================================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Fecha por defecto
       document.getElementById('fecha').valueAsDate = new Date();
 
-      // Cargar comisión guardada para Indriver
       const saved = localStorage.getItem('comision_Indriver');
       if (saved !== null && !isNaN(parseFloat(saved))) {
         commissionPercent = parseFloat(saved);
@@ -501,18 +698,14 @@
         document.getElementById('comisionPreview').innerText = `${commissionPercent}%`;
       }
 
-      // Comisión guardar
       document.getElementById('guardarComisionBtn').addEventListener('click', guardarComision);
 
-      // Eventos para preview
       document.getElementById('monto').addEventListener('input', calcularPreview);
       document.getElementById('horaInicio')?.addEventListener('change', calcularPreview);
       document.getElementById('horaFin')?.addEventListener('change', calcularPreview);
 
-      // Guardar
       document.getElementById('guardarBtn').addEventListener('click', guardarIngreso);
 
-      // Seleccionar rubro inicial
       seleccionarRubro('Transporte');
       verificarConexion();
     });
