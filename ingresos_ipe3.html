@@ -1,47 +1,428 @@
 <!DOCTYPE html>
 <html class="light" lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
-<title>Registro de Servicio Electrónico</title>
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-<style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Registro Ingreso - Transporte</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+  <!-- Tesseract.js para OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
     body { font-family: 'Inter', sans-serif; background: #f8f9ff; }
-    .loading-spinner { width: 24px; height: 24px; border: 3px solid #fff; border-top-color: transparent; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+    .spinner { border: 3px solid #e5e7eb; border-top-color: #004831; border-radius: 50%; width: 28px; height: 28px; animation: spin 0.8s linear infinite; display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
-</style>
+    .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+    .extracted-info { background: #f0fdf4; border-left: 4px solid #16a34a; padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 6px; }
+  </style>
 </head>
-<body class="bg-background min-h-screen pb-24">
-<header class="bg-surface border-b border-outline-variant flex justify-between items-center px-4 h-12 w-full sticky top-0 z-50">
-    <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-electronica-primary flex items-center justify-center"><span class="material-symbols-outlined text-white">smart_toy</span></div><h1 class="text-xl font-bold text-electronica-primary">Driver Insights 🤖</h1></div>
-    <button onclick="history.back()" class="material-symbols-outlined text-electronica-primary">arrow_back</button>
-</header>
-<main class="px-4 py-6 max-w-2xl mx-auto space-y-6">
-    <header><h2 class="text-2xl font-bold">Registro de Servicio Electrónico</h2><p class="text-sm text-on-surface-variant">Complete los detalles del trabajo realizado.</p></header>
-    <section class="space-y-3"><label class="text-xs font-bold uppercase">Tipo de Servicio</label><div class="grid grid-cols-2 gap-2"><button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high" data-service="Instalación" onclick="selectService(this)">🤖 Instalación</button><button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high" data-service="Reparación" onclick="selectService(this)">🔧 Reparación</button><button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high" data-service="Mantenimiento" onclick="selectService(this)">⚙️ Mantenimiento</button><button class="service-btn border border-outline flex flex-col items-center justify-center p-4 rounded-xl transition-all bg-surface hover:bg-surface-container-high" data-service="Consultoría" onclick="selectService(this)">💡 Consultoría</button></div></section>
-    <section class="space-y-4"><div><label class="text-xs font-bold uppercase">Nombre del Cliente</label><input id="cliente" class="w-full h-14 px-4 bg-surface border rounded-xl" placeholder="Ej. Juan Pérez"></div><div><label class="text-xs font-bold uppercase">Descripción del Trabajo</label><textarea id="descripcion" rows="3" class="w-full p-4 bg-surface border rounded-xl" placeholder="Detalle las tareas realizadas..."></textarea></div></section>
-    <section class="bg-surface border rounded-xl p-5 space-y-4"><h3 class="text-xs font-bold uppercase">Desglose de Costos</h3><div class="grid grid-cols-2 gap-4"><div><label>Mano de Obra</label><div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2">$</span><input id="labor" type="number" step="0.01" class="w-full h-12 pl-8 pr-4 bg-surface-container-low border rounded-lg" placeholder="0.00" oninput="calcularTotal()"></div></div><div><label>Materiales</label><div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2">$</span><input id="materials" type="number" step="0.01" class="w-full h-12 pl-8 pr-4 bg-surface-container-low border rounded-lg" placeholder="0.00" oninput="calcularTotal()"></div></div></div><div class="border-t pt-4 flex justify-between items-baseline"><span class="text-lg font-bold">Precio Total</span><span class="text-3xl font-bold text-electronica-primary" id="totalPrecio">$0.00</span></div></section>
-    <section class="flex items-center justify-between bg-surface border rounded-xl p-4"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-electronica-primary" id="statusIcon">pending_actions</span><div><p class="text-xs font-bold uppercase">Estado de Pago</p><p class="font-bold" id="statusLabel">Pendiente</p></div></div><button class="w-14 h-8 rounded-full bg-outline-variant relative transition-colors" id="togglePago" onclick="togglePago()"><div class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform" id="toggleKnob"></div></button></section>
-    <div class="pt-4"><button id="guardarBtn" class="w-full h-14 bg-electronica-primary text-white rounded-xl font-bold flex items-center justify-center gap-2"><span class="material-symbols-outlined">save</span> Registrar Ingreso</button></div>
-</main>
-<script>
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqiJKDDXKRM_7xBR8NhDC43BVpsyrqyI3mZeY5w_w6vroHubh1KjlBExGw66MmeZX_Rg/exec';
-    let tipoServicio = 'Instalación', pagoPagado = false;
-    function selectService(btn) { document.querySelectorAll('.service-btn').forEach(b => b.classList.remove('bg-electronica-primary', 'text-white', 'border-electronica-primary')); btn.classList.add('bg-electronica-primary', 'text-white', 'border-electronica-primary'); tipoServicio = btn.getAttribute('data-service'); }
-    function calcularTotal() { const total = (parseFloat(document.getElementById('labor').value)||0) + (parseFloat(document.getElementById('materials').value)||0); document.getElementById('totalPrecio').innerText = `$${total.toFixed(2)}`; }
-    function togglePago() { pagoPagado = !pagoPagado; const knob = document.getElementById('toggleKnob'), label = document.getElementById('statusLabel'), icon = document.getElementById('statusIcon'), btn = document.getElementById('togglePago'); if(pagoPagado){ btn.classList.remove('bg-outline-variant'); btn.classList.add('bg-electronica-primary'); knob.style.transform='translateX(24px)'; label.innerText='Pagado'; icon.innerText='check_circle'; } else { btn.classList.remove('bg-electronica-primary'); btn.classList.add('bg-outline-variant'); knob.style.transform='translateX(0)'; label.innerText='Pendiente'; icon.innerText='pending_actions'; } }
-    document.getElementById('guardarBtn').addEventListener('click', async () => {
-        const cliente = document.getElementById('cliente').value.trim(), desc = document.getElementById('descripcion').value.trim(), labor = parseFloat(document.getElementById('labor').value)||0, materials = parseFloat(document.getElementById('materials').value)||0, total = labor+materials;
-        if (total <= 0) { alert('El monto total debe ser mayor a 0'); return; }
-        const fecha = new Date().toISOString().split('T')[0];
-        const notas = `Cliente: ${cliente} | Servicio: ${tipoServicio} | Descripción: ${desc} | Mano de obra: $${labor} | Materiales: $${materials} | Pago: ${pagoPagado ? 'Pagado' : 'Pendiente'}`;
-        const params = new URLSearchParams(); params.append('action', 'addIncome'); params.append('plataforma', 'Electrónica'); params.append('rubro', 'Electrónica'); params.append('monto', total); params.append('fecha', fecha); params.append('notas', notas);
-        const btn = document.getElementById('guardarBtn'); const original = btn.innerHTML; btn.innerHTML = '<div class="loading-spinner"></div> Guardando...'; btn.disabled = true;
-        try { const res = await fetch(SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: params }); const txt = await res.text(); if (res.ok && txt.includes('OK')) alert('✅ Ingreso registrado'); else alert('❌ Error: ' + txt); window.location.href = 'Dashboard.html'; } catch(e) { alert('❌ Error de conexión: ' + e.message); } finally { btn.innerHTML = original; btn.disabled = false; }
+<body>
+  <!-- OVERLAY DE PROCESAMIENTO -->
+  <div id="ocrOverlay" class="overlay hidden">
+    <div class="bg-white p-6 rounded-xl text-center max-w-xs">
+      <div class="spinner mx-auto"></div>
+      <p class="mt-3 font-medium">Procesando imagen...</p>
+      <p id="ocrStatus" class="text-xs text-gray-500 mt-1">Extrayendo texto</p>
+    </div>
+  </div>
+
+  <header class="bg-surface border-b border-outline-variant flex justify-between items-center px-4 h-12 w-full sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+        <span class="material-symbols-outlined text-white">directions_car</span>
+      </div>
+      <h1 class="text-xl font-bold text-primary">Driver Insights 🚖</h1>
+    </div>
+    <button onclick="history.back()" class="material-symbols-outlined text-primary">arrow_back</button>
+  </header>
+
+  <main class="px-4 py-6 max-w-2xl mx-auto space-y-6">
+    <h2 class="text-2xl font-bold">Registro de Ingreso - Transporte</h2>
+    <p class="text-sm text-on-surface-variant">Sube una captura de pantalla de tu app (Indriver, Uber, etc.) y extrae los datos automáticamente.</p>
+
+    <!-- Área de captura -->
+    <section class="bg-white rounded-xl p-4 border border-outline-variant shadow-sm">
+      <label class="block text-xs font-bold uppercase mb-1">Captura de pantalla</label>
+      <div class="flex flex-wrap items-center gap-3">
+        <input type="file" accept="image/*" capture="environment" id="imageInput" class="flex-1 border rounded p-2 text-sm" />
+        <button id="extractBtn" class="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1">
+          <span class="material-symbols-outlined text-sm">auto_awesome</span> Extraer
+        </button>
+      </div>
+      <div id="extractResult" class="text-sm mt-2"></div>
+    </section>
+
+    <!-- Formulario -->
+    <form id="ingresoForm" class="space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-bold uppercase">Fecha</label>
+          <input type="date" id="fechaInput" class="w-full border rounded-lg p-2 bg-surface" required />
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase">Plataforma</label>
+          <select id="plataformaInput" class="w-full border rounded-lg p-2 bg-surface">
+            <option value="Indriver">Indriver</option>
+            <option value="Uber">Uber</option>
+            <option value="DiDi">DiDi</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold uppercase">Ingreso Neto (total)</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+          <input type="number" step="0.01" id="montoNeto" class="w-full pl-8 pr-4 border rounded-lg p-2 bg-surface" placeholder="0.00" required />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-bold uppercase">Kilómetros</label>
+          <input type="number" step="0.1" id="kmInput" class="w-full border rounded-lg p-2 bg-surface" placeholder="0.0" />
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase"># Solicitudes</label>
+          <input type="number" id="viajesInput" class="w-full border rounded-lg p-2 bg-surface" placeholder="0" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs font-bold uppercase">Tarifa / Km</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+            <input type="number" step="0.01" id="tarifaKm" class="w-full pl-8 pr-4 border rounded-lg p-2 bg-surface" placeholder="0.00" />
+          </div>
+        </div>
+        <div>
+          <label class="text-xs font-bold uppercase">Ingreso Bruto (recibido)</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+            <input type="number" step="0.01" id="ingresoBruto" class="w-full pl-8 pr-4 border rounded-lg p-2 bg-surface" placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold uppercase">Comisiones / Impuestos (pagado)</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2">$</span>
+          <input type="number" step="0.01" id="comisionesInput" class="w-full pl-8 pr-4 border rounded-lg p-2 bg-surface" placeholder="0.00" />
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold uppercase">Notas (opcional)</label>
+        <textarea id="notasInput" rows="2" class="w-full border rounded-lg p-2 bg-surface" placeholder="Observaciones..."></textarea>
+      </div>
+
+      <button type="submit" id="guardarBtn" class="w-full bg-primary text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined">save</span> Guardar Ingreso
+      </button>
+    </form>
+  </main>
+
+  <script>
+    // ============================================================
+    // CONFIGURACIÓN
+    // ============================================================
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxqiJKDDXKRM_7xBR8NhDC43BVpsyrqyI3mZeY5w_w6vroHubh1KjlBExGw66MmeZX_Rg/exec'; // Reemplaza con tu URL real
+    const STORAGE_KEY = 'ingresos_transporte_pendientes';
+
+    // ============================================================
+    // ELEMENTOS
+    // ============================================================
+    const imageInput = document.getElementById('imageInput');
+    const extractBtn = document.getElementById('extractBtn');
+    const extractResult = document.getElementById('extractResult');
+    const ocrOverlay = document.getElementById('ocrOverlay');
+    const ocrStatus = document.getElementById('ocrStatus');
+
+    const form = document.getElementById('ingresoForm');
+    const fechaInput = document.getElementById('fechaInput');
+    const plataformaInput = document.getElementById('plataformaInput');
+    const montoNeto = document.getElementById('montoNeto');
+    const kmInput = document.getElementById('kmInput');
+    const viajesInput = document.getElementById('viajesInput');
+    const tarifaKm = document.getElementById('tarifaKm');
+    const ingresoBruto = document.getElementById('ingresoBruto');
+    const comisionesInput = document.getElementById('comisionesInput');
+    const notasInput = document.getElementById('notasInput');
+    const guardarBtn = document.getElementById('guardarBtn');
+
+    // Fecha actual por defecto
+    fechaInput.value = new Date().toISOString().split('T')[0];
+
+    // ============================================================
+    // FUNCIONES AUXILIARES
+    // ============================================================
+    function showToast(msg, type = 'info') {
+      // Usamos alert simple para demo, pero puedes usar un toast personalizado
+      alert(msg);
+    }
+
+    function limpiarNumero(texto) {
+      // Elimina todo excepto dígitos, punto y coma (para decimales)
+      const limpio = texto.replace(/[^0-9,.]/g, '').replace(',', '.');
+      return parseFloat(limpio) || null;
+    }
+
+    function extraerFecha(texto) {
+      // Busca patrones: "2 ago 2026", "02/08/2026", "2026-08-02"
+      let fechas = [];
+      // Formato "día mes año" (ej. 2 ago 2026)
+      const regex1 = /(\d{1,2})\s+(ene|feb|mar|abr|may|jun|jul|ago|sep|oct|nov|dic)\s+(\d{4})/i;
+      const match1 = texto.match(regex1);
+      if (match1) {
+        const meses = {ene:0, feb:1, mar:2, abr:3, may:4, jun:5, jul:6, ago:7, sep:8, oct:9, nov:10, dic:11};
+        const mes = meses[match1[2].toLowerCase()];
+        if (mes !== undefined) {
+          const fecha = new Date(parseInt(match1[3]), mes, parseInt(match1[1]));
+          if (!isNaN(fecha)) return fecha.toISOString().split('T')[0];
+        }
+      }
+      // Formato dd/mm/yyyy
+      const regex2 = /(\d{2})\/(\d{2})\/(\d{4})/;
+      const match2 = texto.match(regex2);
+      if (match2) {
+        const fecha = new Date(parseInt(match2[3]), parseInt(match2[2])-1, parseInt(match2[1]));
+        if (!isNaN(fecha)) return fecha.toISOString().split('T')[0];
+      }
+      return null;
+    }
+
+    // ============================================================
+    // EXTRACCIÓN OCR
+    // ============================================================
+    extractBtn.addEventListener('click', async function() {
+      if (!imageInput.files || imageInput.files.length === 0) {
+        alert('Selecciona una imagen primero.');
+        return;
+      }
+      const file = imageInput.files[0];
+      ocrOverlay.classList.remove('hidden');
+      ocrStatus.textContent = 'Iniciando OCR...';
+
+      try {
+        const { data: { text } } = await Tesseract.recognize(file, 'spa', {
+          logger: m => {
+            if (m.status === 'recognizing text') {
+              ocrStatus.textContent = `Procesando ${Math.round(m.progress * 100)}%`;
+            }
+          }
+        });
+        ocrStatus.textContent = 'Extracción completada.';
+        console.log('Texto OCR:', text);
+
+        // --- PATRONES ESPECÍFICOS PARA LA IMAGEN ---
+        // Buscar "Ingresos netos" o "$31.42"
+        let neto = null, km = null, viajes = null, tarifa = null, bruto = null, comision = null;
+
+        // 1. Ingreso neto: suele aparecer "$31.42" o "31.42"
+        const netoMatch = text.match(/\$\s*(\d+[\.,]\d{2})/) || text.match(/(\d+[\.,]\d{2})\s*Ingresos netos/i);
+        if (netoMatch) neto = limpiarNumero(netoMatch[1]);
+
+        // 2. Kilometraje: "40.1 km" o "40,1 km"
+        const kmMatch = text.match(/(\d+[\.,]\d+)\s*km/i);
+        if (kmMatch) km = limpiarNumero(kmMatch[1]);
+
+        // 3. Solicitudes: "14 Solicitudes" o "14 viajes"
+        const viajesMatch = text.match(/(\d+)\s*Solicitudes/i) || text.match(/(\d+)\s*viajes/i);
+        if (viajesMatch) viajes = parseInt(viajesMatch[1]);
+
+        // 4. Tarifa por km: "$0.78 Por km" o "0.78"
+        const tarifaMatch = text.match(/\$\s*(\d+[\.,]\d+)\s*Por km/i) || text.match(/(\d+[\.,]\d+)\s*Por km/i);
+        if (tarifaMatch) tarifa = limpiarNumero(tarifaMatch[1]);
+
+        // 5. Ingreso bruto (Recibido): "$36.45"
+        const brutoMatch = text.match(/Recibido\s*(?:Solo tarifas)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
+                           text.match(/\$\s*(\d+[\.,]\d{2})\s*(?:Recibido|Solo tarifas)/i);
+        if (brutoMatch) bruto = limpiarNumero(brutoMatch[1]);
+
+        // 6. Comisiones (Pagado): "$5.03"
+        const comisionMatch = text.match(/Pagado\s*(?:Pago por el servicio e impuestos)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
+                              text.match(/\$\s*(\d+[\.,]\d{2})\s*(?:Pagado|Pago por el servicio)/i);
+        if (comisionMatch) comision = limpiarNumero(comisionMatch[1]);
+
+        // Fecha
+        const fechaExtraida = extraerFecha(text);
+
+        // --- AUTO-RELLENAR CAMPOS ---
+        if (neto !== null) montoNeto.value = neto.toFixed(2);
+        if (km !== null) kmInput.value = km;
+        if (viajes !== null) viajesInput.value = viajes;
+        if (tarifa !== null) tarifaKm.value = tarifa.toFixed(2);
+        if (bruto !== null) ingresoBruto.value = bruto.toFixed(2);
+        if (comision !== null) comisionesInput.value = comision.toFixed(2);
+        if (fechaExtraida) fechaInput.value = fechaExtraida;
+
+        // Mostrar resumen de lo extraído
+        let resumen = '✅ Datos extraídos:\n';
+        resumen += `Neto: $${neto !== null ? neto.toFixed(2) : 'N/A'}\n`;
+        resumen += `Km: ${km !== null ? km : 'N/A'}\n`;
+        resumen += `Solicitudes: ${viajes !== null ? viajes : 'N/A'}\n`;
+        resumen += `Tarifa/km: $${tarifa !== null ? tarifa.toFixed(2) : 'N/A'}\n`;
+        resumen += `Bruto: $${bruto !== null ? bruto.toFixed(2) : 'N/A'}\n`;
+        resumen += `Comisiones: $${comision !== null ? comision.toFixed(2) : 'N/A'}\n`;
+        resumen += `Fecha: ${fechaExtraida || 'N/A'}`;
+        extractResult.innerHTML = `<div class="extracted-info">${resumen.replace(/\n/g, '<br>')}</div>`;
+
+        // Si no se extrajo nada, avisar
+        if (neto === null && km === null && viajes === null && tarifa === null && bruto === null && comision === null) {
+          extractResult.innerHTML += '<p class="text-red-500 text-xs mt-1">No se pudieron extraer datos. Verifica la imagen.</p>';
+        }
+
+      } catch (error) {
+        console.error(error);
+        extractResult.innerHTML = '<p class="text-red-500">❌ Error al procesar la imagen: ' + error.message + '</p>';
+      } finally {
+        ocrOverlay.classList.add('hidden');
+      }
     });
-    document.querySelector('.service-btn').click(); calcularTotal();
-</script>
+
+    // ============================================================
+    // GUARDADO
+    // ============================================================
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      // Validaciones
+      const fecha = fechaInput.value;
+      const plataforma = plataformaInput.value;
+      const neto = parseFloat(montoNeto.value);
+      if (!fecha) { alert('Selecciona una fecha.'); return; }
+      if (isNaN(neto) || neto <= 0) { alert('El ingreso neto debe ser mayor a 0.'); return; }
+
+      const km = parseFloat(kmInput.value) || 0;
+      const viajes = parseInt(viajesInput.value) || 0;
+      const tarifa = parseFloat(tarifaKm.value) || 0;
+      const bruto = parseFloat(ingresoBruto.value) || 0;
+      const comision = parseFloat(comisionesInput.value) || 0;
+      const notas = notasInput.value.trim();
+
+      const datos = {
+        fecha,
+        plataforma,
+        neto,
+        km,
+        viajes,
+        tarifa,
+        bruto,
+        comision,
+        notas,
+        timestamp: new Date().toISOString()
+      };
+
+      // Deshabilitar botón
+      guardarBtn.disabled = true;
+      const originalHTML = guardarBtn.innerHTML;
+      guardarBtn.innerHTML = '<div class="spinner"></div> Guardando...';
+
+      try {
+        // 1. Guardar localmente (respaldo)
+        let pendientes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        pendientes.push(datos);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(pendientes));
+
+        // 2. Enviar al backend (Google Apps Script)
+        const params = new URLSearchParams();
+        params.append('action', 'addIncome');
+        params.append('plataforma', plataforma);
+        params.append('rubro', 'Transporte');
+        params.append('monto', neto);
+        params.append('fecha', fecha);
+        params.append('km', km);
+        params.append('viajes', viajes);
+        params.append('tarifa_km', tarifa);
+        params.append('ingreso_bruto', bruto);
+        params.append('comisiones', comision);
+        params.append('notas', notas);
+
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params
+        });
+        const texto = await response.text();
+
+        if (response.ok && texto.includes('OK')) {
+          // Eliminar de pendientes si fue exitoso
+          const pendientesActualizados = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+          const nuevos = pendientesActualizados.filter(p => p.timestamp !== datos.timestamp);
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(nuevos));
+          alert('✅ Ingreso registrado correctamente.');
+          // Limpiar campos opcionales (mantener fecha y plataforma)
+          montoNeto.value = '';
+          kmInput.value = '';
+          viajesInput.value = '';
+          tarifaKm.value = '';
+          ingresoBruto.value = '';
+          comisionesInput.value = '';
+          notasInput.value = '';
+          extractResult.innerHTML = '';
+        } else {
+          alert('⚠️ El registro se guardó localmente pero hubo error al sincronizar: ' + texto);
+        }
+      } catch (error) {
+        console.error(error);
+        alert('❌ Error de conexión. El registro se guardó localmente y se sincronizará después.');
+        // El registro ya está en localStorage, se sincronizará al abrir de nuevo
+      } finally {
+        guardarBtn.innerHTML = originalHTML;
+        guardarBtn.disabled = false;
+      }
+    });
+
+    // ============================================================
+    // SINCRONIZACIÓN DE PENDIENTES (al cargar la página)
+    // ============================================================
+    async function sincronizarPendientes() {
+      const pendientes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      if (pendientes.length === 0) return;
+      console.log(`Sincronizando ${pendientes.length} registros pendientes...`);
+      for (let i = pendientes.length - 1; i >= 0; i--) {
+        const p = pendientes[i];
+        try {
+          const params = new URLSearchParams();
+          params.append('action', 'addIncome');
+          params.append('plataforma', p.plataforma);
+          params.append('rubro', 'Transporte');
+          params.append('monto', p.neto);
+          params.append('fecha', p.fecha);
+          params.append('km', p.km || 0);
+          params.append('viajes', p.viajes || 0);
+          params.append('tarifa_km', p.tarifa || 0);
+          params.append('ingreso_bruto', p.bruto || 0);
+          params.append('comisiones', p.comision || 0);
+          params.append('notas', p.notas || '');
+          const res = await fetch(SCRIPT_URL, { method: 'POST', body: params });
+          const txt = await res.text();
+          if (res.ok && txt.includes('OK')) {
+            pendientes.splice(i, 1);
+          }
+        } catch (e) {
+          console.warn('Error sincronizando registro:', e);
+        }
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pendientes));
+      if (pendientes.length === 0) {
+        console.log('Todos los registros pendientes sincronizados.');
+      } else {
+        console.log(`${pendientes.length} registros aún pendientes.`);
+      }
+    }
+
+    // Ejecutar sincronización al cargar
+    sincronizarPendientes();
+
+    // ============================================================
+    // MEJORA: arrastrar y soltar imagen (opcional)
+    // ============================================================
+    // (Se puede añadir si se desea)
+  </script>
 </body>
 </html>
