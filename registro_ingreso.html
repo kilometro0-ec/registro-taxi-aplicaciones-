@@ -396,8 +396,14 @@
         const kmMatch = text.match(/(\d+[\.,]\d+)\s*[Kk]m/);
         if (kmMatch) km = limpiarNumero(kmMatch[1]);
 
-        // 3. Solicitudes / viajes (BUSCAR "Solicitudes" CON LÍMITE DE PALABRA)
-        const viajesMatch = text.match(/(\d+)\s*[Ss]olicitudes?\b/);
+        // 3. Solicitudes / viajes
+        // CORREGIDO: antes capturaba la cola de un número decimal cercano
+        // (ej. "$0.78Solicitudes" devolvía 78 en vez del valor real, ej. 14).
+        // El lookbehind evita que el dígito capturado esté precedido por un
+        // punto, una coma u otro dígito (o sea, que sea parte de otro número),
+        // y se limita a 1-3 dígitos porque un conteo de solicitudes real
+        // no debería tener más cifras que eso.
+        const viajesMatch = text.match(/(?<![.,\d])(\d{1,3})\s*[Ss]olicitudes?\b/);
         if (viajesMatch) viajes = parseInt(viajesMatch[1]);
 
         // 4. Tarifa por km (ej: "$0.78 Por km")
