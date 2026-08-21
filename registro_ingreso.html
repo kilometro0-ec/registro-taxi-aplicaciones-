@@ -428,8 +428,14 @@
           if (tarifaMatch) tarifa = limpiarNumero(tarifaMatch[1]);
         }
 
-        // 5. Ingreso bruto (RECIBIDO) - este es el que debe ir al campo MONTO
-        const brutoMatch = text.match(/Recibido\s*(?:Solo\s*tarifas)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
+        // 5. Ingreso bruto (BRUTO = "Solo tarifas") - este es el que debe ir al campo MONTO
+        // CORREGIDO: antes exigía que la palabra "Recibido" saliera bien en el OCR
+        // antes de "Solo tarifas $36.45". Si Tesseract la lee mal (o no aparece
+        // en el recorte), todo el match fallaba aunque "Solo tarifas $XX.XX" sí
+        // estuviera presente. Ahora se busca "Solo tarifas" directamente primero,
+        // que es la etiqueta que realmente define el bruto en la app.
+        const brutoMatch = text.match(/Solo\s*tarifas\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
+                           text.match(/Recibido\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
                            text.match(/\$\s*(\d+[\.,]\d{2})\s*(?:Recibido|Solo\s*tarifas)/i);
         if (brutoMatch) bruto = limpiarNumero(brutoMatch[1]);
 
@@ -689,6 +695,12 @@
         const text = await response.text();
         if (response.ok && (text.includes('OK') || text.includes('Ingreso registrado'))) {
           showToast(`✅ Ingreso registrado correctamente\nRubro: ${rubro}\nMonto: $${monto}`, 'success');
+          // Nota: no es posible borrar la imagen de la galería del dispositivo
+          // desde una página web (restricción de seguridad del navegador).
+          // Lo que sí podemos hacer es limpiar la selección y el resultado del
+          // OCR para dejar el formulario listo para el siguiente registro.
+          imageInput.value = '';
+          extractResult.innerHTML = '';
           setTimeout(() => window.location.href = './Dashboard.html', 1500);
         } else {
           showToast('❌ Error del servidor: ' + text, 'error');
