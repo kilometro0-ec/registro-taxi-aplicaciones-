@@ -235,7 +235,7 @@
     <!-- ====== CAMPOS COMUNES ====== -->
     <section class="bg-white border border-outline-variant rounded-xl p-4 shadow-sm space-y-4">
       <div>
-        <label class="text-xs font-bold uppercase text-on-surface-variant">Monto (USD)</label>
+        <label class="text-xs font-bold uppercase text-on-surface-variant">Monto (USD) - <span class="text-gray-500">(Bruto recibido)</span></label>
         <input type="number" step="0.01" id="monto" class="w-full p-2 border rounded-lg text-sm" placeholder="0.00" />
       </div>
       <div>
@@ -367,7 +367,7 @@
     }
 
     // ============================================================
-    // EXTRACCIÓN OCR (MEJORADA)
+    // EXTRACCIÓN OCR (CORREGIDA)
     // ============================================================
     async function extraerDatosIndriver(imageFile) {
       ocrOverlay.classList.remove('hidden');
@@ -388,7 +388,7 @@
         let neto = null, km = null, viajes = null, tarifa = null, bruto = null, comision = null, fecha = null;
         let horaInicio = null, horaFin = null;
 
-        // 1. Ingreso neto (ej: "$31.42" o "31.42 Ingresos netos")
+        // 1. Ingreso neto (solo para referencia, no se asigna al monto)
         const netoMatch = text.match(/\$\s*(\d+[\.,]\d{2})/) || text.match(/(\d+[\.,]\d{2})\s*Ingresos\s*netos/i);
         if (netoMatch) neto = limpiarNumero(netoMatch[1]);
 
@@ -396,16 +396,15 @@
         const kmMatch = text.match(/(\d+[\.,]\d+)\s*[Kk]m/);
         if (kmMatch) km = limpiarNumero(kmMatch[1]);
 
-        // 3. Solicitudes / viajes (buscar "14 Solicitudes" o "14 solicitudes")
-        //    AHORA: solo buscamos "Solicitudes" o "solicitudes" para evitar confusión con otros números.
-        const viajesMatch = text.match(/(\d+)\s*[Ss]olicitudes/);
+        // 3. Solicitudes / viajes (BUSCAR "Solicitudes" CON LÍMITE DE PALABRA)
+        const viajesMatch = text.match(/(\d+)\s*[Ss]olicitudes?\b/);
         if (viajesMatch) viajes = parseInt(viajesMatch[1]);
 
         // 4. Tarifa por km (ej: "$0.78 Por km")
         const tarifaMatch = text.match(/\$\s*(\d+[\.,]\d+)\s*[Pp]or\s*[Kk]m/);
         if (tarifaMatch) tarifa = limpiarNumero(tarifaMatch[1]);
 
-        // 5. Ingreso bruto (ej: "Recibido $36.45" o "Solo tarifas $36.45")
+        // 5. Ingreso bruto (RECIBIDO) - este es el que debe ir al campo MONTO
         const brutoMatch = text.match(/Recibido\s*(?:Solo\s*tarifas)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
                            text.match(/\$\s*(\d+[\.,]\d{2})\s*(?:Recibido|Solo\s*tarifas)/i);
         if (brutoMatch) bruto = limpiarNumero(brutoMatch[1]);
@@ -425,29 +424,34 @@
           horaInicio = horas[0];
           if (horas.length >= 2) horaFin = horas[1];
         }
-        // Si no se encontró hora, asignar por defecto 18:00 y 23:55
         if (!horaInicio) horaInicio = '18:00';
         if (!horaFin) horaFin = '23:55';
 
         // ===== AUTO-RELLENAR CAMPOS =====
-        if (neto !== null) document.getElementById('monto').value = neto.toFixed(2);
+        // MONTO = BRUTO (lo que recibió el conductor)
+        if (bruto !== null) {
+          document.getElementById('monto').value = bruto.toFixed(2);
+        } else if (neto !== null) {
+          // Si no encuentra bruto, usa neto como fallback
+          document.getElementById('monto').value = neto.toFixed(2);
+        }
+
         if (fecha) document.getElementById('fecha').value = fecha;
         if (km !== null) {
           document.getElementById('distanciaApp').value = km;
-          document.getElementById('distanciaTotal').value = km; // opcional
+          document.getElementById('distanciaTotal').value = km;
         }
         // Número de orden = número de solicitudes
         if (viajes !== null) {
           document.getElementById('ordenTransporte').value = viajes;
         }
 
-        // Notas: solo añadimos información adicional relevante (solicitudes, tarifa/km)
+        // Notas: información adicional
         let notasTexto = '';
         if (viajes !== null) notasTexto += `Solicitudes: ${viajes} | `;
         if (tarifa !== null) notasTexto += `Tarifa/km: $${tarifa.toFixed(2)} | `;
-        if (bruto !== null) notasTexto += `Bruto: $${bruto.toFixed(2)} | `;
+        if (neto !== null) notasTexto += `Neto: $${neto.toFixed(2)} | `;
         if (comision !== null) notasTexto += `Comisión: $${comision.toFixed(2)} | `;
-        // Quitamos el último " | " si existe
         if (notasTexto.endsWith(' | ')) notasTexto = notasTexto.slice(0, -3);
         if (notasTexto) document.getElementById('notas').value = notasTexto;
 
@@ -457,11 +461,11 @@
 
         // Mostrar resumen en la interfaz
         let resumen = '✅ Datos extraídos:\n';
+        resumen += `Bruto (Monto): $${bruto !== null ? bruto.toFixed(2) : 'N/A'}\n`;
         resumen += `Neto: $${neto !== null ? neto.toFixed(2) : 'N/A'}\n`;
         resumen += `Km: ${km !== null ? km : 'N/A'}\n`;
         resumen += `Solicitudes: ${viajes !== null ? viajes : 'N/A'}\n`;
         resumen += `Tarifa/km: $${tarifa !== null ? tarifa.toFixed(2) : 'N/A'}\n`;
-        resumen += `Bruto: $${bruto !== null ? bruto.toFixed(2) : 'N/A'}\n`;
         resumen += `Comisiones: $${comision !== null ? comision.toFixed(2) : 'N/A'}\n`;
         resumen += `Fecha: ${fecha || 'N/A'}\n`;
         resumen += `Hora inicio: ${horaInicio || 'N/A'}\n`;
@@ -470,7 +474,7 @@
 
         calcularPreview();
 
-        if (neto === null && km === null && viajes === null) {
+        if (bruto === null && km === null && viajes === null) {
           extractResult.innerHTML += '<p class="text-red-500 text-xs mt-1">⚠️ No se pudieron extraer datos principales. Verifica la imagen.</p>';
         }
 
