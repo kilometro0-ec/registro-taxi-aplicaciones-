@@ -392,23 +392,41 @@
         const netoMatch = text.match(/\$\s*(\d+[\.,]\d{2})/) || text.match(/(\d+[\.,]\d{2})\s*Ingresos\s*netos/i);
         if (netoMatch) neto = limpiarNumero(netoMatch[1]);
 
-        // 2. Kilometraje (buscar "40.1 km" o "40,1 km")
-        const kmMatch = text.match(/(\d+[\.,]\d+)\s*[Kk]m/);
-        if (kmMatch) km = limpiarNumero(kmMatch[1]);
+        // 2, 3 y 4. Solicitudes / Kilometraje / Tarifa por km
+        // CORREGIDO: en la captura real de Indriver, los TRES valores salen
+        // juntos en una sola línea, y las etiquetas van en la línea de ABAJO:
+        //   "14 401 km $0.78"
+        //   "Solicitudes Kilometraje Por km"
+        // Buscar cada número "pegado" a su etiqueta no funciona porque no
+        // están uno al lado del otro en el texto. En su lugar, capturamos
+        // los tres números juntos en ese patrón característico
+        // (número, número+"km", "$"+número) y los asignamos por posición.
+        function normalizarKm(raw) {
+          if (!raw) return null;
+          if (/[.,]/.test(raw)) return parseFloat(raw.replace(',', '.'));
+          // Si Tesseract perdió el punto decimal (ej. "40.1" leído como "401"),
+          // Indriver siempre muestra un solo decimal, así que asumimos que el
+          // último dígito es la parte decimal.
+          if (raw.length >= 2) return parseFloat(raw.slice(0, -1) + '.' + raw.slice(-1));
+          return parseFloat(raw);
+        }
 
-        // 3. Solicitudes / viajes
-        // CORREGIDO: antes capturaba la cola de un número decimal cercano
-        // (ej. "$0.78Solicitudes" devolvía 78 en vez del valor real, ej. 14).
-        // El lookbehind evita que el dígito capturado esté precedido por un
-        // punto, una coma u otro dígito (o sea, que sea parte de otro número),
-        // y se limita a 1-3 dígitos porque un conteo de solicitudes real
-        // no debería tener más cifras que eso.
-        const viajesMatch = text.match(/(?<![.,\d])(\d{1,3})\s*[Ss]olicitudes?\b/);
-        if (viajesMatch) viajes = parseInt(viajesMatch[1]);
+        const comboMatch = text.match(/(\d{1,3})\s+(\d+(?:[.,]\d+)?)\s*[Kk]m\s*\$\s*(\d+(?:[.,]\d+)?)/);
+        if (comboMatch) {
+          viajes = parseInt(comboMatch[1]);
+          km = normalizarKm(comboMatch[2]);
+          tarifa = parseFloat(comboMatch[3].replace(',', '.'));
+        } else {
+          // Fallback: patrones individuales por si la captura viene con otro layout
+          const kmMatch = text.match(/(\d+[\.,]\d+)\s*[Kk]m/);
+          if (kmMatch) km = limpiarNumero(kmMatch[1]);
 
-        // 4. Tarifa por km (ej: "$0.78 Por km")
-        const tarifaMatch = text.match(/\$\s*(\d+[\.,]\d+)\s*[Pp]or\s*[Kk]m/);
-        if (tarifaMatch) tarifa = limpiarNumero(tarifaMatch[1]);
+          const viajesMatch = text.match(/(?<![.,\d])(\d{1,3})\s*[Ss]olicitudes?\b/);
+          if (viajesMatch) viajes = parseInt(viajesMatch[1]);
+
+          const tarifaMatch = text.match(/\$\s*(\d+[\.,]\d+)\s*[Pp]or\s*[Kk]m/);
+          if (tarifaMatch) tarifa = limpiarNumero(tarifaMatch[1]);
+        }
 
         // 5. Ingreso bruto (RECIBIDO) - este es el que debe ir al campo MONTO
         const brutoMatch = text.match(/Recibido\s*(?:Solo\s*tarifas)?\s*[\$\s]*(\d+[\.,]\d{2})/i) ||
